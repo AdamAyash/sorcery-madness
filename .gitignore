@@ -1,0 +1,139 @@
+# ==========================================
+# Sorcery Madness - Git Ignore
+# C++ / Premake5 / Visual Studio 2026
+# ==========================================
+
+# ---- Build outputs ----
+bin/
+bin-int/
+obj/
+build/
+out/
+Debug/
+Release/
+x64/
+x86/
+Win32/
+Win64/
+
+# ---- Compiled binaries and libraries ----
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.o
+*.obj
+*.pdb
+*.ilk
+*.pch
+*.gch
+*.idb
+*.ipch
+*.exp
+*.manifest
+*.lastbuildstate
+*.tlog
+*.recipe
+
+# ---- Visual Studio user-specific files ----
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+*.sdf
+*.opensdf
+*.opendb
+
+# ---- Generated Visual Studio project files ----
+# Premake-generated .sln and .vcxproj files are reproducible.
+*.sln
+*.slnx
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.vcxproj.user.props
+*.vcxproj.user.targets
+
+# ---- Premake generated files ----
+# Keep premake5.lua and any hand-written Premake scripts.
+# Ignore generated project files and temporary output.
+*.make
+*.ninja
+Makefile
+
+# ---- CMake (if ever used by a dependency) ----
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# ---- Temporary and log files ----
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.swp
+*.swo
+*.stackdump
+
+# ---- Operating system files ----
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---- IDEs and editors ----
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ---- Profiling and coverage ----
+*.prof
+*.profraw
+*.gcda
+*.gcno
+coverage/
+coverage.xml
+
+# ---- Crash dumps ----
+*.dmp
+*.mdmp
+*.core
+
+# ---- Environment variables and secrets ----
+.env
+.env.*
+!.env.example
+secrets.json
+secrets.*.json
+
+# ---- Local configuration ----
+*.local
+*.local.json
+
+# ---- Dependency managers / package caches ----
+# Ignore local package caches, not dependency manifests or lockfiles.
+.vcpkg/
+vcpkg_installed/
+conan_cache/
+
+# ---- Generated assets / intermediate imports ----
+# Uncomment these if your asset pipeline generates them.
+# assets/cache/
+# assets/intermediate/
+
+# ---- Keep source assets, project scripts and dependencies ----
+# Do not ignore source code, shaders, models, textures,
+# audio, premake5.lua, or tracked vendor dependencies.
