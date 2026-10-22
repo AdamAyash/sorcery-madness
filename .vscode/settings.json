@@ -11,6 +11,8 @@
     "optimize",
     "symbols",
     "architecture",
-    "include"
-  ]
+    "include",
+    "links"
+  ],
+  "cSpell.words": ["Mswsock"]
 }
