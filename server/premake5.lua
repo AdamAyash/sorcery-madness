@@ -8,9 +8,12 @@ files {
 }
 
 links {
-    "Ws2_32",
-    "Mswsock",
-    "AdvApi32"
+    "Networking",
+}
+
+includedirs {
+    "%{wks.location}/Common/source",
+    "%{wks.location}/Networking/source"
 }
 
 filter "configurations:Debug"

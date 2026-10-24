@@ -12,7 +12,25 @@
     "symbols",
     "architecture",
     "include",
-    "links"
+    "links",
+    "postbuildcommands",
+    "targetdir",
+    "objdir",
+    "cppdialect",
+    "includedirs",
+    "outputdir"
   ],
-  "cSpell.words": ["Mswsock"]
+  "cSpell.words": [
+    "buildoptions",
+    "buildtarget",
+    "cppdialect",
+    "includedirs",
+    "Mswsock",
+    "objdir",
+    "outputdir",
+    "postbuildcommands",
+    "relpath",
+    "startproject",
+    "targetdir"
+  ]
 }

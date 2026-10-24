@@ -4,15 +4,14 @@
 
 #include <iostream>
 #include <cstring>
-
+#include "WinsockContext.h"
 
 int main()
 {
-    WSADATA oWSAData{};
-
-    if (WSAStartup(MAKEWORD(2, 2), &oWSAData) != 0)
+    networking::WinsockContext oWinsockContext;
+    if (!oWinsockContext.Initialize())
     {
-        return -1;
+
     }
 
     addrinfo hints{};
@@ -83,7 +82,6 @@ int main()
 
     closesocket(clientSocket);
     freeaddrinfo(result);
-    WSACleanup();
 
     return 0;
 }
