@@ -18,7 +18,9 @@
     "objdir",
     "cppdialect",
     "includedirs",
-    "outputdir"
+    "outputdir",
+    "startproject",
+    "buildoptions"
   ],
   "cSpell.words": [
     "buildoptions",

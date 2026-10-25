@@ -1,21 +1,17 @@
 #pragma once
 
-#include <winsock2.h>
-#include <Common.h>
+#include "BaseSocket.h"
 
 namespace networking
 {
-	class ServerSocket final : public common::NonCopyableObject
+	class ServerSocket final : public BaseSocket
 	{
 	public:
-		ServerSocket();
-		~ServerSocket();
+		ServerSocket(IN const std::string& strDomainAddress, IN const std::string& strPort);
+		virtual ~ServerSocket();
 
 	public:
-		void Close();
-
-
-	private:
-		SOCKET m_oSocket = INVALID_SOCKET;
+		bool Open() override;
+		bool Bind();
 	};
 }

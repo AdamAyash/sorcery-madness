@@ -3,6 +3,15 @@
 #include "NonCopyableObject.h"
 #include <memory>
 #include <utility>
+#include "Logger.h"
+
+#define InitializeMemory() SecureZeroMemory(this, sizeof(*this));
+
+#define IN
+#define OUT
+#define OPTIONAL
+
+#define BASE __super
 
 namespace common
 {

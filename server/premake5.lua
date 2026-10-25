@@ -13,7 +13,8 @@ links {
 
 includedirs {
     "%{wks.location}/Common/source",
-    "%{wks.location}/Networking/source"
+    "%{wks.location}/Networking/source",
+    "%{wks.location}/vendor/spdlog/include",
 }
 
 filter "configurations:Debug"

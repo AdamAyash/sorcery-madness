@@ -1,22 +1,14 @@
 #include "Socket.h"
+#include <WS2tcpip.h>
 
 namespace networking
 {
-	Socket::Socket()
+	Socket::Socket(IN const std::string& strDomainAddress, IN const std::string& strPort)
+		: BaseSocket(strDomainAddress, strPort)
 	{
 	}
 
 	Socket::~Socket()
 	{
-		Close();
-	}
-
-	void Socket::Close()
-	{
-		if (m_oSocket != INVALID_SOCKET)
-		{
-			closesocket(m_oSocket);
-			m_oSocket = INVALID_SOCKET;
-		}
 	}
 }

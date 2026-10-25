@@ -14,8 +14,6 @@ objdir("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 filter "system:windows"
 links {
     "Ws2_32",
-    "Mswsock",
-    "AdvApi32",
     "Common"
 }
 

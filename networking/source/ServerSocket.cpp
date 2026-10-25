@@ -2,21 +2,29 @@
 
 namespace networking
 {
-	ServerSocket::ServerSocket()
+	ServerSocket::ServerSocket(const std::string& strDomainAddress, const std::string& strPort)
+		: BaseSocket(strDomainAddress, strPort)
 	{
 	}
 
 	ServerSocket::~ServerSocket()
 	{
-		Close();
 	}
 
-	void ServerSocket::Close()
+	bool ServerSocket::Open()
 	{
-		if (m_oSocket != INVALID_SOCKET)
+		if (!BASE::Open())
 		{
-			closesocket(m_oSocket);
-			m_oSocket = INVALID_SOCKET;
+			//TODO LOG
+			return false;
 		}
+
+		if (SOCKET_ERROR == bind(m_oSocket, &m_oSocketAddress.Get(), m_oSocketAddress.Size()))
+		{
+			//TODO LOG
+			return false;
+		}
+
+		return true;
 	}
 }
