@@ -5,14 +5,13 @@
 #include <iostream>
 #include <cstring>
 
-#include "WinsockContext.h"
-#include "Socket.h"
+#include "Networking/WinsockContext.h"
+#include "Networking/Socket.h"
+#include <Networking/Packets/PacketHeader.h>
 
 int main()
 {
     common::Logger::Init();
-
-    LOG_CLIENT_INFO("Test message");
 
     networking::WinsockContext oWinsockContext;
     if (!oWinsockContext.Initialize())
@@ -20,17 +19,20 @@ int main()
 
     }
 
-    networking::Socket oClientSocket("127.0.0.1", "2551");
+    networking::Socket oClientSocket("127.0.0.1", "3000");
     if (!oClientSocket.Open())
     {
 
     }
 
-    const char* message = "Message";
+    networking::PacketHeader oPacketHeader;
+    oPacketHeader.ePacketType = networking::PacketTypes::PacketTypeConnect;
+
+    const char* message = reinterpret_cast<const char*>(&oPacketHeader);
 
     while (true)
     {
-        auto bytes = oClientSocket.Send(message, 7);
+        auto bytes = oClientSocket.Send(message, 16);
         //std::cout << "Sent " << bytes << " bytes\n";
     }
 

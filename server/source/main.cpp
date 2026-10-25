@@ -1,27 +1,17 @@
 #include <iostream>
-#include "WinsockContext.h"
-#include <ServerSocket.h>
+#include "Server.h"
 
 int main()
 {
-	networking::WinsockContext oWinsockContext;
-	if (!oWinsockContext.Initialize())
-	{
+	Server oServer("127.0.0.1", "3000");
 
+	if(!oServer.Start())
+	{
+		LOG_ERROR("Failed to start the server.");
+		return -1;
 	}
 
-	networking::ServerSocket oServerSocket("127.0.0.1", "2551");
-	if (!oServerSocket.Open())
-	{
-
-	}
-
-	while (true)
-	{
-		char buffer[1024]{};
-		oServerSocket.Recieve(buffer);
-		std::cout << buffer << std::endl;
-	}
+	oServer.Run();
 
 	return 0;
 }

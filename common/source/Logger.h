@@ -10,7 +10,7 @@ namespace common
 	public:
 		static void Init();
 
-		inline static const std::shared_ptr<spdlog::logger>& GetClientLogger()
+		inline static const std::shared_ptr<spdlog::logger>& GetLogger()
 		{
 			return s_ClientLogger;
 		}
@@ -20,8 +20,8 @@ namespace common
 	};
 };
 
-//Client log macros
-#define LOG_CLIENT_INFO(...)	::common::Logger::GetClientLogger()->info(__VA_ARGS__)
-#define LOG_CLIENT_WARN(...)	::common::Logger::GetClientLogger()->warn(__VA_ARGS__)
-#define LOG_CLIENT_TRACE(...)	::common::Logger::GetClientLogger()->trace(__VA_ARGS__)
-#define LOG_CLIENT_ERROR(...)	::common::Logger::GetClientLogger()->error(__VA_ARGS__)
+//Log macros
+#define LOG_INFO(...)	::common::Logger::GetLogger()->info(__VA_ARGS__)
+#define LOG_WARN(...)	::common::Logger::GetLogger()->warn(__VA_ARGS__)
+#define LOG_TRACE(...)	::common::Logger::GetLogger()->trace(__VA_ARGS__)
+#define LOG_ERROR(...)	::common::Logger::GetLogger()->error(__VA_ARGS__)

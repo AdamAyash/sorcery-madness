@@ -55,7 +55,7 @@ namespace networking
 	{
 		if (m_oSocket == INVALID_SOCKET)
 		{
-			//TODO LOG ERROR
+			LOG_ERROR("Closed or corrupted socket.");
 			return SOCKET_ERROR;
 		}
 
@@ -81,7 +81,7 @@ namespace networking
 	{
 		if (m_oSocket == INVALID_SOCKET)
 		{
-			//TODO LOG ERROR
+			LOG_ERROR("Closed or corrupted socket.");
 			return SOCKET_ERROR;
 		}
 
@@ -90,7 +90,7 @@ namespace networking
 
 		const int bytesRecieved = recvfrom(m_oSocket, 
 			pMessageBuffer, 
-			nMaxPacketSize, 
+			MAX_PACKET_SIZE, 
 			0, 
 			&oAddressFrom, 
 			&nAddressFromSizeInBytes);

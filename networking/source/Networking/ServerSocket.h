@@ -12,6 +12,8 @@ namespace networking
 
 	public:
 		bool Open() override;
+
+	private:
 		bool Bind();
 	};
 }

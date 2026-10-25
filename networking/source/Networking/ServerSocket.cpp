@@ -21,7 +21,7 @@ namespace networking
 
 		if (SOCKET_ERROR == bind(m_oSocket, &m_oSocketAddress.Get(), m_oSocketAddress.Size()))
 		{
-			//TODO LOG
+			LOG_ERROR("An error occured while binding the socket on {0}:{1}", m_strDomainAddress, m_strPort);
 			return false;
 		}
 
