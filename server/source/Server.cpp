@@ -6,12 +6,10 @@
 Server::Server(const std::string& strServerIpAddress, const std::string& strPort)
 	: m_strServerIpAddress(strServerIpAddress)
 	, m_strPort(strPort)
-{
-}
+{}
 
 Server::~Server()
-{
-}
+{}
 
 bool Server::Start()
 {
@@ -74,14 +72,14 @@ void Server::RecievePackets()
 			return;
 		}
 
-		const networking::PacketHeader* const pPacketHeader 
+		const networking::PacketHeader* const pPacketHeader
 			= reinterpret_cast<networking::PacketHeader*>(messageBuffer);
 
 		networking::RecievedPacket oRecievedPacket;
 		oRecievedPacket.oPacketHeader = *pPacketHeader;
 		oRecievedPacket.oSocketAddress = oClientAddress;
 		oRecievedPacket.nPacketSize = nBytesRecived;
-		
+
 		memcpy(oRecievedPacket.oPacketPayload, messageBuffer, nBytesRecived);
 		memset(messageBuffer, 0, nBytesRecived);
 
@@ -93,10 +91,19 @@ void Server::ProcessPackets()
 {
 	for (auto packetIterator = m_oRecivedPackets.begin(); packetIterator != m_oRecivedPackets.end(); ++packetIterator)
 	{
+		const auto ePacketType = packetIterator->oPacketHeader.ePacketType;
 
+		switch (ePacketType)
+		{
+		case networking::PacketTypes::PacketTypeConnect:
+			HandleClientConnectionRequest();
+			break;
+
+		default:
+
+		}
 	}
 }
 
 void Server::Update()
-{
-}
+{}

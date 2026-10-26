@@ -4,6 +4,7 @@
 #include <Networking/WinsockContext.h>
 #include <Networking/Packets/RecievedPacket.h>
 #include <Common.h>
+#include <vector>
 
 
 class Server final : public common::NonCopyableObject
