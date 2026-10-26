@@ -4,12 +4,13 @@
 
 
 Server::Server(const std::string& strServerIpAddress, const std::string& strPort)
-	: m_strServerIpAddress(strServerIpAddress)
-	, m_strPort(strPort)
-{}
+	: NetworkEndpoint(strServerIpAddress, strPort)
+{
+}
 
 Server::~Server()
-{}
+{
+}
 
 bool Server::Start()
 {
@@ -23,16 +24,18 @@ bool Server::Start()
 		return false;
 	}
 
-	m_oServerSocket = common::CreateScope<networking::ServerSocket>(m_strServerIpAddress, m_strPort);
-	if (!m_oServerSocket->Open())
+	m_oSocket = common::CreateScope<networking::ServerSocket>(m_strIpAddress, m_strPort);
+	if (!m_oSocket->Open())
 	{
 		LOG_ERROR("An error occured while opening the server socket");
 		return false;
 	}
 
+	m_oServerContext = common::CreateScope<ServerContext>();
+
 	m_bIsRunning = true;
 
-	LOG_INFO("Server successfully started on {0}:{1}", m_strServerIpAddress, m_strPort);
+	LOG_INFO("Server successfully started on {0}:{1}", m_strIpAddress, m_strPort);
 
 	return m_bIsRunning;
 }
@@ -47,63 +50,18 @@ void Server::Run()
 	}
 }
 
-void Server::RecievePackets()
+bool Server::ProcessPacket(const networking::RecievedPacket& oRecievedPacket)
 {
-	while (true)
+	switch (oRecievedPacket.ePacketType)
 	{
-		char messageBuffer[networking::MAX_PACKET_SIZE]{};
-		networking::SocketAddress oClientAddress;
+	case networking::PacketTypes::PacketTypeConnect:
+		return m_oServerContext->HandleClientConnectionRequest(oRecievedPacket);
 
-		const auto nBytesRecived = m_oServerSocket->Recieve(messageBuffer, &oClientAddress);
-		if (nBytesRecived == SOCKET_ERROR)
-		{
-			auto nNetworkError = WSAGetLastError();
-
-			if (nNetworkError == WSAEWOULDBLOCK)
-				break;
-
-			LOG_ERROR("An error ocurred while recieving packets");
-			return;
-		}
-
-		if (nBytesRecived < sizeof(networking::PacketHeader))
-		{
-			LOG_ERROR("The recieved packet is corrupted");
-			return;
-		}
-
-		const networking::PacketHeader* const pPacketHeader
-			= reinterpret_cast<networking::PacketHeader*>(messageBuffer);
-
-		networking::RecievedPacket oRecievedPacket;
-		oRecievedPacket.oPacketHeader = *pPacketHeader;
-		oRecievedPacket.oSocketAddress = oClientAddress;
-		oRecievedPacket.nPacketSize = nBytesRecived;
-
-		memcpy(oRecievedPacket.oPacketPayload, messageBuffer, nBytesRecived);
-		memset(messageBuffer, 0, nBytesRecived);
-
-		m_oRecivedPackets.push_back(oRecievedPacket);
-	}
-}
-
-void Server::ProcessPackets()
-{
-	for (auto packetIterator = m_oRecivedPackets.begin(); packetIterator != m_oRecivedPackets.end(); ++packetIterator)
-	{
-		const auto ePacketType = packetIterator->oPacketHeader.ePacketType;
-
-		switch (ePacketType)
-		{
-		case networking::PacketTypes::PacketTypeConnect:
-			HandleClientConnectionRequest();
-			break;
-
-		default:
-
-		}
+	default:
+		return false;
 	}
 }
 
 void Server::Update()
-{}
+{
+}

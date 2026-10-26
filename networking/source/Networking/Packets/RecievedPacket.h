@@ -14,7 +14,7 @@ namespace networking
 			InitializeMemory();
 		}
 
-		PacketHeader oPacketHeader;
+		PacketTypes ePacketType;
 		SocketAddress oSocketAddress;
 		int nPacketSize;
 		char oPacketPayload[MAX_PACKET_SIZE];

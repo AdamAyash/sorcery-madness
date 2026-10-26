@@ -10,6 +10,7 @@
 #define IN
 #define OUT
 #define OPTIONAL
+#define PURE = 0;
 
 #define BASE __super
 
