@@ -26,3 +26,7 @@ namespace common
 #define LOG_WARN(...)	::common::Logger::GetLogger()->warn(__VA_ARGS__)
 #define LOG_TRACE(...)	::common::Logger::GetLogger()->trace(__VA_ARGS__)
 #define LOG_ERROR(...)	::common::Logger::GetLogger()->error(__VA_ARGS__)
+
+#ifdef DEBUG
+	#define  LOG_DEBUG(...)	::common::Logger::GetLogger()->debug(__VA_ARGS__)
+#endif

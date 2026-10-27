@@ -3,6 +3,7 @@
 #include <Common.h>
 #include "PacketHeader.h"
 #include "../SocketAddress.h"
+#include "../NetworkingGlobals.h"
 
 namespace networking
 {
@@ -14,6 +15,7 @@ namespace networking
 		}
 
 		PacketTypes ePacketType;
+		__int64 nnRequestId;
 		SocketAddress oSocketAddress;
 		int nPacketSize;
 		char oPacketPayload[MAX_PACKET_SIZE];

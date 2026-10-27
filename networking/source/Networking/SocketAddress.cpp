@@ -23,4 +23,16 @@ namespace networking
 	{
 		return m_nSizeInBytes;
 	}
+
+	const std::string SocketAddress::GetIpAddress() const
+	{
+		char szIpAddress[INET6_ADDRSTRLEN]{};
+
+		const auto* ipv4Address = reinterpret_cast<const sockaddr_in*>(&m_oRawSocketAddress);
+
+		if (inet_ntop(AF_INET, &ipv4Address->sin_addr, szIpAddress, sizeof(szIpAddress)) == nullptr)
+			return std::string();
+
+		return std::string(szIpAddress);
+	}
 }

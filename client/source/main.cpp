@@ -26,13 +26,15 @@ int main()
     }
 
     networking::PacketHeader oPacketHeader;
+    oPacketHeader.nnRequestId = 1;
     oPacketHeader.ePacketType = networking::PacketTypes::PacketTypeConnect;
 
     const char* message = reinterpret_cast<const char*>(&oPacketHeader);
 
     while (true)
     {
-        auto bytes = oClientSocket.Send(message, 16);
+        oPacketHeader.nnRequestId += 1;
+        auto bytes = oClientSocket.Send(message, sizeof(oPacketHeader));
         //std::cout << "Sent " << bytes << " bytes\n";
     }
 

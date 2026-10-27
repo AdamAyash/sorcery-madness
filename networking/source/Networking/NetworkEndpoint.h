@@ -51,16 +51,26 @@ namespace networking
 					return;
 				}
 
-				if (nBytesRecived < sizeof(PacketHeader))
-				{
-					LOG_ERROR("The recieved packet is corrupted");
-					return;
-				}
-
 				const PacketHeader* const pPacketHeader
 					= reinterpret_cast<PacketHeader*>(messageBuffer);
 
+				if (!pPacketHeader)
+					continue;
+
+				if (!ValidatePacketHeader(*pPacketHeader, nBytesRecived))
+				{
+					LOG_ERROR("The recieved packet is corrupted");
+					continue;
+				}
+
+				if (!ValidateIfPacketDoesntExists(*pPacketHeader))
+				{
+					LOG_WARN("The recieved packet is already registered");
+					continue;
+				}
+
 				RecievedPacket oRecievedPacket;
+				oRecievedPacket.nnRequestId = pPacketHeader->nnRequestId;
 				oRecievedPacket.ePacketType = pPacketHeader->ePacketType;
 				oRecievedPacket.oSocketAddress = oClientAddress;
 				oRecievedPacket.nPacketSize = nBytesRecived;
@@ -87,6 +97,30 @@ namespace networking
 			}
 		}
 
+	private:
+		bool ValidatePacketHeader(IN const PacketHeader& packetHeader, IN const int nBytesRecived)
+		{
+			if (nBytesRecived < sizeof(PacketHeader))
+			{
+				LOG_ERROR("The recieved packet is corrupted");
+				return false;
+			}
+
+			return true;
+		}
+
+		bool ValidateIfPacketDoesntExists(IN const PacketHeader& packetHeader)
+		{
+			for (auto nIndex = 0; nIndex < m_oRecivedPackets.size(); ++nIndex)
+			{
+				auto oCurrentPacket = m_oRecivedPackets[nIndex];
+				if (oCurrentPacket.nnRequestId == packetHeader.nnRequestId)
+					return false;
+			}
+
+			return true;
+		}
+
 	protected:
 		const std::string m_strIpAddress;
 		const std::string m_strPort;
@@ -95,5 +129,7 @@ namespace networking
 		common::Scope<TSocket> m_oSocket = nullptr;
 
 		std::vector<networking::RecievedPacket> m_oRecivedPackets;
+
+		__int64 m_nnNextRequestId = 1;
 	};
 }

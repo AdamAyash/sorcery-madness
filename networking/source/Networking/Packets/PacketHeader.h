@@ -12,6 +12,7 @@ namespace networking
 			InitializeMemory();
 		}
 
+		__int64 nnRequestId = 0;
 		PacketTypes ePacketType;
 	};
 }

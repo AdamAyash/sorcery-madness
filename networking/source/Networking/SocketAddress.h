@@ -17,8 +17,8 @@ namespace networking
 	public:
 		const sockaddr& Get() const;
 		void Set(IN const sockaddr& oSocketAddress);
-
 		const int Size() const;
+		const std::string GetIpAddress() const;
 
 	private:
 		sockaddr m_oRawSocketAddress{};
