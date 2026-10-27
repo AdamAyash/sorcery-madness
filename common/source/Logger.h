@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <spdlog/spdlog.h>
 
 namespace common
@@ -8,7 +9,7 @@ namespace common
 	class Logger
 	{
 	public:
-		static void Init();
+		static void Init(const std::string& strLoggerName);
 
 		inline static const std::shared_ptr<spdlog::logger>& GetLogger()
 		{

@@ -11,7 +11,7 @@
 
 int main()
 {
-    common::Logger::Init();
+    common::Logger::Init("Client application");
 
     networking::WinsockContext oWinsockContext;
     if (!oWinsockContext.Initialize())

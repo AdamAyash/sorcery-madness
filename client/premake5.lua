@@ -1,6 +1,7 @@
 project "Client"
 kind "ConsoleApp"
 language "C++"
+externalwarnings("Off")
 
 targetdir("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 objdir("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")

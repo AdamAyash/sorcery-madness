@@ -10,5 +10,6 @@ ServerContext::~ServerContext()
 
 bool ServerContext::HandleClientConnectionRequest(const networking::RecievedPacket& oRecievedPacket)
 {
+
 	return true;
 }

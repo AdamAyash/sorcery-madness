@@ -20,12 +20,14 @@
     "includedirs",
     "outputdir",
     "startproject",
-    "buildoptions"
+    "buildoptions",
+    "externalwarnings"
   ],
   "cSpell.words": [
     "buildoptions",
     "buildtarget",
     "cppdialect",
+    "externalwarnings",
     "includedirs",
     "Mswsock",
     "objdir",

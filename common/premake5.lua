@@ -2,6 +2,7 @@ project "Common"
 kind "StaticLib"
 language "C++"
 cppdialect "C++20"
+externalwarnings("Off")
 
 files {
     "source/**.h",
@@ -22,5 +23,3 @@ symbols "On"
 
 filter "configurations:Release"
 optimize "On"
-
-filter {}

@@ -2,7 +2,6 @@
 
 #include <Common.h>
 #include "PacketHeader.h"
-#include "../Networking.h"
 #include "../SocketAddress.h"
 
 namespace networking

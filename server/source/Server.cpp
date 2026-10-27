@@ -14,7 +14,7 @@ Server::~Server()
 
 bool Server::Start()
 {
-	common::Logger::Init();
+	common::Logger::Init("Server instance");
 	LOG_INFO("Server is starting...");
 
 	m_oWinsockContext = common::CreateScope<networking::WinsockContext>();

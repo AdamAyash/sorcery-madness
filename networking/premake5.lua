@@ -2,6 +2,7 @@ project "Networking"
 kind "StaticLib"
 language "C++"
 cppdialect "C++20"
+externalwarnings("Off")
 
 files {
     "source/**.h",
