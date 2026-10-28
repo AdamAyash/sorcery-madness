@@ -20,5 +20,5 @@ private:
 private:
 
 	int m_nNextPlayerId = 1;
-	std::unordered_map<int, ClientSession> m_oClientSessionMap;
+	std::unordered_map<int, ClientSession> m_oClientSessionsMap;
 };

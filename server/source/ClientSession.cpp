@@ -4,10 +4,13 @@ ClientSession::ClientSession(IN int nPlayerId, IN const networking::SocketAddres
 	: m_nPlayerId(nPlayerId)
 	, m_oClientAddress(oClientAddress)
 {
-
 }
 
 ClientSession::~ClientSession()
 {
+}
 
+const networking::SocketAddress& ClientSession::GetClientAddress() const
+{
+	return m_oClientAddress;
 }

@@ -13,11 +13,11 @@ namespace common
 
 		inline static const std::shared_ptr<spdlog::logger>& GetLogger()
 		{
-			return s_ClientLogger;
+			return s_oLogger;
 		}
 
 	private:
-		static std::shared_ptr<spdlog::logger> s_ClientLogger;
+		static std::shared_ptr<spdlog::logger> s_oLogger;
 	};
 };
 
