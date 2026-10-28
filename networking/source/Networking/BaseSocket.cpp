@@ -90,7 +90,7 @@ namespace networking
 
 		const int bytesRecieved = recvfrom(m_oSocket, 
 			pMessageBuffer, 
-			MAX_PACKET_SIZE, 
+			n_MAX_PACKET_SIZE, 
 			0, 
 			&oAddressFrom, 
 			&nAddressFromSizeInBytes);

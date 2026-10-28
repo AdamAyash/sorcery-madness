@@ -1,6 +1,7 @@
 project "Server"
 kind "ConsoleApp"
 language "C++"
+cppdialect "C++20"
 externalwarnings("Off")
 
 targetdir("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")

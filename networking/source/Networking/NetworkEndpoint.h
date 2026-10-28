@@ -1,10 +1,12 @@
 #pragma once
 
-#include "Common.h"
+#include <Common/Common.h>
 #include "Networking.h"
+#include "Networking/BaseSocket.h"
 #include "Packets/PacketHeader.h"
 #include "WinsockContext.h"
 #include <vector>
+#include <type_traits>
 
 namespace networking
 {
@@ -36,7 +38,7 @@ namespace networking
 		{
 			while (true)
 			{
-				char messageBuffer[MAX_PACKET_SIZE]{};
+				char messageBuffer[n_MAX_PACKET_SIZE]{};
 				SocketAddress oClientAddress;
 
 				const auto nBytesRecived = m_oSocket->Recieve(messageBuffer, &oClientAddress);
