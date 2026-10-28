@@ -21,7 +21,8 @@
     "outputdir",
     "startproject",
     "buildoptions",
-    "externalwarnings"
+    "externalwarnings",
+    "defines"
   ],
   "cSpell.words": [
     "buildoptions",

@@ -1,5 +1,6 @@
 #include "Server.h"
 #include <Networking/Networking.h>
+#include <Networking/Version/ProtocolVersion.h>
 #include <Networking/Packets/PacketHeader.h>
 
 
@@ -15,6 +16,8 @@ Server::~Server()
 bool Server::Start()
 {
 	common::Logger::Init("Server instance");
+
+	LOG_INFO("Protocol version: {0}", networking::ProtocolVersion::GetVersion());
 	LOG_INFO("Server is starting...");
 
 	m_oWinsockContext = common::CreateScope<networking::WinsockContext>();

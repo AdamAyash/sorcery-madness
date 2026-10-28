@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.h"
+#include "Common/Common.h"
 #include <Networking/Packets/RecievedPacket.h>
 
 class ClientSession;

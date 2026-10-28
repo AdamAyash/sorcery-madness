@@ -1,7 +1,7 @@
 #include "ServerContext.h"
 #include <Networking/Networking.h>
 #include <Networking/Packets/ConnectPacket.h>
-#include <Common.h>
+#include <Common/Common.h>
 #include "ClientSession.h"
 
 

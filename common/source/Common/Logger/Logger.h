@@ -29,4 +29,6 @@ namespace common
 
 #ifdef DEBUG
 	#define  LOG_DEBUG(...)	::common::Logger::GetLogger()->debug(__VA_ARGS__)
+#else
+	#define  LOG_DEBUG(...)
 #endif

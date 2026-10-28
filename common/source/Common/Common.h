@@ -3,7 +3,7 @@
 #include "NonCopyableObject.h"
 #include <memory>
 #include <utility>
-#include "Logger.h"
+#include "Common/Logger/Logger.h"
 
 #define InitializeMemory() SecureZeroMemory(this, sizeof(*this));
 

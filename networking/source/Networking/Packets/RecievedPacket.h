@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common.h>
+#include <Common/Common.h>
 #include "PacketHeader.h"
 #include "../SocketAddress.h"
 #include "../NetworkingGlobals.h"
@@ -18,6 +18,6 @@ namespace networking
 		__int64 nnRequestId;
 		SocketAddress oSocketAddress;
 		int nPacketSize;
-		char oPacketPayload[MAX_PACKET_SIZE];
+		char oPacketPayload[n_MAX_PACKET_SIZE];
 	};
 }
