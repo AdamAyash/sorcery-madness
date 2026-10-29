@@ -4,7 +4,6 @@
 #include <Common/Common.h>
 #include "ClientSession.h"
 
-
 ServerContext::ServerContext()
 {
 }
@@ -23,7 +22,7 @@ bool ServerContext::HandleClientConnectionRequest(const networking::RecievedPack
 		if (0 == memcmp(&oClientSessionIterator->second.GetClientAddress(), &oRecievedPacket.oSocketAddress, sizeof(networking::SocketAddress)))
 		{
 			LOG_WARN("Client is already connected to the server.");
-			return false;
+			return true;
 		}
 	}
 

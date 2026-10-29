@@ -9,6 +9,7 @@ namespace networking
 		ConnectPacket()
 		{
 			InitializeMemory();
+			ePacketType = networking::PacketTypes::PacketTypeConnect;
 		}
 	};
 }

@@ -21,7 +21,6 @@ namespace networking
 			: m_strIpAddress(strIpAddress)
 			, m_strPort(strPort)
 		{
-
 		}
 
 	public:
@@ -31,7 +30,26 @@ namespace networking
 
 	public:
 		virtual bool Start() PURE;
-		virtual bool ProcessPacket(const networking::RecievedPacket& oRecievedPacket) PURE;
+		virtual bool ProcessPacket(IN const networking::RecievedPacket& oRecievedPacket) PURE;
+
+		template<class TPacket>
+		bool SendPacket(IN const TPacket& oPacket)
+		{
+			static_assert(std::is_convertible_v<TPacket*, Packet*>,
+				"TPacket must publicly inherit from Packet");
+
+			const char* pPacket = reinterpret_cast<const char*>(&oPacket);
+			if (!pPacket)
+			{
+				//TODO ERROR
+				return false;
+			}
+
+			const auto nBytesSent = m_oSocket->Send(pPacket, sizeof(TPacket));
+			LOG_DEBUG("Sent {0} bytes", nBytesSent);
+
+			return true;
+		}
 
 	protected:
 		void RecievePackets()
@@ -53,7 +71,7 @@ namespace networking
 					return;
 				}
 
-				const PacketHeader* const pPacketHeader
+				const PacketHeader* const pPacketHeader 
 					= reinterpret_cast<PacketHeader*>(messageBuffer);
 
 				if (!pPacketHeader)
@@ -80,13 +98,13 @@ namespace networking
 				memcpy(oRecievedPacket.oPacketPayload, messageBuffer, nBytesRecived);
 				memset(messageBuffer, 0, nBytesRecived);
 
-				m_oRecivedPackets.push_back(oRecievedPacket);
+				m_oRecivedPacketsQueue.push_back(oRecievedPacket);
 			}
 		}
 
 		void ProcessPackets()
 		{
-			for (auto packetIterator = m_oRecivedPackets.begin(); packetIterator != m_oRecivedPackets.end();)
+			for (auto packetIterator = m_oRecivedPacketsQueue.begin(); packetIterator != m_oRecivedPacketsQueue.end();)
 			{
 				const auto ePacketType = packetIterator->ePacketType;
 				if (!ProcessPacket(*packetIterator))
@@ -95,7 +113,7 @@ namespace networking
 					continue;
 				}
 
-				packetIterator = m_oRecivedPackets.erase(packetIterator);
+				packetIterator = m_oRecivedPacketsQueue.erase(packetIterator);
 			}
 		}
 
@@ -113,9 +131,9 @@ namespace networking
 
 		bool ValidateIfPacketDoesntExists(IN const PacketHeader& packetHeader)
 		{
-			for (auto nIndex = 0; nIndex < m_oRecivedPackets.size(); ++nIndex)
+			for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
 			{
-				auto oCurrentPacket = m_oRecivedPackets[nIndex];
+				auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
 				if (oCurrentPacket.nnRequestId == packetHeader.nnRequestId)
 					return false;
 			}
@@ -130,7 +148,7 @@ namespace networking
 		common::Scope <networking::WinsockContext> m_oWinsockContext = nullptr;
 		common::Scope<TSocket> m_oSocket = nullptr;
 
-		std::vector<networking::RecievedPacket> m_oRecivedPackets;
+		std::vector<networking::RecievedPacket> m_oRecivedPacketsQueue;
 
 		__int64 m_nnNextRequestId = 1;
 	};
