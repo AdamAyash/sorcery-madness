@@ -10,7 +10,7 @@ files {
 }
 
 includedirs {
-    "%{wks.location}/vendor/spdlog/include",
+    IncludeDirectories["spdlog"],
 }
 
 targetdir("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")

@@ -32,6 +32,7 @@ namespace networking
 		virtual bool Start() PURE;
 		virtual bool ProcessPacket(IN const networking::RecievedPacket& oRecievedPacket) PURE;
 
+	public:
 		template<class TPacket>
 		bool SendPacket(IN const TPacket& oPacket)
 		{
@@ -150,6 +151,7 @@ namespace networking
 
 		std::vector<networking::RecievedPacket> m_oRecivedPacketsQueue;
 
+	private:
 		__int64 m_nnNextRequestId = 1;
 	};
 }
