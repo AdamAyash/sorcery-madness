@@ -3,17 +3,18 @@
 
 namespace engine
 {
-	Application& Application::GetInstance()
+	Application::Application()
 	{
-		static Application oApplicationInstance;
-		return oApplicationInstance;
+
+	}
+
+	Application::~Application()
+	{
+
 	}
 
 	bool Application::Start()
 	{
-		OpenGLContext oOpenGLContext;
-		oOpenGLContext.InitializeOpenGLContext();
-
 		return true;
 	}
 }

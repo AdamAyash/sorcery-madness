@@ -13,7 +13,7 @@ namespace engine
 	{
 	}
 
-	const bool OpenGLContext::InitializeOpenGLContext()
+	bool OpenGLContext::InitializeOpenGLContext() const
 	{
 		const int nIsGLFWInitialized = glfwInit();
 		ASSERT(nIsGLFWInitialized);
@@ -25,7 +25,7 @@ namespace engine
 		return true;
 	}
 
-	const bool OpenGLContext::InitializeGlad()
+	bool OpenGLContext::InitializeGlad() const
 	{
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
@@ -46,7 +46,7 @@ namespace engine
 		LOG_INFO("OpenGL Shading Language Version: {0}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 	}
 
-	const bool OpenGLContext::CheckIfClientSupportsOpenGLVersion4() const
+	bool OpenGLContext::CheckIfClientSupportsOpenGLVersion4() const
 	{
 		return GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 3);
 	}

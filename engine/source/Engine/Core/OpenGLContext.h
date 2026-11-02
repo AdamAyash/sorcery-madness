@@ -11,11 +11,10 @@ namespace engine
 		~OpenGLContext();
 
 	public:
-		const bool InitializeOpenGLContext();
-		const bool InitializeGlad();
+		bool InitializeOpenGLContext() const;
+		bool InitializeGlad() const;
 		void DisplayOpenGLContextInfo();
-
 	private:
-		const inline bool CheckIfClientSupportsOpenGLVersion4() const;
+		inline bool CheckIfClientSupportsOpenGLVersion4() const;
 	};
 };

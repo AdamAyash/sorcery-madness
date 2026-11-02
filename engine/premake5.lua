@@ -7,6 +7,7 @@ externalwarnings("Off")
 files {
     "source/**.h",
     "source/**.cpp",
+    "../vendor/GLAD/src/glad.c"
 }
 
 targetdir("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
