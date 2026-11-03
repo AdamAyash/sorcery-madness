@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "../Core/OpenGLContext.h"
 
 namespace engine
 {
@@ -13,8 +12,35 @@ namespace engine
 
 	}
 
-	bool Application::Start()
+	void Application::Run()
 	{
+		this->Initialize();
+
+		while (m_bIsRunning)
+		{
+			Update();
+		}
+	}
+
+	bool Application::Initialize()
+	{
+		common::Logger::Init("Client");
+
+		WindowProperties oWindowProperties;
+		m_pWindow = common::CreateScope<Window>(oWindowProperties);
+
+		m_bIsRunning = true;
+
 		return true;
+	}
+
+	void Application::Update()
+	{
+		m_pWindow->OnUpdate();
+	}
+
+	void Application::Draw()
+	{
+
 	}
 }
