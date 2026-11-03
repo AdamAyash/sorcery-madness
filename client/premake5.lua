@@ -14,12 +14,16 @@ files {
 
 links {
     "Networking",
+    "Engine"
 }
 
 includedirs {
-    "%{wks.location}/Common/source",
-    "%{wks.location}/Networking/source",
-    "%{wks.location}/vendor/spdlog/include",
+    IncludeDirectories["Common"],
+    IncludeDirectories["Networking"],
+    IncludeDirectories["spdlog"],
+    IncludeDirectories["Engine"],
+    IncludeDirectories["GLFW"],
+    IncludeDirectories["Glad"]
 }
 
 filter "configurations:Debug"

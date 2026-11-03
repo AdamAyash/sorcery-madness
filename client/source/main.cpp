@@ -5,9 +5,14 @@
 #include <iostream>
 #include "GameClient.h"
 #include <Networking/Packets/ConnectPacket.h>
+#include "GameApplication.h"
 
 int main()
 {
+
+    GameApplication oGameApplication;
+    oGameApplication.Run();
+
     GameClient oGameClient("127.0.0.1", "3000");
     oGameClient.Start();
   

@@ -12,8 +12,6 @@ GameClient::~GameClient()
 
 bool GameClient::Start()
 {
-	common::Logger::Init("Game client");
-
 	LOG_INFO("Protocol version: {0}", networking::ProtocolVersion::GetVersion());
 	LOG_INFO("Client is starting...");
 

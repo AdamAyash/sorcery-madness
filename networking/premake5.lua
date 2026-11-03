@@ -20,7 +20,7 @@ links {
 
 includedirs {
     "%{wks.location}/Common/source",
-    "%{wks.location}/vendor/spdlog/include"
+    IncludeDirectories["spdlog"],
 }
 
 filter "configurations:Debug"
