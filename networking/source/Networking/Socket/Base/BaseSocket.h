@@ -3,7 +3,7 @@
 #include <Common/Common.h>
 #include <string>
 #include <winsock2.h>
-#include "SocketAddress.h"
+#include "../../SocketAddress.h"
 
 namespace networking
 {

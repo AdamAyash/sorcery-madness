@@ -2,7 +2,7 @@
 
 #include <Common/Common.h>
 #include "Networking.h"
-#include "Networking/BaseSocket.h"
+#include "Socket/Base/BaseSocket.h"
 #include "Packets/PacketHeader.h"
 #include "WinsockContext.h"
 #include <vector>

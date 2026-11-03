@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Common/Common.h>
-#include <Networking/ServerSocket.h>
+#include <Networking/Socket/ServerSocket.h>
 #include <Networking/Packets/RecievedPacket.h>
 #include <Networking/NetworkEndpoint.h>
 #include "ServerContext.h"

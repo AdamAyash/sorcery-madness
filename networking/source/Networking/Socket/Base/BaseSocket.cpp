@@ -1,5 +1,5 @@
 #include "BaseSocket.h"
-#include "Networking.h"
+#include "../../Networking.h"
 
 namespace networking
 {

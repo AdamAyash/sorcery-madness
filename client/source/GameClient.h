@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Networking/NetworkEndpoint.h>
-#include <Networking/Socket.h>
+#include <Networking/Socket/Socket.h>
 
 class GameClient final : public networking::NetworkEndpoint<networking::Socket>
 {

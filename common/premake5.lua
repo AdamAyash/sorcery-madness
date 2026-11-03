@@ -19,9 +19,6 @@ objdir("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 filter "system:windows"
 
 filter "configurations:Debug"
-defines {
-    "DEBUG",
-}
 symbols "On"
 
 filter "configurations:Release"

@@ -8,7 +8,6 @@
 
 int main()
 {
-
     GameClient oGameClient("127.0.0.1", "3000");
     oGameClient.Start();
   
