@@ -1,0 +1,8 @@
+#version 330 core
+
+in vec3 oPosition;
+
+void main()
+{
+    gl_Position = vec4(oPosition, 1.0);
+}

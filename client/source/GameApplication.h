@@ -1,19 +1,19 @@
 #pragma once
 
-#include <Engine/Application/Application.h>
-#include <Engine//Graphics/Shader.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
-
-class GameApplication : public engine::Application
+class GameApplication
 {
 public:
 	GameApplication();
 	~GameApplication();
 
 public:
-	bool Initialize() override;
-	void Draw() override;
+	void Run();
+	bool Initialize();
+	void Draw();
 
 private:
-	engine::Shader m_oShader;
+	GLFWwindow* m_pWindow = nullptr;
 };

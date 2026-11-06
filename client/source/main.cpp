@@ -9,11 +9,10 @@
 
 int main()
 {
-
     GameApplication oGameApplication;
     oGameApplication.Run();
 
-    GameClient oGameClient("127.0.0.1", "3000");
+    /*GameClient oGameClient("127.0.0.1", "3000");
     oGameClient.Start();
   
     networking::ConnectPacket oConnectPacket;
@@ -22,7 +21,7 @@ int main()
     while (true)
     {
         auto bytes = oGameClient.SendPacket(oConnectPacket);
-    }
+    }*/
 
     return 0;
 }
