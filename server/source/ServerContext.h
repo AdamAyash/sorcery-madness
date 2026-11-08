@@ -2,6 +2,7 @@
 
 #include "Common/Common.h"
 #include <Networking/Packets/RecievedPacket.h>
+#include <Networking/Packets/ConnectionEstablishedPacket.h>
 
 class ClientSession;
 
@@ -12,10 +13,8 @@ public:
 	~ServerContext();
 
 public:
-	bool HandleClientConnectionRequest(const networking::RecievedPacket& oRecievedPacket);
-
-private:
-
+	bool HandleClientConnectionRequest(IN const networking::RecievedPacket& oRecievedPacket, 
+		OUT networking::ConnectionEstablishedPacket& oConnectionEstablishedPacket);
 
 private:
 

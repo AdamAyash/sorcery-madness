@@ -7,6 +7,9 @@ namespace networking
 {
     class ProtocolVersion : public common::NonCopyableObject
     {
+        ProtocolVersion() = default;
+        ~ProtocolVersion() = default;
+
     public:
         static const std::string GetVersion()
         {

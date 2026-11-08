@@ -4,7 +4,10 @@
 #include "Networking.h"
 #include "Socket/Base/BaseSocket.h"
 #include "Packets/PacketHeader.h"
-#include "WinsockContext.h"
+#include "Packets/PendingPacket.h"
+#include "WinsockContext/WinsockContext.h"
+#include "PacketSendStrategy.h"
+#include "PendingPacketsQueueManager/PendingPacketsQueueManager.h"
 #include <vector>
 #include <type_traits>
 
@@ -34,20 +37,42 @@ namespace networking
 
 	public:
 		template<class TPacket>
-		bool SendPacket(IN const TPacket& oPacket)
+		bool SendPacket(IN TPacket& oPacket, IN const SocketAddress* pSocketAddress = nullptr, IN const PacketSendStrategy ePacketSendStrategy = PacketSendStrategy::Unreliable)
 		{
 			static_assert(std::is_convertible_v<TPacket*, Packet*>,
 				"TPacket must publicly inherit from Packet");
 
-			const char* pPacket = reinterpret_cast<const char*>(&oPacket);
-			if (!pPacket)
+			Packet* const pBasePacket = reinterpret_cast<Packet*>(&oPacket);
+			if (!pBasePacket)
 			{
 				//TODO ERROR
 				return false;
 			}
 
-			const auto nBytesSent = m_oSocket->Send(pPacket, sizeof(TPacket));
-			LOG_DEBUG("Sent {0} bytes", nBytesSent);
+			if(pBasePacket->nnRequestId <= 0)
+				pBasePacket->nnRequestId = m_nnNextRequestId++;
+
+			const char* pPacketData = reinterpret_cast<const char*>(&oPacket);
+			if (!pPacketData)
+			{
+				//TODO ERROR
+				return false;
+			}
+
+			if (ePacketSendStrategy == PacketSendStrategy::Reliable)
+			{
+				PendingPacket oPendingPacket;
+				oPendingPacket.oPacketHeader = *pBasePacket;
+				oPendingPacket.oPacketSerializedData = std::vector<char>(pPacketData, pPacketData + sizeof(TPacket));
+
+				m_oPendingPacketsQueueManager.Submit(oPendingPacket);
+			}
+
+			if (!SendPacketInternal(pPacketData, sizeof(TPacket), pSocketAddress))
+			{
+				//TODO LOG
+				return false;
+			}
 
 			return true;
 		}
@@ -68,7 +93,6 @@ namespace networking
 					if (nNetworkError == WSAEWOULDBLOCK)
 						break;
 
-					LOG_ERROR("An error ocurred while recieving packets");
 					return;
 				}
 
@@ -90,6 +114,8 @@ namespace networking
 					continue;
 				}
 
+				LOG_DEBUG("Recived {0} bytes", nBytesRecived);
+
 				RecievedPacket oRecievedPacket;
 				oRecievedPacket.nnRequestId = pPacketHeader->nnRequestId;
 				oRecievedPacket.ePacketType = pPacketHeader->ePacketType;
@@ -98,6 +124,13 @@ namespace networking
 
 				memcpy(oRecievedPacket.oPacketPayload, messageBuffer, nBytesRecived);
 				memset(messageBuffer, 0, nBytesRecived);
+
+				const auto nnPendingPacketId = m_oPendingPacketsQueueManager.FindPendingPacket(oRecievedPacket);
+
+				if (nnPendingPacketId != ELEMENT_NOT_FOUND)
+				{
+					m_oPendingPacketsQueueManager.Remove(nnPendingPacketId);
+				}
 
 				m_oRecivedPacketsQueue.push_back(oRecievedPacket);
 			}
@@ -115,6 +148,20 @@ namespace networking
 				}
 
 				packetIterator = m_oRecivedPacketsQueue.erase(packetIterator);
+			}
+		}
+
+		void ProcessPendingPackets()
+		{
+			const std::vector<PendingPacket>& oPendingPackets = m_oPendingPacketsQueueManager.GetPacketsToRetry();
+			for (const auto& oPendingPacket : oPendingPackets)
+			{
+				const char* pPacketData = oPendingPacket.oPacketSerializedData.data();
+
+				if (!SendPacketInternal(pPacketData, oPendingPacket.oPacketSerializedData.size()))
+				{
+					//TODO LOG
+				}
 			}
 		}
 
@@ -142,6 +189,21 @@ namespace networking
 			return true;
 		}
 
+		bool SendPacketInternal(IN const char* pPacketData, IN const int nPacketSize, IN const SocketAddress* pSocketAddress = nullptr)
+		{
+			const auto nBytesSent = m_oSocket->Send(pPacketData, nPacketSize, pSocketAddress);
+
+			if (nBytesSent == SOCKET_ERROR)
+			{
+				LOG_ERROR("Failed to send packet");
+				return false;
+			}
+
+			LOG_DEBUG("Sent {0} bytes", nBytesSent);
+
+			return true;
+		}
+
 	protected:
 		const std::string m_strIpAddress;
 		const std::string m_strPort;
@@ -150,6 +212,8 @@ namespace networking
 		common::Scope<TSocket> m_oSocket = nullptr;
 
 		std::vector<networking::RecievedPacket> m_oRecivedPacketsQueue;
+
+		PendingPacketsQueueManager& m_oPendingPacketsQueueManager = PendingPacketsQueueManager::GetInstance();
 
 	private:
 		__int64 m_nnNextRequestId = 1;

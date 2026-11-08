@@ -8,8 +8,8 @@ namespace networking
 	{
 		ConnectPacket()
 		{
-			InitializeMemory();
-			ePacketType = networking::PacketTypes::PacketTypeConnect;
+			ePacketType = networking::PacketTypes::Connect;
+			eRetryPolicy = PacketRetryPolicy::Unlimited;
 		}
 	};
 }

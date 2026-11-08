@@ -18,7 +18,7 @@ namespace networking
 		WSADATA oWSAData;
 		if (WSAStartup(MAKEWORD(2, 2), &oWSAData) != 0)
 		{
-			//TODO LOG
+			LOG_ERROR("Failed to initialize winsock2");
 			return false;
 		}
 

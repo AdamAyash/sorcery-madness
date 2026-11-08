@@ -2,6 +2,7 @@
 #include <Networking/Networking.h>
 #include <Networking/Version/ProtocolVersion.h>
 #include <Networking/Packets/PacketHeader.h>
+#include <Networking/Packets/ConnectionEstablishedPacket.h>
 
 
 Server::Server(const std::string& strServerIpAddress, const std::string& strPort)
@@ -57,10 +58,27 @@ bool Server::ProcessPacket(const networking::RecievedPacket& oRecievedPacket)
 {
 	switch (oRecievedPacket.ePacketType)
 	{
-	case networking::PacketTypes::PacketTypeConnect:
-		return m_oServerContext->HandleClientConnectionRequest(oRecievedPacket);
+	case networking::PacketTypes::Connect:
+	{
+		networking::ConnectionEstablishedPacket oConnectionEstablishedPacket;
+
+		if (!m_oServerContext->HandleClientConnectionRequest(oRecievedPacket, oConnectionEstablishedPacket))
+		{
+			//TODO LOG
+			return false;
+		}
+
+		if (!SendPacket<networking::ConnectionEstablishedPacket>(oConnectionEstablishedPacket, &oRecievedPacket.oSocketAddress))
+		{
+			//TODO LOG
+			return false;
+		}
+
+		return true;
+	}
 
 	default:
+		LOG_ERROR("Unsupported packet type: ", static_cast<int>(oRecievedPacket.ePacketType));
 		return false;
 	}
 }

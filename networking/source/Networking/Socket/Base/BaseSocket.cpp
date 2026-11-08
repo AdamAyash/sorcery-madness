@@ -51,7 +51,8 @@ namespace networking
 		return true;
 	}
 
-	int BaseSocket::Send(IN const char* pMessageBuffer, IN const int nMessageBufferSizeInBytes) const
+	int BaseSocket::Send(IN const char* pMessageBuffer, IN const int nMessageBufferSizeInBytes, 
+		IN const SocketAddress* pSocketAddress /*= nullptr*/) const
 	{
 		if (m_oSocket == INVALID_SOCKET)
 		{
@@ -65,17 +66,23 @@ namespace networking
 			return SOCKET_ERROR;
 		}
 
+		if (!pSocketAddress)
+		{
+			pSocketAddress = &m_oSocketAddress;
+		}
+
 		auto nBytesSent = sendto(
 			m_oSocket,
 			pMessageBuffer,
 			nMessageBufferSizeInBytes,
 			0,
-			&m_oSocketAddress.Get(),
-			m_oSocketAddress.Size()
+			&pSocketAddress->Get(),
+			pSocketAddress->Size()
 		);
 
 		return nBytesSent;
 	}
+
 
 	int BaseSocket::Recieve(OUT char* pMessageBuffer, OUT SocketAddress* pSenderAddress /*= nullptr*/) const
 	{

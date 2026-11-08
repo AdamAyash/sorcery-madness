@@ -17,7 +17,7 @@ namespace networking
 
 	public:
 		virtual bool Open();
-		int Send(IN const char* pMessageBuffer, IN const int nMessageBufferSizeInBytes) const;
+		int Send(IN const char* pMessageBuffer, IN const int nMessageBufferSizeInBytes, IN const SocketAddress* pSocketAddress = nullptr) const;
 		int Recieve(OUT char* pMessageBuffer, OUT SocketAddress* pSenderAddress = nullptr) const;
 		void Close();
 

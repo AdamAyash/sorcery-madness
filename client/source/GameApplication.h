@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "Client/GameClient.h"
 
 class GameApplication
 {
@@ -16,4 +17,5 @@ public:
 
 private:
 	GLFWwindow* m_pWindow = nullptr;
+	GameClient m_oGameClient;
 };

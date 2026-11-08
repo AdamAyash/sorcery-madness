@@ -2,6 +2,7 @@
 
 #include <Common/Common.h>
 #include "PacketTypes.h"
+#include "PacketRetryPolicty.h"
 
 namespace networking
 {
@@ -12,7 +13,8 @@ namespace networking
 			InitializeMemory();
 		}
 
-		__int64 nnRequestId = 0;
+		__int64 nnRequestId;
+		PacketRetryPolicy eRetryPolicy;
 		PacketTypes ePacketType;
 	};
 }

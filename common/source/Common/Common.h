@@ -4,6 +4,7 @@
 #include <memory>
 #include <utility>
 #include "Common/Logger/Logger.h"
+#include "Common/Assert.h"
 
 #define InitializeMemory() SecureZeroMemory(this, sizeof(*this));
 
@@ -13,6 +14,7 @@
 #define PURE = 0;
 
 #define BASE __super
+#define ELEMENT_NOT_FOUND -1
 
 namespace common
 {

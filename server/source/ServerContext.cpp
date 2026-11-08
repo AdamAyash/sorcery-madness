@@ -12,7 +12,7 @@ ServerContext::~ServerContext()
 {
 }
 
-bool ServerContext::HandleClientConnectionRequest(const networking::RecievedPacket& oRecievedPacket)
+bool ServerContext::HandleClientConnectionRequest(IN const networking::RecievedPacket& oRecievedPacket, OUT networking::ConnectionEstablishedPacket& oConnectionEstablishedPacket)
 {
 	common::Scope<networking::ConnectPacket> oConnectPacket 
 		= networking::DeserializePacket<networking::ConnectPacket>(oRecievedPacket);
@@ -22,7 +22,7 @@ bool ServerContext::HandleClientConnectionRequest(const networking::RecievedPack
 		if (0 == memcmp(&oClientSessionIterator->second.GetClientAddress(), &oRecievedPacket.oSocketAddress, sizeof(networking::SocketAddress)))
 		{
 			LOG_WARN("Client is already connected to the server.");
-			return true;
+			return false;
 		}
 	}
 
@@ -33,6 +33,9 @@ bool ServerContext::HandleClientConnectionRequest(const networking::RecievedPack
 
 	LOG_INFO("Client with id: {0} and ip: {1} has connected to the server.", nPlayerId, 
 		oRecievedPacket.oSocketAddress.GetIpAddress());
+
+	oConnectionEstablishedPacket.nnRequestId = oRecievedPacket.nnRequestId;
+	oConnectionEstablishedPacket.nPlayerId = nPlayerId;
 
 	m_nNextPlayerId++;
 
