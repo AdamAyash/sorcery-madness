@@ -20,4 +20,6 @@ namespace networking
 		int nPacketSize;
 		char oPacketPayload[n_MAX_PACKET_SIZE];
 	};
+
+	using RecievedPackestList = std::vector<RecievedPacket>;
 }

@@ -69,7 +69,7 @@ namespace networking
 		return m_oPendingPacketsRegisteredForRetry;
 	}
 
-	__int64 PendingPacketsQueueManager::FindPendingPacket(IN const RecievedPacket oRecievedPacket) const
+	const __int64 PendingPacketsQueueManager::FindPendingPacket(IN const RecievedPacket oRecievedPacket) const
 	{
 		for (auto pendingPacketIterator = m_oPendingPacketsQueue.begin(); pendingPacketIterator != m_oPendingPacketsQueue.end();)
 		{

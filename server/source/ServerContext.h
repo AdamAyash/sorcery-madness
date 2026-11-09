@@ -4,7 +4,7 @@
 #include <Networking/Packets/RecievedPacket.h>
 #include <Networking/Packets/ConnectionEstablishedPacket.h>
 
-class ClientSession;
+class Session;
 
 class ServerContext final : public common::NonCopyableObject
 {
@@ -17,7 +17,6 @@ public:
 		OUT networking::ConnectionEstablishedPacket& oConnectionEstablishedPacket);
 
 private:
-
-	int m_nNextPlayerId = 1;
-	std::unordered_map<int, ClientSession> m_oClientSessionsMap;
+	int m_nNextSessionId = 1;
+	std::unordered_map<int, Session> m_oClientSessionsMap;
 };

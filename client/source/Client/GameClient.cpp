@@ -39,6 +39,18 @@ bool GameClient::Start()
 	return m_bIsRunning;
 }
 
+bool GameClient::IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const
+{
+	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
+	{
+		auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
+		if (oCurrentPacket.nnRequestId == oRecievedPacket.nnRequestId)
+			return false;
+	}
+
+	return true;
+}
+
 bool GameClient::ConnectToServer()
 {
 	ASSERT(m_bIsRunning);

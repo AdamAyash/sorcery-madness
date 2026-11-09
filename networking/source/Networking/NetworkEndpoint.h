@@ -33,7 +33,8 @@ namespace networking
 
 	public:
 		virtual bool Start() PURE;
-		virtual bool ProcessPacket(IN const networking::RecievedPacket& oRecievedPacket) PURE;
+		virtual bool IsPacketAlreadyQueued(IN const RecievedPacket& oRecievedPacket) const PURE;
+		virtual bool ProcessPacket(IN const RecievedPacket& oRecievedPacket) PURE;
 
 	public:
 		template<class TPacket>
@@ -42,7 +43,7 @@ namespace networking
 			static_assert(std::is_convertible_v<TPacket*, Packet*>,
 				"TPacket must publicly inherit from Packet");
 
-			Packet* const pBasePacket = reinterpret_cast<Packet*>(&oPacket);
+			Packet* const pBasePacket = static_cast<Packet*>(&oPacket);
 			if (!pBasePacket)
 			{
 				//TODO ERROR
@@ -52,10 +53,10 @@ namespace networking
 			if(pBasePacket->nnRequestId <= 0)
 				pBasePacket->nnRequestId = m_nnNextRequestId++;
 
-			const char* pPacketData = reinterpret_cast<const char*>(&oPacket);
-			if (!pPacketData)
+			const char* pPacketData = SerializePacket(oPacket);
+			if(!pPacketData)
 			{
-				//TODO ERROR
+				LOG_ERROR("An error occured while serializing packet: {0}", GetPacketName(pBasePacket->ePacketType));
 				return false;
 			}
 
@@ -73,6 +74,13 @@ namespace networking
 				//TODO LOG
 				return false;
 			}
+
+			LOG_DEBUG(
+				"Packet sent | Type: {0} | RequestId: {1} | Size: {2} bytes",
+				GetPacketName(pBasePacket->ePacketType),
+				pBasePacket->nnRequestId,
+				sizeof(TPacket)
+			);
 
 			return true;
 		}
@@ -104,23 +112,34 @@ namespace networking
 
 				if (!ValidatePacketHeader(*pPacketHeader, nBytesRecived))
 				{
-					LOG_ERROR("The recieved packet is corrupted");
+					LOG_ERROR("The recieved packet is corrupted: {0}", GetPacketName(pPacketHeader->ePacketType));
 					continue;
 				}
 
-				if (!ValidateIfPacketDoesntExists(*pPacketHeader))
-				{
-					LOG_WARN("The recieved packet is already registered");
-					continue;
-				}
-
-				LOG_DEBUG("Recived {0} bytes", nBytesRecived);
+				LOG_DEBUG(
+					"Received packet | Type: {0} | RequestId: {1} | Size: {2} bytes | From: {3}",
+					GetPacketName(pPacketHeader->ePacketType),
+					pPacketHeader->nnRequestId,
+					nBytesRecived,
+					oClientAddress.GetIpAddress()
+				);
 
 				RecievedPacket oRecievedPacket;
 				oRecievedPacket.nnRequestId = pPacketHeader->nnRequestId;
 				oRecievedPacket.ePacketType = pPacketHeader->ePacketType;
 				oRecievedPacket.oSocketAddress = oClientAddress;
 				oRecievedPacket.nPacketSize = nBytesRecived;
+
+				if (!IsPacketAlreadyQueued(oRecievedPacket))
+				{
+					LOG_WARN(
+						"Duplicate packet ignored | Type: {0} | RequestId: {1} | From: {2}",
+						GetPacketName(oRecievedPacket.ePacketType),
+						oRecievedPacket.nnRequestId,
+						oRecievedPacket.oSocketAddress.GetIpAddress()
+					);
+					continue;
+				}
 
 				memcpy(oRecievedPacket.oPacketPayload, messageBuffer, nBytesRecived);
 				memset(messageBuffer, 0, nBytesRecived);
@@ -168,22 +187,14 @@ namespace networking
 	private:
 		bool ValidatePacketHeader(IN const PacketHeader& packetHeader, IN const int nBytesRecived)
 		{
-			if (nBytesRecived < sizeof(PacketHeader))
+			const auto nPacketSize = sizeof(PacketHeader);
+
+			if (nBytesRecived < nPacketSize)
 			{
-				LOG_ERROR("The recieved packet is corrupted");
+				LOG_ERROR("Incomplete packet recieved | Expected: {0} | Actual: {1}",
+					nPacketSize, nBytesRecived);
+
 				return false;
-			}
-
-			return true;
-		}
-
-		bool ValidateIfPacketDoesntExists(IN const PacketHeader& packetHeader)
-		{
-			for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
-			{
-				auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
-				if (oCurrentPacket.nnRequestId == packetHeader.nnRequestId)
-					return false;
 			}
 
 			return true;
@@ -198,8 +209,6 @@ namespace networking
 				LOG_ERROR("Failed to send packet");
 				return false;
 			}
-
-			LOG_DEBUG("Sent {0} bytes", nBytesSent);
 
 			return true;
 		}

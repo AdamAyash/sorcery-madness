@@ -12,12 +12,14 @@ namespace networking
 		PendingPacket()
 		{
 			InitializeMemory();
+
+			nPacketRetryTimeoutInSeconds = n_MAX_PACKET_RETRY_TIMEOUT_IN_SECONDS;
 		}
 
 		Packet oPacketHeader;
 		short sRetryCount;
 		std::vector<char> oPacketSerializedData;
-		int nPacketRetryTimeoutInSeconds = n_MAX_PACKET_RETRY_TIMEOUT_IN_SECONDS;
+		int nPacketRetryTimeoutInSeconds;
 		std::chrono::steady_clock::time_point oLastSentTimesStamp;
 	};
 }

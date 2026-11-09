@@ -2,6 +2,7 @@
 #include <Networking/Networking.h>
 #include <Networking/Version/ProtocolVersion.h>
 #include <Networking/Packets/PacketHeader.h>
+#include <Networking/Packets/RecievedPacket.h>
 #include <Networking/Packets/ConnectionEstablishedPacket.h>
 
 
@@ -42,6 +43,21 @@ bool Server::Start()
 	LOG_INFO("Server successfully started on {0}:{1}", m_strIpAddress, m_strPort);
 
 	return m_bIsRunning;
+}
+
+bool Server::IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const
+{
+	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
+	{
+		auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
+		if (oCurrentPacket.nnRequestId == oRecievedPacket.nnRequestId ||
+			oCurrentPacket.oSocketAddress == oRecievedPacket.oSocketAddress)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void Server::Run()

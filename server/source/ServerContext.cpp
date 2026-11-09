@@ -2,7 +2,7 @@
 #include <Networking/Networking.h>
 #include <Networking/Packets/ConnectPacket.h>
 #include <Common/Common.h>
-#include "ClientSession.h"
+#include "Sessions/Session.h"
 
 ServerContext::ServerContext()
 {
@@ -19,25 +19,25 @@ bool ServerContext::HandleClientConnectionRequest(IN const networking::RecievedP
 
 	for (auto oClientSessionIterator = m_oClientSessionsMap.begin(); oClientSessionIterator != m_oClientSessionsMap.end(); ++oClientSessionIterator)
 	{
-		if (0 == memcmp(&oClientSessionIterator->second.GetClientAddress(), &oRecievedPacket.oSocketAddress, sizeof(networking::SocketAddress)))
+		if (oClientSessionIterator->second.GetClientAddress() == oRecievedPacket.oSocketAddress)
 		{
 			LOG_WARN("Client is already connected to the server.");
 			return false;
 		}
 	}
 
-	const auto nPlayerId = m_nNextPlayerId;
+	const auto nSessionId = m_nNextSessionId;
 
-	ClientSession oClientSession(nPlayerId, oRecievedPacket.oSocketAddress);
-	m_oClientSessionsMap.try_emplace(nPlayerId, oClientSession);
+	Session oClientSession(nSessionId, oRecievedPacket.oSocketAddress);
+	m_oClientSessionsMap.try_emplace(nSessionId, oClientSession);
 
-	LOG_INFO("Client with id: {0} and ip: {1} has connected to the server.", nPlayerId, 
+	LOG_INFO("Client with session id: {0} and ip: {1} has connected to the server.", nSessionId,
 		oRecievedPacket.oSocketAddress.GetIpAddress());
 
 	oConnectionEstablishedPacket.nnRequestId = oRecievedPacket.nnRequestId;
-	oConnectionEstablishedPacket.nPlayerId = nPlayerId;
+	oConnectionEstablishedPacket.nPlayerId = nSessionId;
 
-	m_nNextPlayerId++;
+	m_nNextSessionId++;
 
 	return true;
 }

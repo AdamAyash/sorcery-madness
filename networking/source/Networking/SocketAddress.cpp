@@ -8,6 +8,15 @@ namespace networking
 		m_nSizeInBytes = static_cast<int>(oRawSocketAddress.ai_addrlen);
 	}
 
+	bool SocketAddress::operator==(const SocketAddress& oOtherSocketAddress) const
+	{
+		const auto* pAddress = reinterpret_cast<const sockaddr_in*>(&m_oRawSocketAddress);
+		const auto* pOtherAddress = reinterpret_cast<const sockaddr_in*>(&oOtherSocketAddress.m_oRawSocketAddress);
+
+		return pAddress->sin_addr.s_addr == pOtherAddress->sin_addr.s_addr &&
+			pAddress->sin_port == pOtherAddress->sin_port;
+	}
+
 	const sockaddr& SocketAddress::Get() const
 	{
 		return m_oRawSocketAddress;

@@ -2,10 +2,10 @@
 
 #include <Common/Common.h>
 #include <Networking/Socket/ServerSocket.h>
-#include <Networking/Packets/RecievedPacket.h>
 #include <Networking/NetworkEndpoint.h>
 #include "ServerContext.h"
 
+struct networking::RecievedPacket;
 
 class Server final : public networking::NetworkEndpoint<networking::ServerSocket>
 {
@@ -15,6 +15,7 @@ public:
 
 public:
 	bool Start() override;
+	bool IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const override;
 	void Run();
 
 private:

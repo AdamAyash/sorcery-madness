@@ -4,6 +4,8 @@
 #include <Networking/Socket/Socket.h>
 #include "ClientConnectionStatuses.h"
 
+struct networking::RecievedPacket;
+
 class GameClient final : public networking::NetworkEndpoint<networking::Socket>
 {
 public:
@@ -12,6 +14,7 @@ public:
 
 public:
 	bool Start() override;
+	bool IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const override;
 	bool ConnectToServer();
 	void Update();
 

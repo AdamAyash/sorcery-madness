@@ -15,6 +15,9 @@ namespace networking
 		~SocketAddress() = default;
 
 	public:
+		bool operator==(const SocketAddress& oOtherSocketAddress) const;
+
+	public:
 		const sockaddr& Get() const;
 		void Set(IN const sockaddr& oSocketAddress);
 		const int Size() const;
