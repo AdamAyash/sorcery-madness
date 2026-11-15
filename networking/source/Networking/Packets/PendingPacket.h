@@ -16,7 +16,7 @@ namespace networking
 			nPacketRetryTimeoutInSeconds = n_MAX_PACKET_RETRY_TIMEOUT_IN_SECONDS;
 		}
 
-		Packet oPacketHeader;
+		PacketHeader oPacketHeader;
 		short sRetryCount;
 		std::vector<char> oPacketSerializedData;
 		int nPacketRetryTimeoutInSeconds;

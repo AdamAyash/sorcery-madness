@@ -1,19 +1,20 @@
-#include "GameApplication.h"
+#include "Application.h"
 #include <Common/Logger/Logger.h>
+#include <filesystem>
 #include "Shader.cpp"
 
-GameApplication::GameApplication()
+Application::Application()
 	: m_oGameClient("127.0.0.1", "3000")
 {
 }
 
-GameApplication::~GameApplication()
+Application::~Application()
 {
 }
 
-bool GameApplication::Initialize()
+bool Application::Initialize()
 {
-	common::Logger::Init("Client app");
+	common::Logger::Init("Client");
 
 	if (!m_oGameClient.Start())
 	{
@@ -32,7 +33,7 @@ bool GameApplication::Initialize()
 		m_oGameClient.Update();
 	}
 
-	/*glfwInit();
+	glfwInit();
 	m_pWindow = glfwCreateWindow(1270, 720, "Client", nullptr, nullptr);
 
 	glfwMakeContextCurrent(m_pWindow);
@@ -65,22 +66,17 @@ bool GameApplication::Initialize()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	Shader oShader("../../../assets/shaders/VertexShader.glsl", "../../../assets/shaders/FragmentShader.gls");
-	oShader.use();*/
+	Shader oShader("..//assets//shaders//VertexShader.glsl", "..//assets//shaders//FragmentShader.glsl");
+	oShader.use();
 
 	return true;
 }
 
-void GameApplication::Run()
+void Application::Run()
 {
 	Initialize();
 
-	while (true)
-	{
-
-	}
-
-	/*while (!glfwWindowShouldClose(m_pWindow))
+	while (!glfwWindowShouldClose(m_pWindow))
 	{
 		glClearColor(
 			0.063f,
@@ -89,17 +85,15 @@ void GameApplication::Run()
 			1.0f
 		);
 
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		Draw();
 
 		glfwSwapBuffers(m_pWindow);
 		glfwPollEvents();
-	}*/
+	}
 }
-
-void GameApplication::Draw()
+void Application::Draw()
 {
-	/*glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	glClearColor(
 		0.063f,
@@ -107,5 +101,6 @@ void GameApplication::Draw()
 		0.153f,
 		1.0f
 	);
-	glDrawArrays(GL_TRIANGLES, 0, 6);*/
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

@@ -17,27 +17,18 @@ bool ServerContext::HandleClientConnectionRequest(IN const networking::RecievedP
 	common::Scope<networking::ConnectPacket> oConnectPacket 
 		= networking::DeserializePacket<networking::ConnectPacket>(oRecievedPacket);
 
-	for (auto oClientSessionIterator = m_oClientSessionsMap.begin(); oClientSessionIterator != m_oClientSessionsMap.end(); ++oClientSessionIterator)
+	const auto nSessionId = m_oSessionManager.CreateSession(oRecievedPacket.oSocketAddress);
+	if (!nSessionId)
 	{
-		if (oClientSessionIterator->second.GetClientAddress() == oRecievedPacket.oSocketAddress)
-		{
-			LOG_WARN("Client is already connected to the server.");
-			return false;
-		}
+		//TODO ERROR
+		return false;
 	}
-
-	const auto nSessionId = m_nNextSessionId;
-
-	Session oClientSession(nSessionId, oRecievedPacket.oSocketAddress);
-	m_oClientSessionsMap.try_emplace(nSessionId, oClientSession);
 
 	LOG_INFO("Client with session id: {0} and ip: {1} has connected to the server.", nSessionId,
 		oRecievedPacket.oSocketAddress.GetIpAddress());
 
 	oConnectionEstablishedPacket.nnRequestId = oRecievedPacket.nnRequestId;
 	oConnectionEstablishedPacket.nPlayerId = nSessionId;
-
-	m_nNextSessionId++;
 
 	return true;
 }

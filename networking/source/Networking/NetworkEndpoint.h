@@ -177,10 +177,19 @@ namespace networking
 			{
 				const char* pPacketData = oPendingPacket.oPacketSerializedData.data();
 
-				if (!SendPacketInternal(pPacketData, oPendingPacket.oPacketSerializedData.size()))
+				const auto nPacketSizeInBytes = static_cast<int>(oPendingPacket.oPacketSerializedData.size());
+
+				if (!SendPacketInternal(pPacketData, nPacketSizeInBytes))
 				{
 					//TODO LOG
 				}
+
+				LOG_DEBUG(
+					"Packet sent for retry | Type: {0} | RequestId: {1} | Size: {2} bytes",
+					GetPacketName(oPendingPacket.oPacketHeader.ePacketType),
+					oPendingPacket.oPacketHeader.nnRequestId,
+					nPacketSizeInBytes
+				);
 			}
 		}
 

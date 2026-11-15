@@ -6,11 +6,12 @@
 class Session final
 {
 public:
-	Session(IN int nSessionId, IN const networking::SocketAddress oClientAddress);
+	Session(IN int nSessionId, IN const networking::SocketAddress& oClientAddress);
 	~Session();
 
 public:
 	const networking::SocketAddress& GetClientAddress() const;
+	int GetSessionId() const;
 
 private:
 	int m_nSessionId = 0;

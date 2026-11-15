@@ -1,8 +1,10 @@
-project "GameClient"
+project "Client"
 kind "ConsoleApp"
 language "C++"
 cppdialect "C++20"
 externalwarnings("Off")
+
+debugdir "%{wks.location}"
 
 targetdir("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 objdir("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")

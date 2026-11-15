@@ -4,11 +4,11 @@
 #include <GLFW/glfw3.h>
 #include "Client/GameClient.h"
 
-class GameApplication
+class Application
 {
 public:
-	GameApplication();
-	~GameApplication();
+	Application();
+	~Application();
 
 public:
 	void Run();

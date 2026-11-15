@@ -3,6 +3,7 @@
 #include "Common/Common.h"
 #include <Networking/Packets/RecievedPacket.h>
 #include <Networking/Packets/ConnectionEstablishedPacket.h>
+#include "Sessions/SessionManager.h"
 
 class Session;
 
@@ -15,8 +16,6 @@ public:
 public:
 	bool HandleClientConnectionRequest(IN const networking::RecievedPacket& oRecievedPacket, 
 		OUT networking::ConnectionEstablishedPacket& oConnectionEstablishedPacket);
-
 private:
-	int m_nNextSessionId = 1;
-	std::unordered_map<int, Session> m_oClientSessionsMap;
+	SessionManager& m_oSessionManager = SessionManager::GetInstance();
 };

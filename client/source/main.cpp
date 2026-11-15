@@ -4,11 +4,11 @@
 
 #include <iostream>
 #include <Networking/Packets/ConnectPacket.h>
-#include "GameApplication.h"
+#include "Application.h"
 
 int main()
 {
-    GameApplication oGameApplication;
+    Application oGameApplication;
     oGameApplication.Run();
 
     return 0;
