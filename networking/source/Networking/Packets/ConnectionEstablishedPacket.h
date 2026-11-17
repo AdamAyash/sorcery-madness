@@ -11,6 +11,6 @@ namespace networking
 			ePacketType = PacketTypes::ConnectionEstablished;
 		}
 
-		int nPlayerId = 0;
+		int nPlayerSessionId = 0;
 	};
 }

@@ -25,7 +25,8 @@ includedirs {
     IncludeDirectories["spdlog"],
     IncludeDirectories["Engine"],
     IncludeDirectories["GLFW"],
-    IncludeDirectories["Glad"]
+    IncludeDirectories["Glad"],
+    IncludeDirectories["GLM"]
 }
 
 filter "configurations:Debug"

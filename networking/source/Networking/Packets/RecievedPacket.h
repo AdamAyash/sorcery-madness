@@ -7,9 +7,9 @@
 
 namespace networking
 {
-	struct ReceivedPacket
+	struct RecievedPacket
 	{
-		ReceivedPacket()
+		RecievedPacket()
 		{
 			InitializeMemory();
 		}
@@ -21,5 +21,5 @@ namespace networking
 		char oPacketPayload[n_MAX_PACKET_SIZE];
 	};
 
-	using ReceivedPacketPacketsList = std::vector<ReceivedPacket>;
+	using RecievedPacketPacketsList = std::vector<RecievedPacket>;
 }

@@ -32,8 +32,8 @@ namespace networking
 
 	public:
 		virtual bool Start() PURE;
-		virtual bool IsPacketAlreadyQueued(IN const ReceivedPacket &oReceivedPacket) const PURE;
-		virtual bool ProcessPacket(IN const ReceivedPacket &oReceivedPacket) PURE;
+		virtual bool IsPacketAlreadyQueued(IN const RecievedPacket &oRecievedPacket) const PURE;
+		virtual bool ProcessPacket(IN const RecievedPacket &oRecievedPacket) PURE;
 
 	public:
 		template <class TPacket>

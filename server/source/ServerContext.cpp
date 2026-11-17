@@ -28,7 +28,7 @@ bool ServerContext::HandleClientConnectionRequest(IN const networking::RecievedP
 		oRecievedPacket.oSocketAddress.GetIpAddress());
 
 	oConnectionEstablishedPacket.nnRequestId = oRecievedPacket.nnRequestId;
-	oConnectionEstablishedPacket.nPlayerId = nSessionId;
+	oConnectionEstablishedPacket.nPlayerSessionId = nSessionId;
 
 	return true;
 }

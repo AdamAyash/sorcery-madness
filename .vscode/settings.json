@@ -22,9 +22,11 @@
     "startproject",
     "buildoptions",
     "externalwarnings",
-    "defines"
+    "defines",
+    "group"
   ],
   "cSpell.words": [
+    "buildcfg",
     "buildoptions",
     "buildtarget",
     "cppdialect",

@@ -5,7 +5,6 @@
 #include <Networking/Packets/RecievedPacket.h>
 #include <Networking/Packets/ConnectionEstablishedPacket.h>
 
-
 Server::Server(const std::string& strServerIpAddress, const std::string& strPort)
 	: NetworkEndpoint(strServerIpAddress, strPort)
 {
