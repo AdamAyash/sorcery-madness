@@ -31,3 +31,8 @@ int SessionManager::CreateSession(const IN networking::SocketAddress& oClientSoc
 
 	return oSession.GetSessionId();
 }
+
+const Session& SessionManager::GetSesion(const IN int nSessionId) const
+{
+	return m_oClientSessionsMap.at(nSessionId);
+}

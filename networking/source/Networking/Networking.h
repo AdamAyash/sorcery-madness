@@ -6,11 +6,9 @@
 
 namespace networking
 {
-	template <class TPacket>
+	template <class TPacket, class = class std::enable_if<std::is_base_of_v<Packet, TPacket>>>
 	std::unique_ptr<TPacket> DeserializePacket(IN const RecievedPacket& oRecievedPacket)
 	{
-		static_assert(std::is_convertible_v<TPacket*, Packet*>,
-			"TPacket must publicly inherit from Packet");
 
 		auto pPacket = std::make_unique<TPacket>();
 		memcpy(pPacket.get(), oRecievedPacket.oPacketPayload, sizeof(TPacket));
@@ -18,12 +16,9 @@ namespace networking
 		return pPacket;
 	}
 
-	template <class TPacket>
+	template <class TPacket, class = class std::enable_if<std::is_base_of_v<Packet, TPacket>>>
 	const char* SerializePacket(IN const TPacket& oPacket)
 	{
-		static_assert(std::is_convertible_v<TPacket*, Packet*>,
-			"TPacket must publicly inherit from Packet");
-
 		const char* pPacketData = reinterpret_cast<const char*>(&oPacket);
 		if (!pPacketData)
 		{

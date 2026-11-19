@@ -1,10 +1,10 @@
-#include "Application.h"
+#include "Game.h"
 #include <Common/Logger/Logger.h>
 #include <gtc/matrix_transform.hpp>
+#include "Client/GameContext/GameContext.h"
 
 float velocity = 200;
 
-glm::vec3 m_oPlayerPosition = glm::vec3(300, 300, 0.5);
 glm::vec3 m_oPlayerRotation;
 glm::vec3 m_oPlayerScale = glm::vec3( 16.0f, 16.0f, 1.0);
 
@@ -14,55 +14,38 @@ double currentTime = 0;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GL_REPEAT))
-	{
-		m_oPlayerPosition.x -= velocity * deltaTime;
-	}
-
-	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GL_REPEAT))
-	{
-		m_oPlayerPosition.x += velocity * deltaTime;
-	}
-
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GL_REPEAT))
-	{
-		m_oPlayerPosition.y += velocity * deltaTime;
-	}
-
-	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GL_REPEAT))
-	{
-		m_oPlayerPosition.y -= velocity * deltaTime;
-	}
 }
 
-Application::Application()
-	: m_oGameClient("127.0.0.1", "3000")
+Game::Game()
 {
 }
 
-Application::~Application()
+Game::~Game()
 {
 }
 
-bool Application::Initialize()
+bool Game::Initialize()
 {
 	common::Logger::Init("Client");
 
-	if (!m_oGameClient.Start())
+	m_oGameContext = common::CreateScope<GameContext>();
+	m_oClient = common::CreateScope<Client>("127.0.0.1", "3000", *m_oGameContext);
+
+	if (!m_oClient->Start())
 	{
 		//TODO LOG
 		return false;
 	}
 
-	if (!m_oGameClient.ConnectToServer())
+	if (!m_oClient->ConnectToServer())
 	{
 		//TODO LOG
 		return false;
 	}
 
-	while (m_oGameClient.GetClientConnectionStatus() != ClientConnectionStatuses::Connected)
+	while (!m_oGameContext->IsClientStatusConnected() && !m_oGameContext->GetSessionId())
 	{
-		m_oGameClient.Update();
+		m_oClient->Update();
 	}
 
 	glfwInit();
@@ -111,20 +94,18 @@ bool Application::Initialize()
 	return true;
 }
 
-void Application::Update()
+void Game::Update()
 {
+	m_oClient->Update();
+
 	lastTime = currentTime;
 	currentTime = glfwGetTime();
 	deltaTime = currentTime - lastTime;
 
-	m_oModelMatrix = glm::mat4(1.f);
-	m_oModelMatrix = glm::translate(m_oModelMatrix, m_oPlayerPosition);
-	m_oModelMatrix = glm::scale(m_oModelMatrix, m_oPlayerScale);
-
 	m_oProjectionMatrix = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);
 }
 
-void Application::Run()
+void Game::Run()
 {
 	Initialize();
 
@@ -132,19 +113,50 @@ void Application::Run()
 	{
 		glfwPollEvents();
 
+		ProcessInput();
 		Update();
 		Draw();
 
 		glfwSwapBuffers(m_pWindow);
 	}
 }
-void Application::Draw()
+void Game::Draw()
 {
-	m_oShader->use();
-	m_oShader->setMatrix("model", m_oModelMatrix);
-	m_oShader->setMatrix("projection", m_oProjectionMatrix);
-
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	for (auto playerIterator = m_oGameContext->oPlayersMap.begin(); playerIterator != m_oGameContext->oPlayersMap.end(); playerIterator++)
+	{
+		m_oModelMatrix = glm::mat4(1.f);
+		m_oModelMatrix = glm::translate(m_oModelMatrix, playerIterator->second);
+		m_oModelMatrix = glm::scale(m_oModelMatrix, m_oPlayerScale);
+
+		m_oShader->use();
+		m_oShader->setMatrix("model", m_oModelMatrix);
+		m_oShader->setMatrix("projection", m_oProjectionMatrix);
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+}
+
+void Game::ProcessInput()
+{
+	if (glfwGetKey(m_pWindow, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		//m_oGameContext->oPlayerPosition.x -= velocity * deltaTime;
+	}
+
+	if (glfwGetKey(m_pWindow, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		//m_oGameContext->oPlayerPosition.x += velocity * deltaTime;
+	}
+
+	if (glfwGetKey(m_pWindow, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		//m_oGameContext->oPlayerPosition.y += velocity * deltaTime;
+	}
+
+	if (glfwGetKey(m_pWindow, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		//m_oGameContext->oPlayerPosition.y -= velocity * deltaTime;
+	}
 }

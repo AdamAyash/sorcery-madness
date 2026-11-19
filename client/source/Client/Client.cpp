@@ -1,19 +1,20 @@
-#include "GameClient.h"
+#include "Client.h"
 #include <Networking/Version/ProtocolVersion.h>
 #include <Common/Common.h>
 #include <Networking/Packets/ConnectPacket.h>
+#include "GameContext/GameContext.h"
 
-GameClient::GameClient(const std::string& strServerIpAddress, const std::string& strPort)
+Client::Client(const std::string& strServerIpAddress, const std::string& strPort, IN GameContext& oGameContext)
 	: NetworkEndpoint(strServerIpAddress, strPort)
+	, m_oGameContext(oGameContext)
 {
 }
 
-GameClient::~GameClient()
+Client::~Client()
 {
 }
 
-
-bool GameClient::Start()
+bool Client::Start()
 {
 	LOG_INFO("Protocol version: {0}", networking::ProtocolVersion::GetVersion());
 	LOG_INFO("Client is starting...");
@@ -32,6 +33,8 @@ bool GameClient::Start()
 		return false;
 	}
 
+	m_oClientPacketProcessor = common::CreateScope<ClientPacketProcessor>(m_oGameContext);
+
 	m_bIsRunning = true;
 
 	LOG_INFO("Client successfully started on {0}:{1}", m_strIpAddress, m_strPort);
@@ -39,7 +42,7 @@ bool GameClient::Start()
 	return m_bIsRunning;
 }
 
-bool GameClient::IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const
+bool Client::IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const
 {
 	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
 	{
@@ -51,7 +54,7 @@ bool GameClient::IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRec
 	return true;
 }
 
-bool GameClient::ConnectToServer()
+bool Client::ConnectToServer()
 {
 	ASSERT(m_bIsRunning);
 
@@ -64,29 +67,24 @@ bool GameClient::ConnectToServer()
 		return false;
 	}
 
-	m_eClientConnectionStatus = ClientConnectionStatuses::Connecting;
+	m_oGameContext.SetClientStatusAsConnecting();
 
 	return true;
 }
 
-void GameClient::Update()
+void Client::Update()
 {
 	RecievePackets();
 	ProcessPendingPackets();
 	ProcessPackets();
 }
 
-const ClientConnectionStatuses GameClient::GetClientConnectionStatus() const
+bool Client::ProcessPacket(const networking::RecievedPacket& oRecievedPacket)
 {
-	return m_eClientConnectionStatus;
-}
-
-bool GameClient::ProcessPacket(const networking::RecievedPacket& oRecievedPacket)
-{
-	if (oRecievedPacket.ePacketType == networking::PacketTypes::ConnectionEstablished)
+	if (!m_oClientPacketProcessor->ProcessPacket(oRecievedPacket))
 	{
-		m_eClientConnectionStatus = ClientConnectionStatuses::Connected;
-		LOG_INFO("Successfully connected to the server.");
+		//TODO LOG
+		return false;
 	}
 
 	return true;

@@ -3,8 +3,9 @@
 #include "NonCopyableObject.h"
 #include <memory>
 #include <utility>
-#include "Common/Logger/Logger.h"
-#include "Common/Assert.h"
+#include "Logger/Logger.h"
+#include "Timer.h"
+#include "Assert.h"
 
 #define InitializeMemory() SecureZeroMemory(this, sizeof(*this));
 
@@ -33,4 +34,6 @@ namespace common
 	{
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
+
+	using Clock = std::chrono::high_resolution_clock;
 }

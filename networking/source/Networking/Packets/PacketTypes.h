@@ -6,7 +6,8 @@ namespace networking
 	{
 		Undefined,
 		Connect,
-		ConnectionEstablished
+		ConnectionEstablished,
+		UpdateWorldState,
 	};
 
 	inline const std::string GetPacketName(const PacketTypes ePacketType)
@@ -17,6 +18,8 @@ namespace networking
 			return "Connect";
 		case PacketTypes::ConnectionEstablished:
 			return "ConnectionEstablished";
+		case PacketTypes::UpdateWorldState:
+			return "UpdateWorldState";
 		default:
 			return "Not implemented packet type.";
 		}

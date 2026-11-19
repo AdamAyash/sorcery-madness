@@ -2,15 +2,16 @@
 
 #include <Networking/NetworkEndpoint.h>
 #include <Networking/Socket/Socket.h>
-#include "ClientConnectionStatuses.h"
+#include "ClientPacketProcessor/ClientPacketProcessor.h"
 
+class ClientContext;
 struct networking::RecievedPacket;
 
-class GameClient final : public networking::NetworkEndpoint<networking::Socket>
+class Client final : public networking::NetworkEndpoint<networking::Socket>
 {
 public:
-	GameClient(IN const std::string& strServerIpAddress, IN const std::string& strPort);
-	virtual ~GameClient();
+	Client(IN const std::string& strServerIpAddress, IN const std::string& strPort, IN GameContext& oGameContext);
+	virtual ~Client();
 
 public:
 	bool Start() override;
@@ -18,14 +19,14 @@ public:
 	bool ConnectToServer();
 	void Update();
 
-	const ClientConnectionStatuses GetClientConnectionStatus() const;
+private:
 
 private:
 	bool ProcessPacket(const networking::RecievedPacket& oRecievedPacket) override;
 
 private:
 	bool m_bIsRunning = false;
-	ClientConnectionStatuses m_eClientConnectionStatus = ClientConnectionStatuses::Disconnected;
-
+	GameContext& m_oGameContext;
+	common::Scope<ClientPacketProcessor> m_oClientPacketProcessor;
 	std::vector<networking::RecievedPacket> m_oRecivedPackets;
 };

@@ -2,27 +2,33 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "Client/GameClient.h"
+#include "Client/Client.h"
 #include "Shader.cpp"
 #include <memory>
 #include <mat4x4.hpp>
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+class GameContext;
 
-class Application
+class Game
 {
 public:
-	Application();
-	~Application();
+	Game();
+	~Game();
 
 public:
 	void Run();
 	bool Initialize();
 	void Update();
 	void Draw();
+
+private:
+	void ProcessInput();
+
 private:
 	GLFWwindow* m_pWindow = nullptr;
-	GameClient m_oGameClient;
+
+	common::Scope<GameContext> m_oGameContext = nullptr;
+	common::Scope<Client> m_oClient = nullptr;
 
 	std::unique_ptr<Shader> m_oShader = nullptr;
 

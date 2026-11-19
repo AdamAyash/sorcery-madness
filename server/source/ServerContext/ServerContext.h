@@ -3,7 +3,7 @@
 #include "Common/Common.h"
 #include <Networking/Packets/RecievedPacket.h>
 #include <Networking/Packets/ConnectionEstablishedPacket.h>
-#include "Sessions/SessionManager.h"
+#include <Networking/Packets/UpdateWorldStatePacket.h>
 
 class Session;
 
@@ -14,8 +14,9 @@ public:
 	~ServerContext();
 
 public:
-	bool HandleClientConnectionRequest(IN const networking::RecievedPacket& oRecievedPacket, 
-		OUT networking::ConnectionEstablishedPacket& oConnectionEstablishedPacket);
+	void AddPlayer(IN const networking::PlayerStateData& oPlayerStateData);
+	const networking::PlayersStateDataList& GetPlayerStateDataList() const;
+
 private:
-	SessionManager& m_oSessionManager = SessionManager::GetInstance();
+	networking::PlayersStateDataList m_oPlayersStateDataList;
 };

@@ -21,7 +21,7 @@ links {
 }
 
 includedirs {
-    "%{wks.location}/Common/source",
+    IncludeDirectories["Common"],
     IncludeDirectories["spdlog"],
     IncludeDirectories["GLFW"],
     IncludeDirectories["Glad"]
