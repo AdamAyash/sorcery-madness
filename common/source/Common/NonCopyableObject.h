@@ -1,6 +1,6 @@
 #pragma once
 
-namespace common 
+namespace common
 {
 	class NonCopyableObject
 	{
@@ -9,7 +9,7 @@ namespace common
 		~NonCopyableObject() = default;
 
 	public:
-		NonCopyableObject(const NonCopyableObject&) = delete;
-		NonCopyableObject& operator=(const NonCopyableObject&) = delete;
+		NonCopyableObject(const NonCopyableObject &) = delete;
+		NonCopyableObject &operator=(const NonCopyableObject &) = delete;
 	};
 }

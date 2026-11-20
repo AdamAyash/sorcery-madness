@@ -13,9 +13,12 @@ namespace engine
 
     public:
         virtual EventTypes GetEventType() const PURE;
+
+    private:
+        bool m_bIsHandled = false;
     };
 
-#define EVENT(type) \
+#define EVENT(type)                                                     \
     static EventTypes GetStaticEventType() { return EventTypes::type; } \
     EventTypes GetEventType() const override { return GetStaticEventType(); }
 }

@@ -18,6 +18,6 @@ namespace engine
 		}
 
 	public:
-		virtual void OnEvent(const Event& oEvent) PURE;
+		virtual void OnEvent(const Event &oEvent) PURE;
 	};
 }

@@ -35,7 +35,7 @@ namespace engine
 		}
 	}
 
-	void Application::OnEvent(IN const Event& oEvent)
+	void Application::OnEvent(IN const Event &oEvent)
 	{
 		EventDispatcher oEventDispatcher(oEvent);
 		oEventDispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
@@ -50,7 +50,7 @@ namespace engine
 		m_pWindow->OnUpdate();
 	}
 
-	bool Application::OnWindowClose(IN const WindowCloseEvent& oWindowCloseEvent)
+	bool Application::OnWindowClose(IN const WindowCloseEvent &oWindowCloseEvent)
 	{
 		m_bIsRunning = false;
 		return true;

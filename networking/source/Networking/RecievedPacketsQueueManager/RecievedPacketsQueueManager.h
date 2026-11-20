@@ -5,19 +5,19 @@
 
 namespace networking
 {
-	class RecievedPacketsQueueManager final : public common::NonCopyableObject
+	class ReceivedPacketsQueueManager final : public common::NonCopyableObject
 	{
 	private:
-		RecievedPacketsQueueManager();
+		ReceivedPacketsQueueManager();
 
 	public:
-		~RecievedPacketsQueueManager();
+		~ReceivedPacketsQueueManager();
 
 	public:
-		static RecievedPacketsQueueManager& GetInstance();
-		void Submit(IN const RecievedPacket oRecievedPacket);
+		static ReceivedPacketsQueueManager &GetInstance();
+		void Submit(IN const ReceivedPacket oRecievedPacket);
 
 	private:
-		std::unordered_map<__int64, RecievedPacket> m_oRevivedPacketsMap;
+		std::unordered_map<__int64, ReceivedPacket> m_oRevivedPacketsMap;
 	};
 }

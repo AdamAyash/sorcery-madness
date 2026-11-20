@@ -11,19 +11,24 @@ namespace engine
 	{
 	private:
 		EventBus();
+
 	public:
 		~EventBus();
 
 	public:
-		static EventBus& GetInstance();
+		static EventBus &GetInstance();
 
-		void Subscibe(IN IEventListener* pEventListener);
-		void Sumbit(IN const Event& oEvent);
+		void Register(IN IEventListener *pEventListener);
+		void UnRegister(IN IEventListener *pEventListener);
+
+		void Sumbit(IN const Event &oEvent);
 
 	private:
-		std::vector<IEventListener*> m_oEventListeners;
+		static unsigned long s_lEventListenerSubscriptionId;
+		std::vector<IEventListener *> m_oEventListeners;
 	};
 
-	#define SUBMIT_EVENT(Event) EventBus::GetInstance().Sumbit(Event);
-	#define SUBSCRIBE() EventBus::GetInstance().Subscibe(this);
+#define SUBMIT_EVENT(Event) EventBus::GetInstance().Sumbit(Event);
+#define REGISTER_EVENT_LISTENER() EventBus::GetInstance().Register(this);
+#define UNREGISTER_EVENT_LISTENER() EventBus::GetInstance().UnRegister(this);
 }
