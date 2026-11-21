@@ -2,11 +2,11 @@
 
 #include <Common/Common.h>
 #include <vector>
-#include "../Packets/RecievedPacket.h"
 
 namespace networking
 {
 	struct PendingPacket;
+	struct ReceivedPacket;
 
 	class PendingPacketsQueueManager final : public common::NonCopyableObject
 	{
@@ -24,7 +24,7 @@ namespace networking
 
 		const std::vector<PendingPacket>& GetPacketsToRetry();
 
-		const __int64 FindPendingPacket(IN const RecievedPacket oRecievedPacket) const;
+		const __int64 FindPendingPacket(IN const ReceivedPacket oRecievedPacket) const;
 
 	private:
 		std::unordered_map<__int64, PendingPacket> m_oPendingPacketsQueue;

@@ -3,6 +3,8 @@ architecture "x64"
 configurations { "Debug", "Release" }
 startproject "Client"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
+filter "system:windows"
 buildoptions { "/utf-8" }
 
 --Dependencies

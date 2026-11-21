@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Common/Common.h>
-#include <Networking/Packets/RecievedPacket.h>
+#include <Networking/Packets/ReceivedPacket.h>
 #include "../Sessions/SessionManager.h"
 #include <Networking/NetworkEndpoint.h>
 #include <Networking/Socket/ServerSocket.h>
@@ -17,10 +17,10 @@ public:
 	~ServerPacketProcessor();
 
 public:
-	bool ProcessPacket(const networking::RecievedPacket& oRecievedPacket);
+	bool ProcessPacket(const networking::ReceivedPacket& oRecievedPacket);
 
 private:
-	bool ProcessClientConnectionRequest(IN const networking::RecievedPacket& oRecievedPacket);
+	bool ProcessClientConnectionRequest(IN const networking::ReceivedPacket& oRecievedPacket);
 
 private:
 	ServerContext& m_oServerContext;

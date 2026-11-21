@@ -13,7 +13,7 @@ ServerPacketProcessor::~ServerPacketProcessor()
 {
 }
 
-bool ServerPacketProcessor::ProcessPacket(const networking::RecievedPacket& oRecievedPacket)
+bool ServerPacketProcessor::ProcessPacket(const networking::ReceivedPacket& oRecievedPacket)
 {
 	switch (oRecievedPacket.ePacketType)
 	{
@@ -28,7 +28,7 @@ bool ServerPacketProcessor::ProcessPacket(const networking::RecievedPacket& oRec
 	return true;
 }
 
-bool ServerPacketProcessor::ProcessClientConnectionRequest(IN const networking::RecievedPacket& oRecievedPacket)
+bool ServerPacketProcessor::ProcessClientConnectionRequest(IN const networking::ReceivedPacket& oRecievedPacket)
 {
 	common::Scope<networking::ConnectPacket> oConnectPacket
 		= networking::DeserializePacket<networking::ConnectPacket>(oRecievedPacket);

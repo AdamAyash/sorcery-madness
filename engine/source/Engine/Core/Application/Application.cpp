@@ -19,7 +19,7 @@ namespace engine
 		WindowProperties oWindowProperties;
 		m_pWindow = common::CreateScope<Window>(oWindowProperties);
 
-		SUBSCRIBE();
+		REGISTER_EVENT_LISTENER(this);
 
 		m_bIsRunning = true;
 

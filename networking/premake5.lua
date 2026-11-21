@@ -18,6 +18,11 @@ links {
     "Common"
 }
 
+filter "system:linux"
+links {
+    "Common"
+}
+
 includedirs {
     "%{wks.location}/Common/source",
     IncludeDirectories["spdlog"],

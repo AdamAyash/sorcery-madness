@@ -2,7 +2,7 @@
 #include <Networking/Networking.h>
 #include <Networking/Version/ProtocolVersion.h>
 #include <Networking/Packets/PacketHeader.h>
-#include <Networking/Packets/RecievedPacket.h>
+#include <Networking/Packets/ReceivedPacket.h>
 #include <Networking/Packets/ConnectionEstablishedPacket.h>
 #include "ServerContext/ServerContext.h"
 #include <Networking/Packets/UpdateWorldStatePacket.h>
@@ -55,7 +55,7 @@ bool Server::Start()
 	return m_bIsRunning;
 }
 
-bool Server::IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const
+bool Server::IsPacketAlreadyQueued(IN const networking::ReceivedPacket& oRecievedPacket) const
 {
 	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
 	{
@@ -92,7 +92,7 @@ void Server::Run()
 	}
 }
 
-bool Server::ProcessPacket(const networking::RecievedPacket& oRecievedPacket)
+bool Server::ProcessPacket(const networking::ReceivedPacket& oRecievedPacket)
 {
 	if (!m_oServerPacketProcessor->ProcessPacket(oRecievedPacket))
 	{

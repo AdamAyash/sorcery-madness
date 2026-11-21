@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Common/Common.h>
-#include "../Packets/RecievedPacket.h"
+#include "../Packets/ReceivedPacket.h"
 
 namespace networking
 {
@@ -14,7 +14,7 @@ namespace networking
 		~ReceivedPacketsQueueManager();
 
 	public:
-		static ReceivedPacketsQueueManager &GetInstance();
+		static ReceivedPacketsQueueManager& GetInstance();
 		void Submit(IN const ReceivedPacket oRecievedPacket);
 
 	private:

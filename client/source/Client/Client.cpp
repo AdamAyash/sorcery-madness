@@ -42,7 +42,7 @@ bool Client::Start()
 	return m_bIsRunning;
 }
 
-bool Client::IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const
+bool Client::IsPacketAlreadyQueued(IN const networking::ReceivedPacket& oRecievedPacket) const
 {
 	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
 	{
@@ -79,7 +79,7 @@ void Client::Update()
 	ProcessPackets();
 }
 
-bool Client::ProcessPacket(const networking::RecievedPacket& oRecievedPacket)
+bool Client::ProcessPacket(const networking::ReceivedPacket& oRecievedPacket)
 {
 	if (!m_oClientPacketProcessor->ProcessPacket(oRecievedPacket))
 	{

@@ -23,13 +23,15 @@
     "buildoptions",
     "externalwarnings",
     "defines",
-    "group"
+    "group",
+    "debugdir"
   ],
   "cSpell.words": [
     "buildcfg",
     "buildoptions",
     "buildtarget",
     "cppdialect",
+    "debugdir",
     "externalwarnings",
     "GLFW",
     "includedirs",

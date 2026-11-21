@@ -2,17 +2,17 @@
 
 namespace networking
 {
-	RecievedPacketsQueueManager::RecievedPacketsQueueManager()
+	ReceivedPacketsQueueManager::ReceivedPacketsQueueManager()
 	{
 	}
 
-	RecievedPacketsQueueManager::~RecievedPacketsQueueManager()
+	ReceivedPacketsQueueManager::~ReceivedPacketsQueueManager()
 	{
 	}
 
-	RecievedPacketsQueueManager& RecievedPacketsQueueManager::GetInstance()
+	ReceivedPacketsQueueManager& ReceivedPacketsQueueManager::GetInstance()
 	{
-		static RecievedPacketsQueueManager oRecievedPacketsQueueManager;
-		return oRecievedPacketsQueueManager;
+		static ReceivedPacketsQueueManager oReceivedPacketsQueueManager;
+		return oReceivedPacketsQueueManager;
 	}
 }

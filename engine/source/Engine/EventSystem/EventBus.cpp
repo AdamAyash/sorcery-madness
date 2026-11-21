@@ -3,8 +3,6 @@
 
 namespace engine
 {
-	unsigned long EventBus::s_lEventListenerSubscriptionId = 0;
-
 	EventBus::EventBus()
 	{
 	}
@@ -21,19 +19,29 @@ namespace engine
 
 	void EventBus::Register(IN IEventListener *pEventListener)
 	{
-		m_oEventListeners.push_back(pEventListener);
+		if (!pEventListener)
+			return;
+
+		if (m_oEventListenersMap.contains(pEventListener->GetEventListenerSubscriptionId()))
+			return;
+
+		m_oEventListenersMap.emplace(pEventListener->GetEventListenerSubscriptionId(), pEventListener);
 	}
 
 	void EventBus::UnRegister(IN IEventListener *pEventListener)
 	{
-		m_oEventListeners.
+		if (!pEventListener)
+			return;
+
+		m_oEventListenersMap.erase(pEventListener->GetEventListenerSubscriptionId());
 	}
 
 	void EventBus::Sumbit(IN const Event &oEvent)
 	{
-		for (auto nIndex = 0; nIndex < m_oEventListeners.size(); ++nIndex)
+
+		for (auto nIndex = 0; nIndex < m_oEventListenersMap.size(); ++nIndex)
 		{
-			const auto pEventListener = m_oEventListeners[nIndex];
+			const auto pEventListener = m_oEventListenersMap[nIndex];
 			if (!pEventListener)
 				continue;
 

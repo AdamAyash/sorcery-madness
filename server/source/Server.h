@@ -5,7 +5,7 @@
 #include <Networking/NetworkEndpoint.h>
 #include "ServerPacketProcessor/ServerPacketProcessor.h"
 
-struct networking::RecievedPacket;
+struct networking::ReceivedPacket;
 class ServerContext;
 
 class Server final : public networking::NetworkEndpoint<networking::ServerSocket>
@@ -16,17 +16,17 @@ public:
 
 public:
 	bool Start() override;
-	bool IsPacketAlreadyQueued(IN const networking::RecievedPacket& oRecievedPacket) const override;
+	bool IsPacketAlreadyQueued(IN const networking::ReceivedPacket& oRecievedPacket) const override;
 	void Run();
 
 private:
-	bool ProcessPacket(const networking::RecievedPacket& oRecievedPacket) override;
+	bool ProcessPacket(const networking::ReceivedPacket& oRecievedPacket) override;
 	void Update();
 
 private:
 	bool m_bIsRunning = false;
 
-	std::vector<networking:: RecievedPacket> m_oRecivedPackets;
+	std::vector<networking::ReceivedPacket> m_oRecivedPackets;
 	common::Scope<ServerContext> m_oServerContext = nullptr;
 	common::Scope<ServerPacketProcessor> m_oServerPacketProcessor = nullptr;
 };

@@ -1,7 +1,7 @@
 #include <Common//Common.h>
+#include "Window.h"
 #include "../../EventSystem/IEventListener.h"
 #include "../../EventSystem/Events/WindowEvents/WindowCloseEvent.h"
-#include "Window.h"
 
 namespace engine
 {

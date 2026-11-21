@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Packets/RecievedPacket.h"
+#include "Packets/ReceivedPacket.h"
 #include "Packets/Packet.h"
 #include <memory>
 
 namespace networking
 {
 	template <class TPacket, class = class std::enable_if<std::is_base_of_v<Packet, TPacket>>>
-	std::unique_ptr<TPacket> DeserializePacket(IN const RecievedPacket& oRecievedPacket)
+	std::unique_ptr<TPacket> DeserializePacket(IN const ReceivedPacket& oRecievedPacket)
 	{
 
 		auto pPacket = std::make_unique<TPacket>();

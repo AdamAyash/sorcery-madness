@@ -13,7 +13,7 @@ ClientPacketProcessor::~ClientPacketProcessor()
 {
 }
 
-bool ClientPacketProcessor::ProcessPacket(const networking::RecievedPacket& oRecievedPacket)
+bool ClientPacketProcessor::ProcessPacket(const networking::ReceivedPacket& oRecievedPacket)
 {
 	switch (oRecievedPacket.ePacketType)
 	{
@@ -31,7 +31,7 @@ bool ClientPacketProcessor::ProcessPacket(const networking::RecievedPacket& oRec
 	return true;
 }
 
-bool ClientPacketProcessor::ProcessConnectionEstablishedRequest(IN const networking::RecievedPacket& oRecievedPacket)
+bool ClientPacketProcessor::ProcessConnectionEstablishedRequest(IN const networking::ReceivedPacket& oRecievedPacket)
 {
 	const auto oConnectionEstablishedPacket = networking::DeserializePacket<networking::ConnectionEstablishedPacket>(oRecievedPacket);
 	m_oGameContext.SetSessionId(oConnectionEstablishedPacket->nPlayerSessionId);
@@ -40,7 +40,7 @@ bool ClientPacketProcessor::ProcessConnectionEstablishedRequest(IN const network
 	return true;
 }
 
-bool ClientPacketProcessor::ProcessUpdateWorldStateRequest(IN const networking::RecievedPacket& oRecievedPacket)
+bool ClientPacketProcessor::ProcessUpdateWorldStateRequest(IN const networking::ReceivedPacket& oRecievedPacket)
 {
 	const auto oUpdateWorldStatePacket = networking::DeserializePacket<networking::UpdateWorldStatePacket>(oRecievedPacket);
 

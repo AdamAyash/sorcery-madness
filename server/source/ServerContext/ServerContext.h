@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common/Common.h"
-#include <Networking/Packets/RecievedPacket.h>
 #include <Networking/Packets/ConnectionEstablishedPacket.h>
 #include <Networking/Packets/UpdateWorldStatePacket.h>
 

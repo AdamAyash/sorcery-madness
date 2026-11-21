@@ -32,8 +32,8 @@ namespace networking
 
 	public:
 		virtual bool Start() PURE;
-		virtual bool IsPacketAlreadyQueued(IN const RecievedPacket &oRecievedPacket) const PURE;
-		virtual bool ProcessPacket(IN const RecievedPacket &oRecievedPacket) PURE;
+		virtual bool IsPacketAlreadyQueued(IN const ReceivedPacket& oRecievedPacket) const PURE;
+		virtual bool ProcessPacket(IN const ReceivedPacket&oRecievedPacket) PURE;
 
 	public:
 		template <class TPacket>
@@ -120,33 +120,33 @@ namespace networking
 					nBytesRecived,
 					oClientAddress.GetIpAddress());
 
-				RecievedPacket oRecievedPacket;
-				oRecievedPacket.nnRequestId = pPacketHeader->nnRequestId;
-				oRecievedPacket.ePacketType = pPacketHeader->ePacketType;
-				oRecievedPacket.oSocketAddress = oClientAddress;
-				oRecievedPacket.nPacketSize = nBytesRecived;
+				ReceivedPacket oReceivedPacket;
+				oReceivedPacket.nnRequestId = pPacketHeader->nnRequestId;
+				oReceivedPacket.ePacketType = pPacketHeader->ePacketType;
+				oReceivedPacket.oSocketAddress = oClientAddress;
+				oReceivedPacket.nPacketSize = nBytesRecived;
 
-				if (!IsPacketAlreadyQueued(oRecievedPacket))
+				if (!IsPacketAlreadyQueued(oReceivedPacket))
 				{
 					LOG_WARN(
 						"Duplicate packet ignored | Type: {0} | RequestId: {1} | From: {2}",
-						GetPacketName(oRecievedPacket.ePacketType),
-						oRecievedPacket.nnRequestId,
-						oRecievedPacket.oSocketAddress.GetIpAddress());
+						GetPacketName(oReceivedPacket.ePacketType),
+						oReceivedPacket.nnRequestId,
+						oReceivedPacket.oSocketAddress.GetIpAddress());
 					continue;
 				}
 
-				memcpy(oRecievedPacket.oPacketPayload, messageBuffer, nBytesRecived);
+				memcpy(oReceivedPacket.oPacketPayload, messageBuffer, nBytesRecived);
 				memset(messageBuffer, 0, nBytesRecived);
 
-				const auto nnPendingPacketId = m_oPendingPacketsQueueManager.FindPendingPacket(oRecievedPacket);
+				const auto nnPendingPacketId = m_oPendingPacketsQueueManager.FindPendingPacket(oReceivedPacket);
 
 				if (nnPendingPacketId != ELEMENT_NOT_FOUND)
 				{
 					m_oPendingPacketsQueueManager.Remove(nnPendingPacketId);
 				}
 
-				m_oRecivedPacketsQueue.push_back(oRecievedPacket);
+				m_oRecivedPacketsQueue.push_back(oReceivedPacket);
 			}
 		}
 
@@ -224,7 +224,7 @@ namespace networking
 		common::Scope<networking::WinsockContext> m_oWinsockContext = nullptr;
 		common::Scope<TSocket> m_oSocket = nullptr;
 
-		std::vector<networking::RecievedPacket> m_oRecivedPacketsQueue;
+		std::vector<networking::ReceivedPacket> m_oRecivedPacketsQueue;
 
 		PendingPacketsQueueManager &m_oPendingPacketsQueueManager = PendingPacketsQueueManager::GetInstance();
 

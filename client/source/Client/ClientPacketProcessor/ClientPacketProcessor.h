@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Common/Common.h>
-#include <Networking/Packets/RecievedPacket.h>
+#include <Networking/Packets/ReceivedPacket.h>
 
 class GameContext;
 
@@ -12,11 +12,11 @@ public:
 	~ClientPacketProcessor();
 
 public:
-	bool ProcessPacket(const networking::RecievedPacket& oRecievedPacket);
+	bool ProcessPacket(const networking::ReceivedPacket& oRecievedPacket);
 
 private:
-	bool ProcessConnectionEstablishedRequest(IN const networking::RecievedPacket& oRecievedPacket);
-	bool ProcessUpdateWorldStateRequest(IN const networking::RecievedPacket& oRecievedPacket);
+	bool ProcessConnectionEstablishedRequest(IN const networking::ReceivedPacket& oRecievedPacket);
+	bool ProcessUpdateWorldStateRequest(IN const networking::ReceivedPacket& oRecievedPacket);
 
 private:
 	GameContext& m_oGameContext;

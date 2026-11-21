@@ -24,11 +24,10 @@ namespace engine
 		void Sumbit(IN const Event &oEvent);
 
 	private:
-		static unsigned long s_lEventListenerSubscriptionId;
-		std::vector<IEventListener *> m_oEventListeners;
+		std::unordered_map<unsigned long, IEventListener *> m_oEventListenersMap;
 	};
 
 #define SUBMIT_EVENT(Event) EventBus::GetInstance().Sumbit(Event);
-#define REGISTER_EVENT_LISTENER() EventBus::GetInstance().Register(this);
+#define REGISTER_EVENT_LISTENER(EventListener) EventBus::GetInstance().Register(EventListener);
 #define UNREGISTER_EVENT_LISTENER() EventBus::GetInstance().UnRegister(this);
 }

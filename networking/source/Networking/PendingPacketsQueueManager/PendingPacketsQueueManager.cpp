@@ -1,5 +1,6 @@
 #include "PendingPacketsQueueManager.h"
 #include "../Packets/PendingPacket.h"
+#include "../Packets/ReceivedPacket.h"
 #include "../NetworkingGlobals.h"
 
 namespace networking
@@ -69,7 +70,7 @@ namespace networking
 		return m_oPendingPacketsRegisteredForRetry;
 	}
 
-	const __int64 PendingPacketsQueueManager::FindPendingPacket(IN const RecievedPacket oRecievedPacket) const
+	const __int64 PendingPacketsQueueManager::FindPendingPacket(IN const ReceivedPacket oRecievedPacket) const
 	{
 		for (auto pendingPacketIterator = m_oPendingPacketsQueue.begin(); pendingPacketIterator != m_oPendingPacketsQueue.end();)
 		{
