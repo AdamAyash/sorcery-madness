@@ -3,7 +3,7 @@
 #include <Common/Common.h>
 #include "Event.h"
 
-namespace engine
+namespace engine::events
 {
 	class IEventListener : public common::NonCopyableObject
 	{

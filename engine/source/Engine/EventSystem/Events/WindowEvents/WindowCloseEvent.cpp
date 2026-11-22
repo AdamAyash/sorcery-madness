@@ -1,6 +1,6 @@
 #include "WindowCloseEvent.h"
 
-namespace engine
+namespace engine::events
 {
 	WindowCloseEvent::WindowCloseEvent()
 	{
