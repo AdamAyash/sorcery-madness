@@ -19,7 +19,7 @@ namespace engine
 	public:
 		virtual bool OnAttach() PURE;
 		virtual void Update() PURE;
-		virtual void Draw();
+		virtual void Draw() PURE;
 		virtual bool OnDettach() PURE;
 	};
 }

@@ -1,7 +1,7 @@
 #include "EventBus.h"
 #include "IEventListener.h"
 
-namespace engine
+namespace engine::events
 {
 	EventBus::EventBus()
 	{

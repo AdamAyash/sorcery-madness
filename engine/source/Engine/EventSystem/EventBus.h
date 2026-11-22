@@ -2,7 +2,7 @@
 
 #include <Common/Common.h>
 
-namespace engine
+namespace engine::events
 {
 	class Event;
 	class IEventListener;

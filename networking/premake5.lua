@@ -12,6 +12,11 @@ files {
 targetdir("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 objdir("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
+includedirs {
+    "%{wks.location}/Common/source",
+    IncludeDirectories["spdlog"],
+}
+
 filter "system:windows"
 links {
     "Ws2_32",
@@ -21,11 +26,6 @@ links {
 filter "system:linux"
 links {
     "Common"
-}
-
-includedirs {
-    "%{wks.location}/Common/source",
-    IncludeDirectories["spdlog"],
 }
 
 filter "configurations:Debug"

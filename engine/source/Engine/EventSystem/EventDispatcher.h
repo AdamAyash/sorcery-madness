@@ -3,7 +3,7 @@
 #include "Event.h"
 #include <functional>
 
-namespace engine
+namespace engine::events
 {
 	template <typename TEvent>
 	using EventCallback = std::function<bool(const TEvent&)>;

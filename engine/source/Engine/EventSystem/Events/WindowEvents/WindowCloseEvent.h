@@ -2,7 +2,7 @@
 
 #include "../../Event.h"
 
-namespace engine
+namespace engine::events
 {
 	class WindowCloseEvent : public Event
 	{
