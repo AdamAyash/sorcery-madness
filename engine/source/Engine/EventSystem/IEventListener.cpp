@@ -1,6 +1,6 @@
 #include "IEventListener.h"
 
-namespace engine
+namespace engine::events
 {
 	unsigned long IEventListener::s_lEventListenerSubscriptionId = 0;
 }

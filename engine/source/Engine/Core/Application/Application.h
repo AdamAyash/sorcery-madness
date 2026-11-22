@@ -14,15 +14,19 @@ namespace engine
 		~Application();
 
 	public:
-		virtual bool Initialize();
 		void Run();
 
 	public:
 		void OnEvent(const Event& oEvent) override;
 
-	private:
+	protected:
+		virtual bool Initialize();
 		virtual void Update();
+		virtual void Load();
 		virtual void Draw();
+
+		void PushLayer(ILayer* pLayer);
+		void PushLayerOverlay(ILayer* pLayer);
 
 	private:
 		bool OnWindowClose(IN const WindowCloseEvent& oWindowCloseEvent);
