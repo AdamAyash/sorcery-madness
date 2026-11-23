@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "../../Layers/Base/ILayer.h"
 #include "../../EventSystem/EventDispatcher.h"
 #include "../../EventSystem/EventBus.h"
 
@@ -18,8 +19,9 @@ namespace engine
 
 		WindowProperties oWindowProperties;
 		m_pWindow = common::CreateScope<Window>(oWindowProperties);
+		m_pLayerStack = common::CreateScope<LayerStack>();
 
-		REGISTER_EVENT_LISTENER(this);
+		events::REGISTER_EVENT_LISTENER(this);
 
 		m_bIsRunning = true;
 
@@ -28,29 +30,45 @@ namespace engine
 
 	void Application::Run()
 	{
+		if (!Initialize())
+		{
+			LOG_ERROR("Failed to initilize the engine.");
+			return;
+		}
+
 		while (m_bIsRunning)
 		{
 			Update();
 			Draw();
+
+			m_pWindow->OnUpdate();
 		}
 	}
 
-	void Application::OnEvent(IN const Event &oEvent)
+	void Application::OnEvent(IN const events::Event &oEvent)
 	{
-		EventDispatcher oEventDispatcher(oEvent);
-		oEventDispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
+		events::EventDispatcher oEventDispatcher(oEvent);
+		oEventDispatcher.Dispatch<events::WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
 	}
 
 	void Application::Update()
 	{
+		m_oGameTime.Calculate();
+
+		m_pLayerStack->Update();
 	}
 
 	void Application::Draw()
 	{
-		m_pWindow->OnUpdate();
+		m_pLayerStack->Draw();
 	}
 
-	bool Application::OnWindowClose(IN const WindowCloseEvent &oWindowCloseEvent)
+	void Application::PushLayer(ILayer* pLayer)
+	{
+		m_pLayerStack->PushLayer(pLayer);
+	}
+
+	bool Application::OnWindowClose(IN const events::WindowCloseEvent &oWindowCloseEvent)
 	{
 		m_bIsRunning = false;
 		return true;

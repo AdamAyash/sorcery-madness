@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "EventBus.h"
 #include <functional>
 
 namespace engine::events
@@ -38,3 +39,7 @@ namespace engine::events
 }
 
 #define BIND_EVENT(oFucntionReference) std::bind(&oFucntionReference, this, std::placeholders::_1)
+
+#define SUBMIT_EVENT(Event) EventBus::GetInstance().Sumbit(Event);
+#define REGISTER_EVENT_LISTENER(EventListener) EventBus::GetInstance().Register(EventListener);
+#define UNREGISTER_EVENT_LISTENER() EventBus::GetInstance().UnRegister(this);

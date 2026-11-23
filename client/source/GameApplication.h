@@ -7,4 +7,7 @@ class GameApplication : public engine::Application
 public:
 	GameApplication();
 	~GameApplication();
+
+protected:
+	bool Initialize() override;
 };

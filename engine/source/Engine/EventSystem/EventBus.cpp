@@ -9,6 +9,7 @@ namespace engine::events
 
 	EventBus::~EventBus()
 	{
+		m_oEventListenersMap.clear();
 	}
 
 	EventBus &EventBus::GetInstance()

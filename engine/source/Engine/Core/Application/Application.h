@@ -1,11 +1,15 @@
 #include <Common//Common.h>
 #include "Window.h"
-#include "../../EventSystem/IEventListener.h"
+#include "GameTime.h"
 #include "../../EventSystem/Events/WindowEvents/WindowCloseEvent.h"
+#include "../../Layers/LayerStack.h"
+#include "../../EventSystem/IEventListener.h"
 
 namespace engine
 {
-	class Application : public IEventListener
+	class ILayer;
+
+	class Application : public events::IEventListener
 	{
 	protected:
 		Application();
@@ -17,22 +21,22 @@ namespace engine
 		void Run();
 
 	public:
-		void OnEvent(const Event& oEvent) override;
+		void OnEvent(const events::Event& oEvent) override;
 
 	protected:
 		virtual bool Initialize();
 		virtual void Update();
-		virtual void Load();
 		virtual void Draw();
 
 		void PushLayer(ILayer* pLayer);
-		void PushLayerOverlay(ILayer* pLayer);
 
 	private:
-		bool OnWindowClose(IN const WindowCloseEvent& oWindowCloseEvent);
+		bool OnWindowClose(IN const events::WindowCloseEvent& oWindowCloseEvent);
 
 	private:
 		bool m_bIsRunning = false;
 		common::Scope<Window> m_pWindow = nullptr;
+		common::Scope<LayerStack> m_pLayerStack = nullptr;
+		GameTime m_oGameTime;
 	};
 }

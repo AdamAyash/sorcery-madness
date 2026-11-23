@@ -59,8 +59,6 @@ bool Game::Initialize()
 		return false;
 	}
 
-	glfwSetKeyCallback(m_pWindow, key_callback);
-
 	glViewport(0, 0, 1280, 720);
 
 	float vertices[] = {

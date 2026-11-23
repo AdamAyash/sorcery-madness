@@ -13,7 +13,6 @@ int main()
     oGameApplication.Run();*/
 
     GameApplication gameApp;
-    gameApp.Initialize();
     gameApp.Run();
 
     return 0;

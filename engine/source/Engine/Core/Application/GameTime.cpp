@@ -1,0 +1,31 @@
+#include "GameTime.h"
+#include <GLFW/glfw3.h>
+
+namespace engine
+{
+	GameTime::GameTime()
+	{
+	}
+
+	GameTime::~GameTime()
+	{
+	}
+
+	void GameTime::Calculate()
+	{
+		m_dCurrentTime = glfwGetTime();
+		m_dDeltaTime = m_dCurrentTime - m_dLastFrame;
+
+		m_dLastFrame = m_dCurrentTime;
+	}
+
+	constexpr double inline GameTime::GetDeltaTtime() const
+	{
+		return m_dDeltaTime;
+	}
+
+	constexpr double inline GameTime::GetTotalGameTime() const
+	{
+		return m_dCurrentTime;
+	}
+}
