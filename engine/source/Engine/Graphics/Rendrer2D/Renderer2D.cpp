@@ -28,9 +28,12 @@ namespace engine
 			}
 
 			m_oOpenGLQuad.Bind();
-			shader->Bind();
 
+			shader->Bind();
 			shader->SetMatrix("modelMatrix", oRenderCommandIterator.oTransform.GetModelMatrix());
+
+
+			m_oOpenGLQuad.UnBind();
 		}
 
 		m_oRenderCommands.clear();
