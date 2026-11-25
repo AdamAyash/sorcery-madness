@@ -14,7 +14,7 @@ public:
 
 public:
 	static SessionManager& GetInstance();
-	int CreateSession(const IN networking::SocketAddress& oClientSocketAddress);
+	std::optional<int> CreateSession(const IN networking::SocketAddress& oClientSocketAddress);
 	const Session& GetSesion(const IN int nSessionId) const;
 
 private:

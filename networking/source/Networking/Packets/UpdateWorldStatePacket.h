@@ -9,12 +9,11 @@ namespace networking
 	{
 		PlayerStateData()
 		{
-			InitializeMemory();
 		}
 
-		int nSessionId;
-		float positionX;
-		float positionY;
+		int nSessionId = 0;
+		float positionX = 0.f;
+		float positionY = 0.f;
 	};
 
 	using PlayersStateDataList = std::vector<PlayerStateData>;

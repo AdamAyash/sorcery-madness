@@ -24,7 +24,7 @@ bool ClientPacketProcessor::ProcessPacket(const networking::ReceivedPacket& oRec
 		return ProcessUpdateWorldStateRequest(oRecievedPacket);
 
 	default:
-		LOG_ERROR("Unsupported packet type: ", static_cast<int>(oRecievedPacket.ePacketType));
+		LOG_ERROR("Unsupported packet type: {0}", static_cast<int>(oRecievedPacket.ePacketType));
 		return false;
 	}
 

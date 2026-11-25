@@ -24,7 +24,7 @@ namespace networking
 
 		const std::vector<PendingPacket>& GetPacketsToRetry();
 
-		const __int64 FindPendingPacket(IN const ReceivedPacket oRecievedPacket) const;
+		std::optional<__int64> FindPendingPacket(const ReceivedPacket& oPacket) const;
 
 	private:
 		std::unordered_map<__int64, PendingPacket> m_oPendingPacketsQueue;

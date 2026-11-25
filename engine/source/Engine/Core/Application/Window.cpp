@@ -35,7 +35,9 @@ namespace engine
 		glfwMakeContextCurrent(m_pWindow);
 		glfwSetWindowUserPointer(m_pWindow, reinterpret_cast<void*>(this));
 
-		oOpenGLContext.InitializeGlad();
+		const bool bIsGladInitialized = oOpenGLContext.InitializeGlad();
+		ASSERT(bIsGladInitialized);
+
 		oOpenGLContext.DisplayOpenGLContextInfo();
 
 		glfwSetWindowCloseCallback(m_pWindow, [](GLFWwindow* pWindow)
@@ -64,7 +66,7 @@ namespace engine
 		glfwSwapBuffers(m_pWindow);
 	}
 
-	constexpr GLFWwindow* Window::GetNativeWindow() const
+	const GLFWwindow* Window::GetNativeWindow() const
 	{
 		return m_pWindow;
 	}

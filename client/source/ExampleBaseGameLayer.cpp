@@ -13,7 +13,7 @@ void ExampleBaseGameLayer::Update()
 {
 }
 
-void ExampleBaseGameLayer::Draw()
+void ExampleBaseGameLayer::Draw(IN engine::Renderer2D& oRenderer2D)
 {
 	glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);

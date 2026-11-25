@@ -16,7 +16,12 @@ namespace engine
 	{
 		events::REGISTER_EVENT_LISTENER(this);
 
-		this->LoadContent();
+		if (!this->LoadContent())
+		{
+			//TODO LOG
+			return false;
+		}
+
 		return true;
 	}
 
@@ -38,7 +43,7 @@ namespace engine
 		}
 	}
 
-	void BaseGameLayer::Draw()
+	void BaseGameLayer::Draw(IN Renderer2D& oRenderer2D)
 	{
 		for (auto& gameObjectIterator : m_oGameObjects)
 		{

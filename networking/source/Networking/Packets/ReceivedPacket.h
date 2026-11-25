@@ -11,14 +11,14 @@ namespace networking
 	{
 		ReceivedPacket()
 		{
-			InitializeMemory();
 		}
 
-		PacketTypes ePacketType;
-		__int64 nnRequestId;
+		__int64 nnRequestId = 0;
+		PacketTypes ePacketType = PacketTypes::Undefined;
+		int nPacketSize = 0;
+
 		SocketAddress oSocketAddress;
-		int nPacketSize;
-		char oPacketPayload[n_MAX_PACKET_SIZE];
+		char oPacketPayload[n_MAX_PACKET_SIZE]{};
 	};
 
 	using ReceivedPacketsList = std::vector<ReceivedPacket>;

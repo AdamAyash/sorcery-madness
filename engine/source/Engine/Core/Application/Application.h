@@ -36,9 +36,11 @@ namespace engine
 
 	private:
 		bool m_bIsRunning = false;
+
 		common::Scope<Window> m_pWindow = nullptr;
 		common::Scope<LayerStack> m_pLayerStack = nullptr;
-		common::Scope<Renderer2D> m_pRendered2D = nullptr;
+		common::Scope <Renderer2D> m_pRendered2D = nullptr;
+
 		GameTime m_oGameTime;
 	};
 }

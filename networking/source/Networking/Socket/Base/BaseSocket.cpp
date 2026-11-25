@@ -47,6 +47,9 @@ namespace networking
 			}
 		}
 
+		if (m_oSocket == INVALID_SOCKET || m_oSocket == SOCKET_ERROR)
+			return false;
+
 		freeaddrinfo(pAddressResult);
 		return true;
 	}

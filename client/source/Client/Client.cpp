@@ -63,7 +63,7 @@ bool Client::ConnectToServer()
 	networking::ConnectPacket oConnectPacket;
 	if (!SendPacket<networking::ConnectPacket>(oConnectPacket, nullptr, networking::PacketSendStrategy::Reliable))
 	{
-		LOG_ERROR("");
+		//TODO LOG
 		return false;
 	}
 

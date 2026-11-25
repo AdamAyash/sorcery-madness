@@ -2,6 +2,7 @@
 #include "../Packets/PendingPacket.h"
 #include "../Packets/ReceivedPacket.h"
 #include "../NetworkingGlobals.h"
+#include <optional>
 
 namespace networking
 {
@@ -21,7 +22,7 @@ namespace networking
 
 	void PendingPacketsQueueManager::Submit(IN PendingPacket& oPendingPacket)
 	{
-		oPendingPacket.oLastSentTimesStamp = std::chrono::steady_clock::now();
+		oPendingPacket.oLastSentTimesStamp = common::Clock::now();
 		m_oPendingPacketsQueue[oPendingPacket.oPacketHeader.nnRequestId] = oPendingPacket;
 	}
 
@@ -39,11 +40,9 @@ namespace networking
 		{
 			if (pendingPacketIterator->second.sRetryCount >= n_MAX_PACKET_RETRY_COUNT)
 			{
+				LOG_WARN("Packet #{0} dropped after {1} retries", pendingPacketIterator->first, n_MAX_PACKET_RETRY_COUNT);
 				pendingPacketIterator = m_oPendingPacketsQueue.erase(pendingPacketIterator);
-				LOG_WARN("Packet timed out");
-
-				if (pendingPacketIterator == m_oPendingPacketsQueue.end())
-					continue;
+				continue;
 			}
 
 			const auto oCurrentTimeStamp = std::chrono::steady_clock::now();
@@ -70,14 +69,9 @@ namespace networking
 		return m_oPendingPacketsRegisteredForRetry;
 	}
 
-	const __int64 PendingPacketsQueueManager::FindPendingPacket(IN const ReceivedPacket oRecievedPacket) const
+	std::optional<__int64> PendingPacketsQueueManager::FindPendingPacket(const ReceivedPacket& oPacket) const
 	{
-		for (auto pendingPacketIterator = m_oPendingPacketsQueue.begin(); pendingPacketIterator != m_oPendingPacketsQueue.end();)
-		{
-			if (pendingPacketIterator->second.oPacketHeader.nnRequestId == oRecievedPacket.nnRequestId)
-				return pendingPacketIterator->first;
-		}
-
-		return -1;
+		const auto it = m_oPendingPacketsQueue.find(oPacket.nnRequestId);
+		return it != m_oPendingPacketsQueue.end() ? std::optional(it->first) : std::nullopt;
 	}
 }

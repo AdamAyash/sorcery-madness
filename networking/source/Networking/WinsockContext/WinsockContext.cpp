@@ -10,6 +10,7 @@ namespace networking
 
 	WinsockContext::~WinsockContext()
 	{
+		if(m_bIsInitialized)
 		WSACleanup();
 	}
 
@@ -21,6 +22,8 @@ namespace networking
 			LOG_ERROR("Failed to initialize winsock2");
 			return false;
 		}
+
+		m_bIsInitialized = true;
 
 		return true;
 	}

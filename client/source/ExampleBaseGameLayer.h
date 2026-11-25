@@ -3,6 +3,7 @@
 #include <Common/Common.h>
 #include <Engine/Layers/BaseGameLayer.h>
 #include <Engine/Graphics/OpenGL/Shader.h>
+#include <Engine/Graphics/Rendrer2D/Renderer2D.h>
 #include "Client/PlayerGameObject.h"
 
 class ExampleBaseGameLayer : public engine::BaseGameLayer
@@ -13,7 +14,7 @@ public:
 
 public:
 	 void Update() override;
-	 void Draw() override;
+	 void Draw(IN engine::Renderer2D& oRenderer2D) override;
 
 private:
 	bool LoadContent() override;

@@ -1,7 +1,7 @@
 project "Client"
 kind "ConsoleApp"
 language "C++"
-cppdialect "C++20"
+cppdialect "C++23"
 externalwarnings("Off")
 
 debugdir "%{wks.location}"
@@ -30,9 +30,7 @@ includedirs {
 }
 
 filter "configurations:Debug"
-defines {
-    "DEBUG",
-}
+defines { "DEBUG" }
 symbols "On"
 
 filter "configurations:Release"

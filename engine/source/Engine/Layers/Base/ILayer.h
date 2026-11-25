@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Common/Common.h>
+#include "../../Graphics/Rendrer2D/Renderer2D.h"
 
 namespace engine
 {

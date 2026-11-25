@@ -10,6 +10,7 @@
 #include "PendingPacketsQueueManager/PendingPacketsQueueManager.h"
 #include <vector>
 #include <type_traits>
+#include <optional>
 
 namespace networking
 {
@@ -141,10 +142,8 @@ namespace networking
 
 				const auto nnPendingPacketId = m_oPendingPacketsQueueManager.FindPendingPacket(oReceivedPacket);
 
-				if (nnPendingPacketId != ELEMENT_NOT_FOUND)
-				{
-					m_oPendingPacketsQueueManager.Remove(nnPendingPacketId);
-				}
+				if (nnPendingPacketId.has_value())
+					m_oPendingPacketsQueueManager.Remove(*nnPendingPacketId);
 
 				m_oRecivedPacketsQueue.push_back(oReceivedPacket);
 			}
@@ -163,6 +162,8 @@ namespace networking
 
 				packetIterator = m_oRecivedPacketsQueue.erase(packetIterator);
 			}
+
+			m_oRecivedPacketsQueue.clear();
 		}
 
 		void ProcessPendingPackets()

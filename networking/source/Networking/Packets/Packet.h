@@ -8,7 +8,6 @@ namespace networking
 	{
 		Packet()
 		{
-			InitializeMemory();
 		}
 	};
 }

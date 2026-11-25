@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Application.h"
 #include "../../Layers/Base/ILayer.h"
 #include "../../EventSystem/EventDispatcher.h"
@@ -21,7 +23,7 @@ namespace engine
 		WindowProperties oWindowProperties;
 		m_pWindow = common::CreateScope<Window>(oWindowProperties);
 		m_pLayerStack = common::CreateScope<LayerStack>();
-		m_pRendered2D = common::CreateScope<Renderer2D>(new Renderer2D());
+		m_pRendered2D = common::CreateScopeFromRaw<Renderer2D>(new Renderer2D());
 
 		events::REGISTER_EVENT_LISTENER(this);
 

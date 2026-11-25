@@ -12,5 +12,8 @@ namespace networking
 
 	public:
 		bool Initialize();
+
+	private:
+		bool m_bIsInitialized = false;
 	};
 }

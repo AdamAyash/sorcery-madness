@@ -41,7 +41,8 @@ namespace engine
 
 	void Shader::Destroy()
 	{
-		glDeleteProgram(m_nObjectID);
+		if(m_nObjectID != INVALID_OBJECT_ID)
+			glDeleteProgram(m_nObjectID);
 	}
 
 	bool Shader::IsShaderValid() const
@@ -59,20 +60,8 @@ namespace engine
 		const std::string strVertexShaderSource = FileSystem::ReadFileContents(strVertexShaderSourceFilePath);
 		const char* const pVertexShaderSource = strVertexShaderSource.c_str();
 
-		if (!pVertexShaderSource)
-		{
-			ASSERT(pVertexShaderSource)
-				return false;
-		}
-
 		const std::string strFragmentShaderSource = FileSystem::ReadFileContents(strFragmentShaderSourceFilePath);
 		const char* const pFragmentShaderSource = strFragmentShaderSource.c_str();
-
-		if (!pFragmentShaderSource)
-		{
-			ASSERT(pFragmentShaderSource)
-				return false;
-		}
 
 		BOOL bIsSuccessful = FALSE;
 		char shaderCompilationInfoBuffer[SHADER_COMPILATION_INFO_BUFFER_SIZE];
@@ -85,7 +74,8 @@ namespace engine
 		if (!bIsSuccessful)
 		{
 			glGetShaderInfoLog(nVertexShaderProgram, SHADER_COMPILATION_INFO_BUFFER_SIZE, NULL, shaderCompilationInfoBuffer);
-			LOG_ERROR(shaderCompilationInfoBuffer);
+			LOG_ERROR("Shader '{0}' vertex:\n{1}", m_strShaderName, shaderCompilationInfoBuffer);
+			glDeleteShader(nVertexShaderProgram);
 			return false;
 		}
 
@@ -97,7 +87,8 @@ namespace engine
 		if (!bIsSuccessful)
 		{
 			glGetShaderInfoLog(nFragmentShaderProgram, SHADER_COMPILATION_INFO_BUFFER_SIZE, NULL, shaderCompilationInfoBuffer);
-			LOG_ERROR(shaderCompilationInfoBuffer);
+			LOG_ERROR("Shader '{0}' fragment:\n{1}", m_strShaderName, shaderCompilationInfoBuffer);
+			glDeleteShader(nFragmentShaderProgram);
 			return false;
 		}
 
@@ -110,7 +101,11 @@ namespace engine
 		if (!bIsSuccessful)
 		{
 			glGetProgramInfoLog(m_nObjectID, SHADER_COMPILATION_INFO_BUFFER_SIZE, NULL, shaderCompilationInfoBuffer);
-			LOG_ERROR(shaderCompilationInfoBuffer);
+			LOG_ERROR("Shader '{0}' link:\n{1}", m_strShaderName, shaderCompilationInfoBuffer);
+
+			glDeleteShader(nVertexShaderProgram);
+			glDeleteShader(nFragmentShaderProgram);
+
 			return false;
 		}
 

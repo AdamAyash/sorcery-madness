@@ -1,5 +1,6 @@
 #include "SessionManager.h"
 #include "Session.h"
+#include <Networking/NetworkingGlobals.h>
 
 SessionManager::SessionManager()
 {
@@ -15,14 +16,17 @@ SessionManager& SessionManager::GetInstance()
 	return oSessionManager;
 }
 
-int SessionManager::CreateSession(const IN networking::SocketAddress& oClientSocketAddress)
+std::optional<int> SessionManager::CreateSession(const IN networking::SocketAddress& oClientSocketAddress)
 {
+	if(m_oClientSessionsMap.size() >= networking::n_MAX_PLAYER_SESSIONS_SUPPORTED)
+		return std::nullopt;
+
 	for (auto oClientSessionIterator = m_oClientSessionsMap.begin(); oClientSessionIterator != m_oClientSessionsMap.end(); ++oClientSessionIterator)
 	{
 		if (oClientSessionIterator->second.GetClientAddress() == oClientSocketAddress)
 		{
 			LOG_WARN("Client is already connected to the server.");
-			return -1;
+			return std::nullopt;
 		}
 	}
 

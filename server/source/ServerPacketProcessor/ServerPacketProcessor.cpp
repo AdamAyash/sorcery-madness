@@ -33,22 +33,22 @@ bool ServerPacketProcessor::ProcessClientConnectionRequest(IN const networking::
 	common::Scope<networking::ConnectPacket> oConnectPacket
 		= networking::DeserializePacket<networking::ConnectPacket>(oRecievedPacket);
 
-	const auto nSessionId = m_oSessionManager.CreateSession(oRecievedPacket.oSocketAddress);
-	if (nSessionId == -1)
+	const auto oSessionId = m_oSessionManager.CreateSession(oRecievedPacket.oSocketAddress);
+	if (!oSessionId.has_value())
 	{
 		//TODO ERROR
 		return false;
 	}
 
-	LOG_INFO("Client with session id: {0} and ip: {1} has connected to the server.", nSessionId,
+	LOG_INFO("Client with session id: {0} and ip: {1} has connected to the server.", oSessionId.value(),
 		oRecievedPacket.oSocketAddress.GetIpAddress());
 
 	networking::ConnectionEstablishedPacket oConnectionEstablishedPacket;
 	oConnectionEstablishedPacket.nnRequestId = oRecievedPacket.nnRequestId;
-	oConnectionEstablishedPacket.nPlayerSessionId = nSessionId;
+	oConnectionEstablishedPacket.nPlayerSessionId = oSessionId.value();
 
 	networking::PlayerStateData oPlayerStateData;
-	oPlayerStateData.nSessionId = nSessionId;
+	oPlayerStateData.nSessionId = oSessionId.value();
 	oPlayerStateData.positionX = rand() % 1270;
 	oPlayerStateData.positionX = rand() % 720;
 

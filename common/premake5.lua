@@ -1,7 +1,7 @@
 project "Common"
 kind "StaticLib"
 language "C++"
-cppdialect "C++20"
+cppdialect "C++23"
 externalwarnings("Off")
 
 files {

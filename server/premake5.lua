@@ -1,7 +1,7 @@
 project "Server"
 kind "ConsoleApp"
 language "C++"
-cppdialect "C++20"
+cppdialect "C++23"
 externalwarnings("Off")
 
 targetdir("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
@@ -23,9 +23,6 @@ includedirs {
 }
 
 filter "configurations:Debug"
-defines {
-    "DEBUG",
-}
 symbols "On"
 
 filter "configurations:Release"

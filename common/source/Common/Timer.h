@@ -16,6 +16,6 @@ namespace common
 		float ElapsedMilliseconds();
 
 	private:
-		std::chrono::steady_clock::time_point m_oStartInterval;
+		std::chrono::steady_clock::time_point m_oStartInterval = std::chrono::steady_clock::now();
 	};
 }

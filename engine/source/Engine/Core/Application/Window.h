@@ -37,7 +37,7 @@ namespace engine
 
 	public:
 		void OnUpdate();
-		constexpr GLFWwindow* GetNativeWindow() const;
+		const GLFWwindow* GetNativeWindow() const;
 
 	private:
 		void Initialize(IN const WindowProperties& oWindowProperties);

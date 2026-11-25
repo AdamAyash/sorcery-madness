@@ -3,7 +3,7 @@
 #include <Common/Common.h>
 #include <glad/glad.h>
 
-#define INVALID_OBJECT_ID -1
+#define INVALID_OBJECT_ID 0
 
 namespace engine
 {
@@ -14,7 +14,7 @@ namespace engine
 		virtual ~OpenGLObject();
 
 	public:
-		constexpr inline unsigned int GetObjectID() const;
+		unsigned int GetObjectID() const;
 
 		virtual void Generate() PURE;
 		virtual void Bind() const PURE;
@@ -22,6 +22,6 @@ namespace engine
 		virtual void Destroy()	PURE; 
 
 	protected:
-		unsigned int m_nObjectID;
+		unsigned int m_nObjectID = INVALID_OBJECT_ID;
 	};
 }

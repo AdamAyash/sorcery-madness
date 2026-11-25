@@ -3,7 +3,6 @@
 namespace engine
 {
 	OpenGLObject::OpenGLObject()
-		: m_nObjectID(INVALID_OBJECT_ID)
 	{
 	}
 
@@ -11,7 +10,7 @@ namespace engine
 	{
 	}
 
-	constexpr inline unsigned int OpenGLObject::GetObjectID() const
+	unsigned int OpenGLObject::GetObjectID() const
 	{
 		return m_nObjectID;
 	}

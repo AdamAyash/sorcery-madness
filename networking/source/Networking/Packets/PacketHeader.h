@@ -10,11 +10,10 @@ namespace networking
 	{
 		PacketHeader()
 		{
-			InitializeMemory();
 		}
 
-		__int64 nnRequestId;
-		PacketRetryPolicy eRetryPolicy;
-		PacketTypes ePacketType;
+		__int64 nnRequestId = 0;
+		PacketRetryPolicy eRetryPolicy = PacketRetryPolicy::Limited;
+		PacketTypes ePacketType = PacketTypes::Undefined;
 	};
 }

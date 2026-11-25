@@ -6,7 +6,9 @@ namespace common
 	{
 	protected:
 		NonCopyableObject() = default;
-		virtual ~NonCopyableObject() = default;
+
+	public:
+		~NonCopyableObject() = default;
 
 	public:
 		NonCopyableObject(const NonCopyableObject &) = delete;

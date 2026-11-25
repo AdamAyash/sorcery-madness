@@ -60,7 +60,7 @@ bool Server::IsPacketAlreadyQueued(IN const networking::ReceivedPacket& oRecieve
 	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
 	{
 		auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
-		if (oCurrentPacket.nnRequestId == oRecievedPacket.nnRequestId ||
+		if (oCurrentPacket.nnRequestId == oRecievedPacket.nnRequestId &&
 			oCurrentPacket.oSocketAddress == oRecievedPacket.oSocketAddress)
 		{
 			return false;
