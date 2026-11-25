@@ -11,6 +11,7 @@ namespace engine
 
 	Application::~Application()
 	{
+		events::UNREGISTER_EVENT_LISTENER(this);
 	}
 
 	bool Application::Initialize()
@@ -20,6 +21,7 @@ namespace engine
 		WindowProperties oWindowProperties;
 		m_pWindow = common::CreateScope<Window>(oWindowProperties);
 		m_pLayerStack = common::CreateScope<LayerStack>();
+		m_pRendered2D = common::CreateScope<Renderer2D>(new Renderer2D());
 
 		events::REGISTER_EVENT_LISTENER(this);
 
@@ -60,12 +62,13 @@ namespace engine
 
 	void Application::Draw()
 	{
-		m_pLayerStack->Draw();
+		m_pLayerStack->Draw(*m_pRendered2D.get());
+		m_pRendered2D->Draw();
 	}
 
-	void Application::PushLayer(ILayer* pLayer)
+	bool Application::PushLayer(ILayer* pLayer)
 	{
-		m_pLayerStack->PushLayer(pLayer);
+		return m_pLayerStack->PushLayer(pLayer);
 	}
 
 	bool Application::OnWindowClose(IN const events::WindowCloseEvent &oWindowCloseEvent)

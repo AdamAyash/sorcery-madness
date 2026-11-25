@@ -9,6 +9,7 @@ namespace engine
 
 	BaseGameLayer::~BaseGameLayer()
 	{
+		events::UNREGISTER_EVENT_LISTENER(this);
 	}
 
 	bool BaseGameLayer::OnAttach()
@@ -31,11 +32,17 @@ namespace engine
 
 	void BaseGameLayer::Update()
 	{
-	
+		for (auto& gameObjectIterator : m_oGameObjects)
+		{
+			gameObjectIterator->Update();
+		}
 	}
 
 	void BaseGameLayer::Draw()
 	{
-		
+		for (auto& gameObjectIterator : m_oGameObjects)
+		{
+			gameObjectIterator->Draw();
+		}
 	}
 }

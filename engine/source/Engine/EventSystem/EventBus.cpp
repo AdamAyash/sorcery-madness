@@ -39,10 +39,8 @@ namespace engine::events
 
 	void EventBus::Sumbit(IN const Event &oEvent)
 	{
-
-		for (auto nIndex = 0; nIndex < m_oEventListenersMap.size(); ++nIndex)
+		for (const auto& [nId, pEventListener] : m_oEventListenersMap)
 		{
-			const auto pEventListener = m_oEventListenersMap[nIndex];
 			if (!pEventListener)
 				continue;
 

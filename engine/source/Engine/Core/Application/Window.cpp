@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "../OpenGL/OpenGLContext.h"
+#include "../../Graphics/OpenGL/OpenGLContext.h"
 #include "../../EventSystem/Events/WindowEvents/WindowCloseEvent.h"
 #include "../../EventSystem/EventDispatcher.h"
 

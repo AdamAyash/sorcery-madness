@@ -80,8 +80,6 @@ bool Game::Initialize()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	m_oShader = std::make_unique<Shader>("assets/shaders/VertexShader.glsl", "assets/shaders/FragmentShader.glsl");
-
 	glClearColor(
 		0.063f,
 		0.094f,
@@ -127,10 +125,6 @@ void Game::Draw()
 		m_oModelMatrix = glm::mat4(1.f);
 		m_oModelMatrix = glm::translate(m_oModelMatrix, playerIterator->second);
 		m_oModelMatrix = glm::scale(m_oModelMatrix, m_oPlayerScale);
-
-		m_oShader->use();
-		m_oShader->setMatrix("model", m_oModelMatrix);
-		m_oShader->setMatrix("projection", m_oProjectionMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

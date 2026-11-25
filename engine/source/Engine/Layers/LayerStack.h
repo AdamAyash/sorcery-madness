@@ -2,6 +2,7 @@
 
 #include <Common/Common.h>
 #include <vector>
+#include "../Graphics/Rendrer2D/Renderer2D.h"
 
 namespace engine
 {
@@ -14,10 +15,10 @@ namespace engine
 		~LayerStack();
 
 	public:
-		void PushLayer(IN ILayer* const oLayer);
+		bool PushLayer(IN ILayer* const oLayer);
 
 		void Update();
-		void Draw();
+		void Draw(IN Renderer2D& oRenderer2D);
 
 		void Clear();
 

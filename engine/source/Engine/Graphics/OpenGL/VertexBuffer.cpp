@@ -41,7 +41,6 @@ namespace engine
 		: m_nBufferLayoutCounter(0)
 	{
 		Generate();
-		Bind();
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -67,6 +66,12 @@ namespace engine
 	void VertexBuffer::Destroy()
 	{
 		m_oVertexBufferLayoutArray.clear();
+
+		if (m_nObjectID != 0)
+		{
+			glDeleteBuffers(1, &m_nObjectID);
+			m_nObjectID = 0;
+		}
 	}
 
 	void VertexBuffer::AddLayout(IN const std::size_t nnStrideSize, OPTIONAL const  int nComponentSize /*= FOUR_COMPONENT_SIZE*/, OPTIONAL const GLenum eComponentType /*= GL_FLOAT*/,

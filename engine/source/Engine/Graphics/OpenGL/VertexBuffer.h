@@ -49,7 +49,7 @@ namespace engine
 		template<class DataType>
 		void Pack(IN std::vector<DataType>& pData, IN const GLenum usage)
 		{
-			const auto nSize = sizeof(pData) / sizeof(DataType);
+			const auto nSize = pData.size() * sizeof(DataType);
 			glBufferData(GL_ARRAY_BUFFER, nSize, pData.data(), usage);
 		}
 

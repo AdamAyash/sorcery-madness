@@ -17,7 +17,10 @@ bool GameApplication::Initialize()
 		return false;
 	}
 
-	PushLayer(new ExampleBaseGameLayer());
+	if (!PushLayer(new ExampleBaseGameLayer()))
+	{
+		return false;
+	}
 
 	return true;
 }

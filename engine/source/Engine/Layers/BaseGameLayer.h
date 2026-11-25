@@ -2,6 +2,7 @@
 
 #include "Base/ILayer.h"
 #include "../EventSystem/IEventListener.h"
+#include "../GameObjects/GameObject.h"
 
 namespace engine
 {
@@ -19,9 +20,20 @@ namespace engine
 		virtual void Update() override;
 		virtual void Draw() override;
 
-	private:
-		virtual void LoadContent() PURE;
+	protected:
+		template<class TGameObject>
+		void AddGameObject(IN TGameObject& oGameObject)
+		{
+			static_assert(std::is_convertible_v<TGameObject*, GameObject*>,
+				"TGameObject must publicly inherit from GameObject");
+
+			m_oGameObjects.push_back(&oGameObject);
+		}
 
 	private:
+		virtual bool LoadContent() PURE;
+
+	private:
+		GameObjectsList m_oGameObjects;
 	};
 }

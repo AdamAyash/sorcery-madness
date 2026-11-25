@@ -19,7 +19,7 @@ namespace engine
 	public:
 		virtual bool OnAttach() PURE;
 		virtual void Update() PURE;
-		virtual void Draw() PURE;
+		virtual void Draw(IN Renderer2D& oRenderer2D) PURE;
 		virtual bool OnDetach() PURE;
 	};
 }

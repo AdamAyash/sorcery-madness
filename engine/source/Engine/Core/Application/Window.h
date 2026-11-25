@@ -44,6 +44,6 @@ namespace engine
 		void ShutDown();
 
 	private:
-		GLFWwindow* m_pWindow;
+		GLFWwindow* m_pWindow = nullptr;
 	};
 };

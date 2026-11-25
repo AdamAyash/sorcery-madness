@@ -2,6 +2,7 @@
 
 #include <Common/Common.h>
 #include "VertexBuffer.h"
+#include "VertexArray.h"
 
 namespace engine
 {
@@ -18,6 +19,6 @@ namespace engine
 		void Destroy()	override;
 
 	public:
-		VertexBuffer m_oVertexBuffer;
+		common::Scope<VertexArray> m_pVertexArray = nullptr;
 	};
 }

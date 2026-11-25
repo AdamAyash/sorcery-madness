@@ -3,7 +3,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Client/Client.h"
-#include "Shader.cpp"
 #include <memory>
 #include <mat4x4.hpp>
 
@@ -29,8 +28,6 @@ private:
 
 	common::Scope<GameContext> m_oGameContext = nullptr;
 	common::Scope<Client> m_oClient = nullptr;
-
-	std::unique_ptr<Shader> m_oShader = nullptr;
 
 	glm::mat4 m_oModelMatrix = glm::mat4(1.f);
 	glm::mat4 m_oProjectionMatrix = glm::mat4(1.f);

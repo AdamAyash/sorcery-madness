@@ -12,10 +12,17 @@ namespace engine
 		Clear();
 	}
 
-	void LayerStack::PushLayer(IN ILayer* const oLayer)
+	bool LayerStack::PushLayer(IN ILayer* const oLayer)
 	{
+		if (!oLayer->OnAttach())
+		{
+			LOG_ERROR("Failed to attach layer");
+			return false;
+		}
+
 		m_oLayers.push_back(oLayer);
-		oLayer->OnAttach();
+
+		return true;
 	}
 
 	void LayerStack::Update()
@@ -30,7 +37,7 @@ namespace engine
 		}
 	}
 
-	void LayerStack::Draw()
+	void LayerStack::Draw(IN Renderer2D& oRenderer2D)
 	{
 		for (size_t nIndex = 0; nIndex < m_oLayers.size(); nIndex++)
 		{
@@ -38,7 +45,7 @@ namespace engine
 			if (!pCurrentLayer)
 				continue;
 
-			pCurrentLayer->Draw();
+			pCurrentLayer->Draw(oRenderer2D);
 		}
 	}
 

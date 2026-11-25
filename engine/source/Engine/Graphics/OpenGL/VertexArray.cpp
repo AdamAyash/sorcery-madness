@@ -5,7 +5,6 @@ namespace engine
 	VertexArray::VertexArray()
 	{
 		Generate();
-		Bind();
 	}
 
 	VertexArray::~VertexArray()
