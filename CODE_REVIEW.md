@@ -25,17 +25,16 @@
 
 | Тежест | Отворени | Оправени |
 |---|---|---|
-| Критично | 2 (C6 частично, C8 ново) | 6 |
-| Високо | 10 | 0 |
-| Средно | 12 | 4 |
-| Ниско | 14 | 1 |
+| Критично | 1 (C6 частично) | 7 |
+| Високо | 7 (H11 ново) | 4 |
+| Средно | 12 (M17 ново) | 5 |
+| Ниско | 17 | 1 |
 | Билд | 9 | 1 |
 
 Накратко:
 - Всички критични бъгове от първото ревю (билд, безкраен цикъл, overflow, UB) са оправени; от C6 остава повторният `Connect`.
-- **Ново критично (C8):** `InitializeGlad()` е в `ASSERT` и не се вика, защото Engine няма `DEBUG` (H7) → срив при старт на клиента.
 - Протоколът за „надеждни“ пакети реално не работи: няма ACK, request ID-тата на двете страни се смесват, сървърът никога не ретрайва и не чисти чакащите пакети (H1–H3).
-- `Renderer2D` не рисува нищо (няма draw call).
+- Рендерът вече е свързан (submit → draw call), но **нищо не се вижда** заради целочислен `glm::ortho` (H11).
 - Архитектурата като идея е добра (слоеве, event bus, разделение на модули), но изпълнението е полуготово и има няколко структурни проблема — виж т. 8.
 
 ---
@@ -50,20 +49,6 @@
 Сценарий: `ConnectionEstablished` се губи → клиентът ретрайва `Connect` (политиката му е `Unlimited`) → `CreateSession` вижда известен адрес и връща `nullopt` → сървърът не отговаря. Клиентът остава „Connecting“ завинаги и ретрайва с растящ интервал (виж M9).
 
 **Поправка:** повторен `Connect` от известен адрес да върне отново `ConnectionEstablished` със същата сесия (идемпотентност), без да създава нов играч. Клиентът да игнорира `ConnectionEstablished`, ако вече е свързан.
-
-### C8. `ASSERT(oOpenGLContext.InitializeGlad())` — glad не се инициализира, когато `DEBUG` липсва
-**Файл:** [Window.cpp:38](engine/source/Engine/Core/Application/Window.cpp:38)
-
-`ASSERT` без `DEBUG` се разгъва до нищо — **цялото извикване изчезва**, не само проверката. Тогава glad не зарежда функциите и още следващият ред (`DisplayOpenGLContextInfo` → `glGetString`) вика нулев указател → access violation.
-
-Сега това се случва **и в Debug**, защото Engine не получава `DEBUG` (виж H7). В Release ще се случва винаги.
-
-**Поправка:** извикването не бива да е вътре в макроса:
-```cpp
-const bool bIsGladInitialized = oOpenGLContext.InitializeGlad();
-ASSERT(bIsGladInitialized);
-```
-Правило: в `ASSERT(...)` — само проверки без странични ефекти.
 
 ---
 
@@ -92,16 +77,6 @@ ASSERT(bIsGladInitialized);
 
 **Поправка:** `SocketAddress oDestination;` в `PendingPacket`, попълва се в `SendPacket`.
 
-### H4. Енджинът не рисува нищо — `Renderer2D::Draw` няма draw call
-**Файл:** [Renderer2D.cpp:19-40](engine/source/Engine/Graphics/Rendrer2D/Renderer2D.cpp:19)
-
-Bind на quad, bind на шейдър, set на матрица, unbind — но няма `glDrawArrays(GL_TRIANGLES, 0, 6)`. Освен това никой не вика `Submit` (`BaseGameLayer::Draw` игнорира рендерера, `GameObject::Draw()` няма достъп до него).
-
-### H5. `ExampleBaseGameLayer::Draw` рисува без VAO и без шейдър
-**Файл:** [ExampleBaseGameLayer.cpp:16-22](client/source/ExampleBaseGameLayer.cpp:16)
-
-`glDrawArrays` в core profile без bound VAO → `GL_INVALID_OPERATION`, нищо не се рисува. Шейдърът `m_pShader` никога не се bind-ва. Освен това `glClear` е в слоя — при повече слоеве всеки ще изтрие предишния. Clear-ът е работа на `Application`/рендерера в началото на кадъра.
-
 ### H6. `Timer` връща грешни стойности
 **Файл:** [Timer.cpp](common/source/Common/Timer.cpp)
 
@@ -120,46 +95,10 @@ float Timer::ElapsedMilliseconds()
 { return std::chrono::duration<float, std::milli>(std::chrono::steady_clock::now() - m_oStartInterval).count(); }
 ```
 
-### H7. `DEBUG` в главния `premake5.lua` отива само в проекта GLFW
-**Файлове:** [premake5.lua:32-33](premake5.lua:32), [server/premake5.lua](server/premake5.lua), [client/premake5.lua](client/premake5.lua)
+### H9. `Transform`: ротацията се игнорира
+**Файл:** [Transform.cpp:13-20](engine/source/Engine/GameObjects/Transform.cpp:13)
 
-`filter` + `defines` в края на главния файл, **след** `include`-ите, се прилагат към последния деклариран проект — това е `vendor/GLFW`. Генерираните `.vcxproj` го потвърждават:
-
-| Проект | `DEBUG` в Debug |
-|---|---|
-| GLFW | да (по погрешка) |
-| Client | да (от `client/premake5.lua`) |
-| Server | **не** — махнат от `server/premake5.lua` |
-| Engine, Common, Networking | **не** |
-
-Последици: `ASSERT` и `LOG_DEBUG` не работят в Server, Engine, Common и Networking. Сървърът вече не показва логовете за пакети, а в Engine се стига до C8.
-
-**Поправка:** блокът да е в обхвата на `workspace`, **преди** първия `include`:
-```lua
-workspace "SorceryMadness"
-architecture "x64"
-configurations { "Debug", "Release" }
-...
-filter "configurations:Debug"
-defines { "DEBUG" }
-filter {}
-
-include "dependencies"
-...
-```
-После махни `defines { "DEBUG" }` от `client/premake5.lua` и регенерирай проектите.
-
-### H8. `constexpr`/`inline` методи, дефинирани в `.cpp` → линкер грешка при първа употреба
-**Файлове:** [GameTime.h:24,30](engine/source/Engine/Core/Application/GameTime.h:24) + `.cpp`, [Window.h:40](engine/source/Engine/Core/Application/Window.h:40) + `.cpp`, [OpenGLObject.h:17](engine/source/Engine/Graphics/OpenGL/OpenGLObject.h:17) + `.cpp`
-
-`constexpr` функциите са неявно `inline`, а inline функция трябва да е дефинирана във всяка единица, която я използва. Сега никой не ги вика извън техния `.cpp` — затова не гърми. Първото `GetDeltaTtime()` от слой → **unresolved external symbol**.
-
-**Поправка:** дефинирай ги в хедъра или махни `constexpr inline`.
-
-### H9. `Transform::oScale` по подразбиране е 0 → обектите са невидими; ротацията се игнорира
-**Файлове:** [Transform.h:19](engine/source/Engine/GameObjects/Transform.h:19), [Transform.cpp:13-20](engine/source/Engine/GameObjects/Transform.cpp:13)
-
-Скала (0,0,0) колапсира всичко в точка. `oRotation` съществува, но `GetModelMatrix` не я прилага. Скалата по подразбиране трябва да е 1; добави `glm::rotate` по Z за 2D.
+Оправено: скалата по подразбиране е 1. Остава: `oRotation` съществува, но `GetModelMatrix` не я прилага. За 2D: `glm::rotate(modelMatrix, glm::radians(oRotation.z), {0, 0, 1})` между `translate` и `scale`.
 
 ### H10. `Shader`: изтичане на GL обекти и `glDeleteProgram` с невалиден ID
 **Файл:** [Shader.cpp:57-121](engine/source/Engine/Graphics/OpenGL/Shader.cpp:57)
@@ -168,6 +107,20 @@ include "dependencies"
 - При неуспех `m_nObjectID` остава `INVALID_OBJECT_ID` (= `-1` → `0xFFFFFFFF`) и деструкторът вика `glDeleteProgram(0xFFFFFFFF)` → `GL_INVALID_VALUE`. В OpenGL „няма обект“ е **0**, не -1 (виж и M10).
 - Проверките `if (!pVertexShaderSource)` са мъртви — `c_str()` никога не е `nullptr`. Реалният случай (празен/липсващ файл) не се хваща.
 - `BOOL` (Windows тип) вместо `GLint`.
+
+### H11. `glm::ortho(0, 1600, 0, 900)` с цели числа → нищо не се вижда
+**Файл:** [Renderer2D.cpp:25](engine/source/Engine/Graphics/Rendrer2D/Renderer2D.cpp:25)
+
+`glm::ortho` е шаблон — с `int` аргументи `T = int` и делението е **целочислено**: `2 / 1600 = 0`, `2 / 900 = 0`. Мащабът по X и Y става 0 и всеки връх отива в (-1, -1) — квадратът колапсира в точка в ъгъла. Компилира се без предупреждение, защото `glm::imat4` се конвертира неявно към `glm::mat4`.
+
+**Поправка:**
+```cpp
+m_oProjectionMatrix = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
+```
+
+Две неща, които ще излязат веднага след това:
+- **Мащабът вече е в пиксели.** Квадратът е 1×1 ([OpenGLQuad.cpp](engine/source/Engine/Graphics/OpenGL/OpenGLQuad.cpp)), а `ExampleBaseGameLayer` слага `oScale = 0.5` → играчът ще е половин пиксел. Сложи напр. `oScale = {50, 50, 1}` и позиция, различна от (0, 0) — иначе е в долния ляв ъгъл.
+- `1600×900` е твърдо зададено и не следва размера на прозореца. Матрицата се смята всеки кадър — може да се смята веднъж (и при resize). Редът `m_oProjectionMatrix = glm::mat4(1);` преди нея е излишен.
 
 ---
 
@@ -193,13 +146,13 @@ include "dependencies"
 
 **M12. `LayerStack` притежава слоевете чрез сурови указатели.** [LayerStack.cpp](engine/source/Engine/Layers/LayerStack.cpp), [GameApplication.cpp:20](client/source/GameApplication.cpp:20) — `PushLayer(new ...)`; ако `OnAttach` върне `false`, слоят изтича. `nullptr` не се проверява преди `OnAttach`. Ползвай `std::unique_ptr<ILayer>`.
 
-**M13. `BaseGameLayer::OnAttach` игнорира резултата от `LoadContent`.** [BaseGameLayer.cpp:15-21](engine/source/Engine/Layers/BaseGameLayer.cpp:15) — неуспешно зареден шейдър → слоят пак се „закача“ успешно.
-
 **M14. `NonCopyableObject` блокира и move.** [NonCopyableObject.h](common/source/Common/NonCopyableObject.h) — виртуалният деструктор е махнат; полиморфните наследници (`ILayer`, `GameObject`, `Event`, `IEventListener`, `OpenGLObject`) си имат свой `virtual` деструктор, така че нищо не се чупи. Остава: `delete`-натият copy блокира и **move**. Ако потрябва местене — `NonCopyableObject(NonCopyableObject&&) = default;` и `operator=(NonCopyableObject&&) = default;`. По желание деструкторът да е `protected`.
 
-**M15. `Window` продължава при грешка.** [Window.cpp:18-53](engine/source/Engine/Core/Application/Window.cpp:18) — ако `glfwInit` или `glfwCreateWindow` се провалят, кодът продължава с `nullptr` (ASSERT-ът е no-op, виж H7). Резултатът от `InitializeGlad` е сложен в `ASSERT` — виж C8. `Application::Initialize` винаги връща `true`. Няма `glfwSetErrorCallback`, няма `glfwSwapInterval` (без vsync → 100% GPU/CPU).
+**M15. `Window` продължава при грешка.** [Window.cpp:18-53](engine/source/Engine/Core/Application/Window.cpp:18) — ако `glfwInit` или `glfwCreateWindow` се провалят, в Release кодът продължава с `nullptr` (там `ASSERT` е no-op). Резултатът от `InitializeGlad` се проверява само с `ASSERT`. `Application::Initialize` винаги връща `true`. Няма `glfwSetErrorCallback`, няма `glfwSwapInterval` (без vsync → 100% GPU/CPU).
 
 **M16. `Server::Run` е busy-loop на 100% CPU и няма начин да спре.** [Server.cpp:73-93](server/source/Server.cpp:73) — `SERVER_TICK_RATE`, `nextSimulationTick`, `previousTime` са дефинирани, но не се ползват. Няма `sleep_until`. `m_bIsRunning` никога не става `false` (няма Ctrl+C handler). Ако сървърът изостане, `nextWorldStateUpdate += ...` ще прати серия от ъпдейти наведнъж — по-добре `nextWorldStateUpdate = currentTime + WORLD_STATE_RATE` или cap.
+
+**M17. `LayerStack::Draw` рисува слоевете в обратен ред.** [LayerStack.cpp:40-49](engine/source/Engine/Layers/LayerStack.cpp:40) — обратният ред е правилен за **събития** (горният слой ги получава пръв и може да ги „изяде“), но не и за **рисуване**: горният слой (UI, debug) трябва да се рисува **последен**, за да е отгоре. Сега горният се рисува пръв, а играта — върху него. С един слой не личи. `Draw` да е отдолу нагоре; `Update` — по избор; `Clear` в обратен ред е правилно.
 
 ---
 
@@ -213,14 +166,17 @@ include "dependencies"
 | L5 | [Common.h:17](common/source/Common/Common.h:17) | `#define ELEMENT_NOT_FOUND -1` вече не се ползва никъде (заменен с `std::optional`) — махни го. |
 | L7 | [Logger.cpp:6](common/source/Common/Logger/Logger.cpp:6) | `DEFAULT_LOGGER_PATTERN` е дефиниран, но не се ползва. `LOG_*` преди `Logger::Init` → null deref. `stdout_color_mt` хвърля при второ `Init` със същото име. |
 | L8 | [EventTypes.h](engine/source/Engine/EventSystem/EventTypes.h), [PacketTypes.h](networking/source/Networking/Packets/PacketTypes.h) | Ползват `std::string`/`uint16_t` без `<string>`/`<cstdint>`. |
-| L9 | [EventDispatcher.h:26-34](engine/source/Engine/EventSystem/EventDispatcher.h:26) | `Dispatch` винаги връща `true` и игнорира резултата от callback-а; `Event::m_bIsHandled` е private и никой не го пипа. |
+| L9 | [EventDispatcher.h:26-34](engine/source/Engine/EventSystem/EventDispatcher.h:26), [EventBus.cpp:40-49](engine/source/Engine/EventSystem/EventBus.cpp:40) | `bIsHandled` вече се попълва, но **никой не го чете** — `EventBus::Sumbit` праща събитието на всички слушатели независимо от него. Добави `if (oEvent.bIsHandled) break;` в цикъла. `Dispatch` все още винаги връща `true`. |
 | L10 | [EventDispatcher.h:43-45](engine/source/Engine/EventSystem/EventDispatcher.h:43) | Макросите `SUBMIT_EVENT` и т.н. завършват на `;` и разчитат, че извикващият ще напише `events::` пред тях (`events::SUBMIT_EVENT(x)` → `events::EventBus::...`). Замени с inline функции. |
 | L11 | [Window.cpp:43](engine/source/Engine/Core/Application/Window.cpp:43) | `oWindow` в close callback-а не се ползва. |
 | L12 | [FileSystem.cpp:14](engine/source/Engine/FileSystem/FileSystem.cpp:14) | `tellg()` може да върне `-1` → `size_t` огромно → `bad_alloc`. Пътищата са относителни спрямо CWD — работи от VS (`debugdir`), не и при директно стартиране на exe-то. |
 | L13 | [GameTime.cpp:14-20](engine/source/Engine/Core/Application/GameTime.cpp:14) | Първият кадър има delta = цялото време от `glfwInit`. Инициализирай `m_dLastFrame` при старт. |
-| L14 | [VertexShader.glsl:10](assets/shaders/VertexShader.glsl:10) | `vec4(oPosition, 1.0, 1.0)` — z=1 е точно на далечната равнина; трябва `0.0`. Няма projection матрица (закоментирана). |
+| L14 | [VertexShader.glsl:10](assets/shaders/VertexShader.glsl:10) | `vec4(oPosition, 1.0, 1.0)` — z=1 с 2D `ortho` дава z=-1, точно на границата на видимия обем. Работи, но е на ръба — сложи `0.0`. |
 | L15 | [SocketAddress.cpp:25-29](networking/source/Networking/SocketAddress.cpp:25) | `Set` игнорира реалната дължина от `recvfrom`; `sockaddr` (16 байта) поддържа само IPv4. За бъдеще: `sockaddr_storage`. |
 | L16 | [PendingPacketsQueueManager.h](networking/source/Networking/PendingPacketsQueueManager/PendingPacketsQueueManager.h), [SessionManager.h](server/source/Sessions/SessionManager.h) | Ползват `std::optional` и `std::unordered_map` без `<optional>`/`<unordered_map>` — компилира се само заради транзитивни include-и (spdlog). |
+| L17 | [EventDispatcher.h:9](engine/source/Engine/EventSystem/EventDispatcher.h:9) | `typename = typename std::enable_if<...>` не ограничава нищо — без `::type` (или `enable_if_t`) това е винаги валиден тип. На C++23: `template<std::derived_from<Event> TEvent>`. |
+| L18 | [PlayerGameObject.cpp:13-14](client/source/Client/PlayerGameObject.cpp:13) | Шейдърът се създава мързеливо в `Draw` без проверка `IsShaderValid()` — при грешка всеки кадър се bind-ва невалидна програма. Всеки играч ще има собствен шейдър. По-добре: шейдърът да се зарежда в `LoadContent` (там има как да се върне `false`) и да се споделя. |
+| L19 | [Window.h:40](engine/source/Engine/Core/Application/Window.h:40) | `GetNativeWindow` връща `const GLFWwindow*`, а GLFW функциите искат `GLFWwindow*` — всеки извикващ ще трябва `const_cast`. Върни `GLFWwindow*`. |
 
 ### Мъртъв код (да се махне)
 - **`client/source/Game.*`** — целият стар клас (глобални променливи, `key_callback`, ръчен VAO), `main` го е закоментирал.
@@ -270,7 +226,7 @@ include "dependencies"
 
 | # | Проблем | Препоръка |
 |---|---|---|
-| B1 | `DEBUG` в главния файл е след `include`-ите (H7) | Премести го в обхвата на `workspace`. |
+| B1 | `DEBUG` е дублиран в `client/premake5.lua` | Вече идва от workspace-а — махни го от Client. Регенерирай проектите: сегашните `.vcxproj` са от преди промяната. |
 | B4 | `filter "system:linux"` в Networking, но проектът е само за Windows | Махни филтъра. |
 | B5 | GLM include dir е `vendor/glm/glm` → include-ите са `<mat4x4.hpp>`, `<gtc/...>`, `<matrix.hpp>` | Стандартното е `vendor/glm` + `<glm/mat4x4.hpp>`. Сегашното е податливо на колизии с други `matrix.hpp`. |
 | B6 | `server/premake5.lua` хардкодва пътища вместо `IncludeDirectories[...]` | Използвай таблицата. |
@@ -308,7 +264,7 @@ include "dependencies"
 **Препоръка:** малък `BitWriter`/`BitReader` (или `ByteStream`) с явен `Serialize(stream)` за всеки пакет. Хедър: `magic (u32) | protocol version (u16) | type (u16) | sequence (u16) | ack (u16) | ack bits (u32)`.
 
 **2. Надеждността е смесена с транспорта и е грешна по дизайн.**
-Request ID = ACK ID = sequence — едно поле за три роли (H1). Pending опашката е **глобален singleton**, споделен от всички endpoint-и, без адрес на получателя (H3) и с ключ, който колизира между клиенти. Сървърът дори не я обработва (H2).
+Request ID = ACK ID = sequence — едно поле за три роли (H1). Pending опашката вече е член на endpoint-а, но е без адрес на получателя (H3) и с ключ, който колизира между клиенти. Сървърът дори не я обработва (H2).
 
 **Препоръка:** обект `Connection` за всеки отдалечен адрес (на сървъра — по един за сесия), който притежава своите sequence/ack броячи и pending опашка. `NetworkEndpoint` само рутира пакетите към правилната `Connection`. Махни singleton-ите.
 
@@ -318,15 +274,15 @@ Request ID = ACK ID = sequence — едно поле за три роли (H1). 
 **Препоръка:** `Session` да притежава `Connection` + състоянието на играча; `SessionManager` да е член на `Server` (не singleton); heartbeat + таймаут.
 
 **4. Прекалено много singleton-и.**
-`EventBus`, `PendingPacketsQueueManager`, `ReceivedPacketsQueueManager`, `SessionManager`, `Logger` (статичен). Това прави кода невъзможен за unit тестове, скрива зависимостите и в мрежовия случай е директен бъг (споделена pending опашка). Изключение може да се направи за логера.
+`EventBus`, `SessionManager`, `Logger` (статичен). (`PendingPacketsQueueManager` вече е член на endpoint-а ✅.) Това прави кода невъзможен за unit тестове, скрива зависимостите и в мрежовия случай е директен бъг (споделена pending опашка). Изключение може да се направи за логера.
 
 **5. Engine-ът няма реален рендер път.**
-`Renderer2D` е заченат правилно (command queue), но: няма draw call (H4); никой не submit-ва; `GameObject::Draw()` няма достъп до рендерера; няма камера/projection; няма batching; шейдърът се сетва по име при всяка команда (`glGetUniformLocation` всеки кадър). Слоят сам вика `glClear` и `glDrawArrays` → абстракцията се заобикаля.
+Пътят submit → draw call вече работи (`GameObject::Draw(Renderer2D&)`) ✅. Остава: няма камера (projection-ът е твърдо зададен в рендерера, H11); няма batching; шейдърът се сетва по име при всяка команда (`glGetUniformLocation` всеки кадър); `glClear` е в рендерера с `TODO REMOVE`.
 
 **Препоръка:** `Renderer2D::BeginScene(camera)` → `DrawQuad(transform, color/texture)` → `EndScene()` с batching; `ILayer::Draw(Renderer2D&)` (вече е заложено) и `GameObject::Draw(Renderer2D&)`; кеширане на uniform locations в `Shader`.
 
 **6. Event системата е непълна.**
-- `unordered_map` по ID → редът на доставка е недетерминиран. Слоевете трябва да получават събития **в обратен ред** (най-горният първи) и да могат да ги „изядат“ (`m_bIsHandled`).
+- Редът вече е детерминиран (`std::map`), `bIsHandled` се попълва, но `EventBus` не спира при него (L9).
 - Слоевете се регистрират директно в глобалния bus, вместо `Application` да ги пропагира през `LayerStack`.
 - Отписване по време на dispatch инвалидира итератора.
 - Само едно събитие (`WindowClose`) — няма input, resize, key.
@@ -379,12 +335,16 @@ Request ID = ACK ID = sequence — едно поле за три роли (H1). 
 
 **Не е оправено, въпреки че изглеждаше така:** H1 (ACK). В работното копие няма поле за ACK — `FindPendingPacket` още търси по `nnRequestId`, а `ConnectionEstablished` копира ID-то на `Connect`.
 
+Трета ревизия (комити `Design`, `Hot fixes`): оправени **C8**, **H4** (draw call + `Submit` през `GameObject::Draw(Renderer2D&)`), **H5** (слоят вече не рисува сам), **H7/B1** (`DEBUG` на ниво workspace — проектите трябва да се регенерират), **H8**, **M13**; `PendingPacketsQueueManager` вече не е singleton. Частично: **H9** (скала 1, ротацията остава), **L9**, **L14**.
+
+Ново от третата ревизия: **H11** (целочислен `glm::ortho`), **M17** (обратен ред на рисуване на слоевете), **L17–L19**.
+
 ## 9. Препоръчан ред за оправяне
 
-1. **Веднага:** C8 (`InitializeGlad` извън `ASSERT`), H7/B1 (`DEBUG` преди `include`-ите).
-2. **Билд:** M3 (`#pragma once`), H8 (`constexpr` в хедъра), B7 (warnings), L16.
-3. **Мрежа — потвърждение:** H1 (`nnAckId`), C6 (идемпотентен `Connect`). След това H2/H3, ако сървърът ще праща надеждни пакети.
-4. **Енджинът да рисува:** H4, H5, H9, H10, M10.
-5. **Common и мрежа:** H6 (`Timer` — `seconds` и деленето), M4 (`freeaddrinfo`, `ioctlsocket`).
+1. **Да се вижда нещо:** H11 (`ortho` с `float` + мащаб в пиксели), M17 (ред на рисуване), H9 (ротация).
+2. **Билд:** регенерирай проектите, махни `DEBUG` от Client (B1), M3 (`#pragma once`), B7 (warnings), L16.
+3. **Мрежа — потвърждение:** по [ACK_DESIGN.md](ACK_DESIGN.md) — H1, H2, H3, C6.
+4. **Енджин:** H10, M10.
+5. **Common и мрежа:** H6 (`Timer`), M4 (`freeaddrinfo`, `ioctlsocket`).
 6. **Мрежов редизайн:** `Connection` per peer, после сериализация вместо memcpy.
-7. **Почистване:** мъртъв код, правопис, L2.
+7. **Почистване:** мъртъв код, правопис, L1, L2.
