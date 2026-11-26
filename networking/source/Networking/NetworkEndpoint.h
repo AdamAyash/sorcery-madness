@@ -33,8 +33,8 @@ namespace networking
 
 	public:
 		virtual bool Start() PURE;
-		virtual bool IsPacketAlreadyQueued(IN const ReceivedPacket& oRecievedPacket) const PURE;
-		virtual bool ProcessPacket(IN const ReceivedPacket&oRecievedPacket) PURE;
+		virtual bool IsPacketAlreadyQueued(IN const ReceivedPacket &oReceivedPacket) const PURE;
+		virtual bool ProcessPacket(IN const ReceivedPacket &oReceivedPacket) PURE;
 
 	public:
 		template <class TPacket>
@@ -184,8 +184,7 @@ namespace networking
 					"Packet sent for retry | Type: {0} | RequestId: {1} | Size: {2} bytes",
 					GetPacketName(oPendingPacket.oPacketHeader.ePacketType),
 					oPendingPacket.oPacketHeader.nnRequestId,
-					nPacketSizeInBytes
-				);
+					nPacketSizeInBytes);
 			}
 		}
 

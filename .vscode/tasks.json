@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "premake",
+      "type": "shell",
+      "command": "./premake5.exe vs2026"
+    },
+    {
+      "label": "build (Debug)",
+      "type": "shell",
+      "command": "C:/Program Files/Microsoft Visual Studio/18/Professional/MSBuild/Current/Bin/MSBuild.exe",
+      "args": [
+        "SorceryMadness.slnx",
+        "/m",
+        "/v:minimal",
+        "/p:Configuration=Debug",
+        "/p:Platform=x64"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": { "kind": "build", "isDefault": true }
+    }
+  ]
+}

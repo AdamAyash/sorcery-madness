@@ -13,7 +13,7 @@
 constexpr auto SERVER_TICK_RATE = std::chrono::duration<double>(1.0 / 60.0);
 constexpr auto WORLD_STATE_RATE = std::chrono::duration_cast<common::Clock::duration>(std::chrono::duration<double>(1.0 / 10.0));
 
-Server::Server(const std::string& strServerIpAddress, const std::string& strPort)
+Server::Server(const std::string &strServerIpAddress, const std::string &strPort)
 	: NetworkEndpoint(strServerIpAddress, strPort)
 {
 }
@@ -45,7 +45,7 @@ bool Server::Start()
 	}
 
 	m_oServerContext = common::CreateScope<ServerContext>();
-	m_oServerPacketProcessor = common::CreateScope<ServerPacketProcessor>(*m_oServerContext, *static_cast<ServerEndpoint*>(this));
+	m_oServerPacketProcessor = common::CreateScope<ServerPacketProcessor>(*m_oServerContext, *static_cast<ServerEndpoint *>(this));
 
 	m_bIsRunning = true;
 
@@ -55,13 +55,13 @@ bool Server::Start()
 	return m_bIsRunning;
 }
 
-bool Server::IsPacketAlreadyQueued(IN const networking::ReceivedPacket& oRecievedPacket) const
+bool Server::IsPacketAlreadyQueued(IN const networking::ReceivedPacket &oReceivedPacket) const
 {
 	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
 	{
 		auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
-		if (oCurrentPacket.nnRequestId == oRecievedPacket.nnRequestId &&
-			oCurrentPacket.oSocketAddress == oRecievedPacket.oSocketAddress)
+		if (oCurrentPacket.nnRequestId == oReceivedPacket.nnRequestId &&
+			oCurrentPacket.oSocketAddress == oReceivedPacket.oSocketAddress)
 		{
 			return false;
 		}
@@ -92,11 +92,11 @@ void Server::Run()
 	}
 }
 
-bool Server::ProcessPacket(const networking::ReceivedPacket& oRecievedPacket)
+bool Server::ProcessPacket(const networking::ReceivedPacket &oReceivedPacket)
 {
-	if (!m_oServerPacketProcessor->ProcessPacket(oRecievedPacket))
+	if (!m_oServerPacketProcessor->ProcessPacket(oReceivedPacket))
 	{
-		//TODO LOG
+		// TODO LOG
 		return false;
 	}
 
@@ -105,7 +105,7 @@ bool Server::ProcessPacket(const networking::ReceivedPacket& oRecievedPacket)
 
 void Server::Update()
 {
-	const auto& playerStateDataList = m_oServerContext->GetPlayerStateDataList();
+	const auto &playerStateDataList = m_oServerContext->GetPlayerStateDataList();
 	const auto nPlayerCount = playerStateDataList.size();
 
 	if (nPlayerCount <= 0)

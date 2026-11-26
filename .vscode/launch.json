@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Server",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/Debug-windows-x86_64/Server/Server.exe",
+      "cwd": "${workspaceFolder}",
+      "console": "newExternalWindow",
+      "preLaunchTask": "build debug"
+    },
+    {
+      "name": "Client",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/Debug-windows-x86_64/Client/Client.exe",
+      "cwd": "${workspaceFolder}",
+      "console": "newExternalWindow",
+      "preLaunchTask": "build debug"
+    },
+    {
+      "name": "Client (без билд)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/Debug-windows-x86_64/Client/Client.exe",
+      "cwd": "${workspaceFolder}",
+      "console": "newExternalWindow"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Server + Client",
+      "configurations": ["Server", "Client (без билд)"],
+      "stopAll": true
+    }
+  ]
+}

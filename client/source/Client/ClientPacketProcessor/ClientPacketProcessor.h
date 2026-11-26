@@ -8,16 +8,16 @@ class GameContext;
 class ClientPacketProcessor final : public common::NonCopyableObject
 {
 public:
-	ClientPacketProcessor(IN GameContext& oGameContext);
+	ClientPacketProcessor(IN GameContext &oGameContext);
 	~ClientPacketProcessor();
 
 public:
-	bool ProcessPacket(const networking::ReceivedPacket& oRecievedPacket);
+	bool ProcessPacket(const networking::ReceivedPacket &oReceivedPacket);
 
 private:
-	bool ProcessConnectionEstablishedRequest(IN const networking::ReceivedPacket& oRecievedPacket);
-	bool ProcessUpdateWorldStateRequest(IN const networking::ReceivedPacket& oRecievedPacket);
+	bool ProcessConnectionEstablishedRequest(IN const networking::ReceivedPacket &oReceivedPacket);
+	bool ProcessUpdateWorldStateRequest(IN const networking::ReceivedPacket &oReceivedPacket);
 
 private:
-	GameContext& m_oGameContext;
+	GameContext &m_oGameContext;
 };

@@ -5,28 +5,27 @@
 #include <Networking/NetworkEndpoint.h>
 #include "ServerPacketProcessor/ServerPacketProcessor.h"
 
-struct networking::ReceivedPacket;
 class ServerContext;
 
 class Server final : public networking::NetworkEndpoint<networking::ServerSocket>
 {
 public:
-	Server(const std::string& strServerIpAddress, const std::string& strPort);
+	Server(const std::string &strServerIpAddress, const std::string &strPort);
 	~Server();
 
 public:
 	bool Start() override;
-	bool IsPacketAlreadyQueued(IN const networking::ReceivedPacket& oRecievedPacket) const override;
+	bool IsPacketAlreadyQueued(IN const networking::ReceivedPacket &oReceivedPacket) const override;
 	void Run();
 
 private:
-	bool ProcessPacket(const networking::ReceivedPacket& oRecievedPacket) override;
+	bool ProcessPacket(const networking::ReceivedPacket &oReceivedPacket) override;
 	void Update();
 
 private:
 	bool m_bIsRunning = false;
 
-	std::vector<networking::ReceivedPacket> m_oRecivedPackets;
+	std::vector<networking::ReceivedPacket> m_oReceivedPacket;
 	common::Scope<ServerContext> m_oServerContext = nullptr;
 	common::Scope<ServerPacketProcessor> m_oServerPacketProcessor = nullptr;
 };

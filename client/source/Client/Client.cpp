@@ -4,9 +4,8 @@
 #include <Networking/Packets/ConnectPacket.h>
 #include "GameContext/GameContext.h"
 
-Client::Client(const std::string& strServerIpAddress, const std::string& strPort, IN GameContext& oGameContext)
-	: NetworkEndpoint(strServerIpAddress, strPort)
-	, m_oGameContext(oGameContext)
+Client::Client(const std::string &strServerIpAddress, const std::string &strPort, IN GameContext &oGameContext)
+	: NetworkEndpoint(strServerIpAddress, strPort), m_oGameContext(oGameContext)
 {
 }
 
@@ -42,12 +41,12 @@ bool Client::Start()
 	return m_bIsRunning;
 }
 
-bool Client::IsPacketAlreadyQueued(IN const networking::ReceivedPacket& oRecievedPacket) const
+bool Client::IsPacketAlreadyQueued(IN const networking::ReceivedPacket &oReceivedPacket) const
 {
 	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
 	{
 		auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
-		if (oCurrentPacket.nnRequestId == oRecievedPacket.nnRequestId)
+		if (oCurrentPacket.nnRequestId == oReceivedPacket.nnRequestId)
 			return false;
 	}
 
@@ -63,7 +62,7 @@ bool Client::ConnectToServer()
 	networking::ConnectPacket oConnectPacket;
 	if (!SendPacket<networking::ConnectPacket>(oConnectPacket, nullptr, networking::PacketSendStrategy::Reliable))
 	{
-		//TODO LOG
+		// TODO LOG
 		return false;
 	}
 
@@ -79,11 +78,11 @@ void Client::Update()
 	ProcessPackets();
 }
 
-bool Client::ProcessPacket(const networking::ReceivedPacket& oRecievedPacket)
+bool Client::ProcessPacket(const networking::ReceivedPacket &oReceivedPacket)
 {
-	if (!m_oClientPacketProcessor->ProcessPacket(oRecievedPacket))
+	if (!m_oClientPacketProcessor->ProcessPacket(oReceivedPacket))
 	{
-		//TODO LOG
+		// TODO LOG
 		return false;
 	}
 

@@ -13,17 +13,17 @@ class ServerContext;
 class ServerPacketProcessor final : public common::NonCopyableObject
 {
 public:
-	ServerPacketProcessor(IN ServerContext& oServerContext, IN ServerEndpoint& oServerEndpoint);
+	ServerPacketProcessor(IN ServerContext &oServerContext, IN ServerEndpoint &oServerEndpoint);
 	~ServerPacketProcessor();
 
 public:
-	bool ProcessPacket(const networking::ReceivedPacket& oRecievedPacket);
+	bool ProcessPacket(const networking::ReceivedPacket &oReceivedPacket);
 
 private:
-	bool ProcessClientConnectionRequest(IN const networking::ReceivedPacket& oRecievedPacket);
+	bool ProcessClientConnectionRequest(IN const networking::ReceivedPacket &oReceivedPacket);
 
 private:
-	ServerContext& m_oServerContext;
-	ServerEndpoint& m_oServerEndpoint;
-	SessionManager& m_oSessionManager = SessionManager::GetInstance();
+	ServerContext &m_oServerContext;
+	ServerEndpoint &m_oServerEndpoint;
+	SessionManager &m_oSessionManager = SessionManager::GetInstance();
 };

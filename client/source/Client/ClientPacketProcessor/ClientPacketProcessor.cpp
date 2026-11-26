@@ -4,7 +4,7 @@
 #include <Networking/Packets/UpdateWorldStatePacket.h>
 #include <Networking/Packets/ConnectionEstablishedPacket.h>
 
-ClientPacketProcessor::ClientPacketProcessor(IN GameContext& oGameContext)
+ClientPacketProcessor::ClientPacketProcessor(IN GameContext &oGameContext)
 	: m_oGameContext(oGameContext)
 {
 }
@@ -13,48 +13,48 @@ ClientPacketProcessor::~ClientPacketProcessor()
 {
 }
 
-bool ClientPacketProcessor::ProcessPacket(const networking::ReceivedPacket& oRecievedPacket)
+bool ClientPacketProcessor::ProcessPacket(const networking::ReceivedPacket &oReceivedPacket)
 {
-	switch (oRecievedPacket.ePacketType)
+	switch (oReceivedPacket.ePacketType)
 	{
 	case networking::PacketTypes::ConnectionEstablished:
-		return ProcessConnectionEstablishedRequest(oRecievedPacket);
+		return ProcessConnectionEstablishedRequest(oReceivedPacket);
 
 	case networking::PacketTypes::UpdateWorldState:
-		return ProcessUpdateWorldStateRequest(oRecievedPacket);
+		return ProcessUpdateWorldStateRequest(oReceivedPacket);
 
 	default:
-		LOG_ERROR("Unsupported packet type: {0}", static_cast<int>(oRecievedPacket.ePacketType));
+		LOG_ERROR("Unsupported packet type: {0}", static_cast<int>(oReceivedPacket.ePacketType));
 		return false;
 	}
 
 	return true;
 }
 
-bool ClientPacketProcessor::ProcessConnectionEstablishedRequest(IN const networking::ReceivedPacket& oRecievedPacket)
+bool ClientPacketProcessor::ProcessConnectionEstablishedRequest(IN const networking::ReceivedPacket &oReceivedPacket)
 {
-	const auto oConnectionEstablishedPacket = networking::DeserializePacket<networking::ConnectionEstablishedPacket>(oRecievedPacket);
+	const auto oConnectionEstablishedPacket = networking::DeserializePacket<networking::ConnectionEstablishedPacket>(oReceivedPacket);
 	m_oGameContext.SetSessionId(oConnectionEstablishedPacket->nPlayerSessionId);
 	m_oGameContext.SetClientStatusAsConnected();
 
 	return true;
 }
 
-bool ClientPacketProcessor::ProcessUpdateWorldStateRequest(IN const networking::ReceivedPacket& oRecievedPacket)
+bool ClientPacketProcessor::ProcessUpdateWorldStateRequest(IN const networking::ReceivedPacket &oReceivedPacket)
 {
-	const auto oUpdateWorldStatePacket = networking::DeserializePacket<networking::UpdateWorldStatePacket>(oRecievedPacket);
+	const auto oUpdateWorldStatePacket = networking::DeserializePacket<networking::UpdateWorldStatePacket>(oReceivedPacket);
 
 	const auto oPlayerStateDataElementSize = sizeof(oUpdateWorldStatePacket->playerStateDataArray) / sizeof(networking::PlayerStateData);
-	const auto oPlayerStateDataArray = std::vector<networking::PlayerStateData>(oUpdateWorldStatePacket->playerStateDataArray, 
-		oUpdateWorldStatePacket->playerStateDataArray + oPlayerStateDataElementSize);
+	const auto oPlayerStateDataArray = std::vector<networking::PlayerStateData>(oUpdateWorldStatePacket->playerStateDataArray,
+																				oUpdateWorldStatePacket->playerStateDataArray + oPlayerStateDataElementSize);
 
-	auto& oPlayersMap = m_oGameContext.oPlayersMap;
+	auto &oPlayersMap = m_oGameContext.oPlayersMap;
 
-	for (const auto& oPlayerStateDataIterator : oPlayerStateDataArray)
+	for (const auto &oPlayerStateDataIterator : oPlayerStateDataArray)
 	{
 		const auto nCurrentSessionId = oPlayerStateDataIterator.nSessionId;
 
-		if(nCurrentSessionId <= 0)
+		if (nCurrentSessionId <= 0)
 			continue;
 
 		if (!oPlayersMap.contains(nCurrentSessionId))
