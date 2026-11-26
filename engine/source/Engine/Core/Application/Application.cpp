@@ -36,7 +36,7 @@ namespace engine
 	{
 		if (!Initialize())
 		{
-			LOG_ERROR("Failed to initilize the engine.");
+			LOG_ERROR("Failed to initialize the engine.");
 			return;
 		}
 
@@ -68,7 +68,7 @@ namespace engine
 		m_pRendered2D->Draw();
 	}
 
-	bool Application::PushLayer(ILayer* pLayer)
+	bool Application::PushLayer(ILayer *pLayer)
 	{
 		return m_pLayerStack->PushLayer(pLayer);
 	}
