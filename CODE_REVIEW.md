@@ -23,15 +23,16 @@
 
 ## 1. Обобщение
 
-| Тежест | Отворени | Оправени |
-|---|---|---|
-| Критично | 1 (C6 частично) | 7 |
-| Високо | 7 (H11 ново) | 4 |
-| Средно | 12 (M17 ново) | 5 |
-| Ниско | 17 | 1 |
-| Билд | 9 | 1 |
+| Тежест   | Отворени        | Оправени |
+| -------- | --------------- | -------- |
+| Критично | 1 (C6 частично) | 7        |
+| Високо   | 7 (H11 ново)    | 4        |
+| Средно   | 12 (M17 ново)   | 5        |
+| Ниско    | 17              | 1        |
+| Билд     | 9               | 1        |
 
 Накратко:
+
 - Всички критични бъгове от първото ревю (билд, безкраен цикъл, overflow, UB) са оправени; от C6 остава повторният `Connect`.
 - Протоколът за „надеждни“ пакети реално не работи: няма ACK, request ID-тата на двете страни се смесват, сървърът никога не ретрайва и не чисти чакащите пакети (H1–H3).
 - Рендерът вече е свързан (submit → draw call), но **нищо не се вижда** заради целочислен `glm::ortho` (H11).
@@ -42,6 +43,7 @@
 ## 2. Критични
 
 ### C6. Повторен `Connect` от вече свързан клиент остава без отговор
+
 **Файлове:** [ServerPacketProcessor.cpp:36-41](server/source/ServerPacketProcessor/ServerPacketProcessor.cpp:36), [SessionManager.cpp:24-30](server/source/Sessions/SessionManager.cpp:24)
 
 Оправено: `ProcessPackets` вече чисти опашката, а дедупликацията е по `(адрес && ID)`. Остава:
@@ -55,6 +57,7 @@
 ## 3. Високи
 
 ### H1. „Надеждната“ доставка няма ACK — request ID-тата на двете страни се смесват
+
 **Файлове:** [NetworkEndpoint.h:53-54, 143-146](networking/source/Networking/NetworkEndpoint.h:53), [ServerPacketProcessor.cpp:47](server/source/ServerPacketProcessor/ServerPacketProcessor.cpp:47)
 
 - Всеки endpoint брои своите request ID-та от 1.
@@ -66,11 +69,13 @@
 **Поправка (минимална):** добави в хедъра `nnAckId` (ID-то, което потвърждаваш) отделно от `nnRequestId`. Надеждните пакети се потвърждават само по `nnAckId` + адрес на подателя. По-добре — sequence + ack bitfield (стандартният подход за UDP игри).
 
 ### H2. Сървърът никога не ретрайва и никога не чисти pending опашката
+
 **Файл:** [Server.cpp:73-93](server/source/Server.cpp:73)
 
 `Server::Run` не вика `ProcessPendingPackets()`. Всички `Reliable` пакети на сървъра (`ConnectionEstablished`) влизат в `PendingPacketsQueueManager` и **остават там завинаги** (клиентът не праща ACK) → неограничен растеж на паметта, и никакъв ретрай при загуба.
 
 ### H3. Ретрайнатите пакети отиват на грешен адрес
+
 **Файлове:** [NetworkEndpoint.h:178](networking/source/Networking/NetworkEndpoint.h:178), [PendingPacket.h](networking/source/Networking/Packets/PendingPacket.h)
 
 `PendingPacket` не пази адреса на получателя; `ProcessPendingPackets` праща без адрес → `BaseSocket::Send` използва `m_oSocketAddress`. За клиента това случайно е сървърът (работи). За сървъра това е **собственият му bind адрес** — ретраят отива при самия него. Щом оправиш H2, ще удариш този бъг.
@@ -78,9 +83,11 @@
 **Поправка:** `SocketAddress oDestination;` в `PendingPacket`, попълва се в `SendPacket`.
 
 ### H6. `Timer` връща грешни стойности
+
 **Файл:** [Timer.cpp](common/source/Common/Timer.cpp)
 
 Оправено: началният момент вече се взима при създаване (`= now()` в хедъра). Остава:
+
 1. `Elapsed()` прави `duration_cast<seconds>` → отрязва до цели секунди (всичко под 1 s е 0).
 2. `ElapsedMilliseconds()` **дели** на 1000 вместо да умножава → практически винаги 0.
 3. Деструкторът вика `Restart()` — безсмислено.
@@ -88,6 +95,7 @@
 Логовете „Shader creation took X ms“ и „Server start took X ms“ показват 0.
 
 **Поправка:**
+
 ```cpp
 float Timer::Elapsed()
 { return std::chrono::duration<float>(std::chrono::steady_clock::now() - m_oStartInterval).count(); }
@@ -96,11 +104,13 @@ float Timer::ElapsedMilliseconds()
 ```
 
 ### H9. `Transform`: ротацията се игнорира
+
 **Файл:** [Transform.cpp:13-20](engine/source/Engine/GameObjects/Transform.cpp:13)
 
 Оправено: скалата по подразбиране е 1. Остава: `oRotation` съществува, но `GetModelMatrix` не я прилага. За 2D: `glm::rotate(modelMatrix, glm::radians(oRotation.z), {0, 0, 1})` между `translate` и `scale`.
 
 ### H10. `Shader`: изтичане на GL обекти и `glDeleteProgram` с невалиден ID
+
 **Файл:** [Shader.cpp:57-121](engine/source/Engine/Graphics/OpenGL/Shader.cpp:57)
 
 - При грешка в компилацията на фрагментния шейдър вертексният не се трие; при грешка в линка не се трият нито шейдърите, нито програмата.
@@ -109,16 +119,19 @@ float Timer::ElapsedMilliseconds()
 - `BOOL` (Windows тип) вместо `GLint`.
 
 ### H11. `glm::ortho(0, 1600, 0, 900)` с цели числа → нищо не се вижда
+
 **Файл:** [Renderer2D.cpp:25](engine/source/Engine/Graphics/Rendrer2D/Renderer2D.cpp:25)
 
 `glm::ortho` е шаблон — с `int` аргументи `T = int` и делението е **целочислено**: `2 / 1600 = 0`, `2 / 900 = 0`. Мащабът по X и Y става 0 и всеки връх отива в (-1, -1) — квадратът колапсира в точка в ъгъла. Компилира се без предупреждение, защото `glm::imat4` се конвертира неявно към `glm::mat4`.
 
 **Поправка:**
+
 ```cpp
 m_oProjectionMatrix = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
 ```
 
 Две неща, които ще излязат веднага след това:
+
 - **Мащабът вече е в пиксели.** Квадратът е 1×1 ([OpenGLQuad.cpp](engine/source/Engine/Graphics/OpenGL/OpenGLQuad.cpp)), а `ExampleBaseGameLayer` слага `oScale = 0.5` → играчът ще е половин пиксел. Сложи напр. `oScale = {50, 50, 1}` и позиция, различна от (0, 0) — иначе е в долния ляв ъгъл.
 - `1600×900` е твърдо зададено и не следва размера на прозореца. Матрицата се смята всеки кадър — може да се смята веднъж (и при resize). Редът `m_oProjectionMatrix = glm::mat4(1);` преди нея е излишен.
 
@@ -129,6 +142,7 @@ m_oProjectionMatrix = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
 **M3. `Application.h` няма `#pragma once`.** [Application.h:1](engine/source/Engine/Core/Application/Application.h:1) — първото двойно включване в една единица → redefinition на `engine::Application`.
 
 **M4. `BaseSocket::Open` — частично оправен.** [BaseSocket.cpp:17-55](networking/source/Networking/Socket/Base/BaseSocket.cpp:17) — проверката за `INVALID_SOCKET` е добавена. Остава:
+
 - новото `return false` е **преди** `freeaddrinfo` → изтичане на `pAddressResult`. Премести `freeaddrinfo` преди проверката.
 - ако `ioctlsocket` се провали → `continue` без `closesocket` → изтичане на сокет; ако е последният кандидат, `m_oSocket` остава валиден **блокиращ** сокет, адресът не е попълнен, а `Open` връща `true`. Затвори сокета и върни `m_oSocket = INVALID_SOCKET` преди `continue`.
 - `getaddrinfo` грешката не се логва.
@@ -158,27 +172,28 @@ m_oProjectionMatrix = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
 
 ## 5. Ниски
 
-| # | Къде | Какво |
-|---|---|---|
-| L1 | [ServerPacketProcessor.cpp:52-53](server/source/ServerPacketProcessor/ServerPacketProcessor.cpp:52) | `positionX` се присвоява два пъти, `positionY` никога. `1270` вместо `1280`. `rand()` без seed — ползвай `<random>`. |
-| L2 | [ServerPacketProcessor.cpp:24](server/source/ServerPacketProcessor/ServerPacketProcessor.cpp:24) | `LOG_ERROR("Unsupported packet type: ", x)` — липсва `{0}`, стойността не се печата (в клиента е оправено). |
-| L4 | [Assert.h](common/source/Common/Assert.h) | Макросът е `if (...) {...}` без `do { } while (0)` → капан с `if/else`. Използва `LOG_ERROR`, без да включва `Logger.h`. |
-| L5 | [Common.h:17](common/source/Common/Common.h:17) | `#define ELEMENT_NOT_FOUND -1` вече не се ползва никъде (заменен с `std::optional`) — махни го. |
-| L7 | [Logger.cpp:6](common/source/Common/Logger/Logger.cpp:6) | `DEFAULT_LOGGER_PATTERN` е дефиниран, но не се ползва. `LOG_*` преди `Logger::Init` → null deref. `stdout_color_mt` хвърля при второ `Init` със същото име. |
-| L8 | [EventTypes.h](engine/source/Engine/EventSystem/EventTypes.h), [PacketTypes.h](networking/source/Networking/Packets/PacketTypes.h) | Ползват `std::string`/`uint16_t` без `<string>`/`<cstdint>`. |
-| L9 | [EventDispatcher.h:26-34](engine/source/Engine/EventSystem/EventDispatcher.h:26), [EventBus.cpp:40-49](engine/source/Engine/EventSystem/EventBus.cpp:40) | `bIsHandled` вече се попълва, но **никой не го чете** — `EventBus::Sumbit` праща събитието на всички слушатели независимо от него. Добави `if (oEvent.bIsHandled) break;` в цикъла. `Dispatch` все още винаги връща `true`. |
-| L10 | [EventDispatcher.h:43-45](engine/source/Engine/EventSystem/EventDispatcher.h:43) | Макросите `SUBMIT_EVENT` и т.н. завършват на `;` и разчитат, че извикващият ще напише `events::` пред тях (`events::SUBMIT_EVENT(x)` → `events::EventBus::...`). Замени с inline функции. |
-| L11 | [Window.cpp:43](engine/source/Engine/Core/Application/Window.cpp:43) | `oWindow` в close callback-а не се ползва. |
-| L12 | [FileSystem.cpp:14](engine/source/Engine/FileSystem/FileSystem.cpp:14) | `tellg()` може да върне `-1` → `size_t` огромно → `bad_alloc`. Пътищата са относителни спрямо CWD — работи от VS (`debugdir`), не и при директно стартиране на exe-то. |
-| L13 | [GameTime.cpp:14-20](engine/source/Engine/Core/Application/GameTime.cpp:14) | Първият кадър има delta = цялото време от `glfwInit`. Инициализирай `m_dLastFrame` при старт. |
-| L14 | [VertexShader.glsl:10](assets/shaders/VertexShader.glsl:10) | `vec4(oPosition, 1.0, 1.0)` — z=1 с 2D `ortho` дава z=-1, точно на границата на видимия обем. Работи, но е на ръба — сложи `0.0`. |
-| L15 | [SocketAddress.cpp:25-29](networking/source/Networking/SocketAddress.cpp:25) | `Set` игнорира реалната дължина от `recvfrom`; `sockaddr` (16 байта) поддържа само IPv4. За бъдеще: `sockaddr_storage`. |
-| L16 | [PendingPacketsQueueManager.h](networking/source/Networking/PendingPacketsQueueManager/PendingPacketsQueueManager.h), [SessionManager.h](server/source/Sessions/SessionManager.h) | Ползват `std::optional` и `std::unordered_map` без `<optional>`/`<unordered_map>` — компилира се само заради транзитивни include-и (spdlog). |
-| L17 | [EventDispatcher.h:9](engine/source/Engine/EventSystem/EventDispatcher.h:9) | `typename = typename std::enable_if<...>` не ограничава нищо — без `::type` (или `enable_if_t`) това е винаги валиден тип. На C++23: `template<std::derived_from<Event> TEvent>`. |
-| L18 | [PlayerGameObject.cpp:13-14](client/source/Client/PlayerGameObject.cpp:13) | Шейдърът се създава мързеливо в `Draw` без проверка `IsShaderValid()` — при грешка всеки кадър се bind-ва невалидна програма. Всеки играч ще има собствен шейдър. По-добре: шейдърът да се зарежда в `LoadContent` (там има как да се върне `false`) и да се споделя. |
-| L19 | [Window.h:40](engine/source/Engine/Core/Application/Window.h:40) | `GetNativeWindow` връща `const GLFWwindow*`, а GLFW функциите искат `GLFWwindow*` — всеки извикващ ще трябва `const_cast`. Върни `GLFWwindow*`. |
+| #   | Къде                                                                                                                                                                              | Какво                                                                                                                                                                                                                                                                 |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| L1  | [ServerPacketProcessor.cpp:52-53](server/source/ServerPacketProcessor/ServerPacketProcessor.cpp:52)                                                                               | `positionX` се присвоява два пъти, `positionY` никога. `1270` вместо `1280`. `rand()` без seed — ползвай `<random>`.                                                                                                                                                  |
+| L2  | [ServerPacketProcessor.cpp:24](server/source/ServerPacketProcessor/ServerPacketProcessor.cpp:24)                                                                                  | `LOG_ERROR("Unsupported packet type: ", x)` — липсва `{0}`, стойността не се печата (в клиента е оправено).                                                                                                                                                           |
+| L4  | [Assert.h](common/source/Common/Assert.h)                                                                                                                                         | Макросът е `if (...) {...}` без `do { } while (0)` → капан с `if/else`. Използва `LOG_ERROR`, без да включва `Logger.h`.                                                                                                                                              |
+| L5  | [Common.h:17](common/source/Common/Common.h:17)                                                                                                                                   | `#define ELEMENT_NOT_FOUND -1` вече не се ползва никъде (заменен с `std::optional`) — махни го.                                                                                                                                                                       |
+| L7  | [Logger.cpp:6](common/source/Common/Logger/Logger.cpp:6)                                                                                                                          | `DEFAULT_LOGGER_PATTERN` е дефиниран, но не се ползва. `LOG_*` преди `Logger::Init` → null deref. `stdout_color_mt` хвърля при второ `Init` със същото име.                                                                                                           |
+| L8  | [EventTypes.h](engine/source/Engine/EventSystem/EventTypes.h), [PacketTypes.h](networking/source/Networking/Packets/PacketTypes.h)                                                | Ползват `std::string`/`uint16_t` без `<string>`/`<cstdint>`.                                                                                                                                                                                                          |
+| L9  | [EventDispatcher.h:26-34](engine/source/Engine/EventSystem/EventDispatcher.h:26), [EventBus.cpp:40-49](engine/source/Engine/EventSystem/EventBus.cpp:40)                          | `bIsHandled` вече се попълва, но **никой не го чете** — `EventBus::Sumbit` праща събитието на всички слушатели независимо от него. Добави `if (oEvent.bIsHandled) break;` в цикъла. `Dispatch` все още винаги връща `true`.                                           |
+| L10 | [EventDispatcher.h:43-45](engine/source/Engine/EventSystem/EventDispatcher.h:43)                                                                                                  | Макросите `SUBMIT_EVENT` и т.н. завършват на `;` и разчитат, че извикващият ще напише `events::` пред тях (`events::SUBMIT_EVENT(x)` → `events::EventBus::...`). Замени с inline функции.                                                                             |
+| L11 | [Window.cpp:43](engine/source/Engine/Core/Application/Window.cpp:43)                                                                                                              | `oWindow` в close callback-а не се ползва.                                                                                                                                                                                                                            |
+| L12 | [FileSystem.cpp:14](engine/source/Engine/FileSystem/FileSystem.cpp:14)                                                                                                            | `tellg()` може да върне `-1` → `size_t` огромно → `bad_alloc`. Пътищата са относителни спрямо CWD — работи от VS (`debugdir`), не и при директно стартиране на exe-то.                                                                                                |
+| L13 | [GameTime.cpp:14-20](engine/source/Engine/Core/Application/GameTime.cpp:14)                                                                                                       | Първият кадър има delta = цялото време от `glfwInit`. Инициализирай `m_dLastFrame` при старт.                                                                                                                                                                         |
+| L14 | [VertexShader.glsl:10](assets/shaders/VertexShader.glsl:10)                                                                                                                       | `vec4(oPosition, 1.0, 1.0)` — z=1 с 2D `ortho` дава z=-1, точно на границата на видимия обем. Работи, но е на ръба — сложи `0.0`.                                                                                                                                     |
+| L15 | [SocketAddress.cpp:25-29](networking/source/Networking/SocketAddress.cpp:25)                                                                                                      | `Set` игнорира реалната дължина от `recvfrom`; `sockaddr` (16 байта) поддържа само IPv4. За бъдеще: `sockaddr_storage`.                                                                                                                                               |
+| L16 | [PendingPacketsQueueManager.h](networking/source/Networking/PendingPacketsQueueManager/PendingPacketsQueueManager.h), [SessionManager.h](server/source/Sessions/SessionManager.h) | Ползват `std::optional` и `std::unordered_map` без `<optional>`/`<unordered_map>` — компилира се само заради транзитивни include-и (spdlog).                                                                                                                          |
+| L17 | [EventDispatcher.h:9](engine/source/Engine/EventSystem/EventDispatcher.h:9)                                                                                                       | `typename = typename std::enable_if<...>` не ограничава нищо — без `::type` (или `enable_if_t`) това е винаги валиден тип. На C++23: `template<std::derived_from<Event> TEvent>`.                                                                                     |
+| L18 | [PlayerGameObject.cpp:13-14](client/source/Client/PlayerGameObject.cpp:13)                                                                                                        | Шейдърът се създава мързеливо в `Draw` без проверка `IsShaderValid()` — при грешка всеки кадър се bind-ва невалидна програма. Всеки играч ще има собствен шейдър. По-добре: шейдърът да се зарежда в `LoadContent` (там има как да се върне `false`) и да се споделя. |
+| L19 | [Window.h:40](engine/source/Engine/Core/Application/Window.h:40)                                                                                                                  | `GetNativeWindow` връща `const GLFWwindow*`, а GLFW функциите искат `GLFWwindow*` — всеки извикващ ще трябва `const_cast`. Върни `GLFWwindow*`.                                                                                                                       |
 
 ### Мъртъв код (да се махне)
+
 - **`client/source/Game.*`** — целият стар клас (глобални променливи, `key_callback`, ръчен VAO), `main` го е закоментирал.
 - **`RecievedPacketsQueueManager.*`** — не се ползва; `Submit` е деклариран, но не е имплементиран.
 - **`networking/source/Networking/Networking.cpp`** — празен.
@@ -196,23 +211,24 @@ m_oProjectionMatrix = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
 
 **Правописни грешки в публични имена** (по-добре сега, отколкото след като се разпространят):
 
-| Сега | Трябва |
-|---|---|
-| `Recieve`, `RecievePackets`, `oRecievedPacket`, `nBytesRecived`, `m_oRecivedPacketsQueue` | `Receive`, `Received` |
-| `RecievedPacketsQueueManager/` (папка и файлове) | `ReceivedPacketsQueueManager` |
-| `EventBus::Sumbit` | `Submit` |
-| `Rendrer2D/` (папка) | `Renderer2D` |
-| `m_pRendered2D` | `m_pRenderer2D` |
-| `GetDeltaTtime` | `GetDeltaTime` |
-| `PacketRetryPolicty.h` | `PacketRetryPolicy.h` |
-| `GetSesion` | `GetSession` |
-| `m_oRevivedPacketsMap` | `m_oReceivedPacketsMap` |
-| `pCurrentStideOffset`, `nStrideOffeset` | `Stride`, `Offset` |
-| `pVertrexBuffer` | `pVertexBuffer` |
-| `oFucntionReference` | `oFunctionReference` |
-| `initilize`, `occured`, `initalize`, `diffrent` | `initialize`, `occurred`, `different` |
+| Сега                                                                                      | Трябва                                |
+| ----------------------------------------------------------------------------------------- | ------------------------------------- |
+| `Recieve`, `RecievePackets`, `oReceivedPacket`, `nBytesRecived`, `m_oRecivedPacketsQueue` | `Receive`, `Received`                 |
+| `RecievedPacketsQueueManager/` (папка и файлове)                                          | `ReceivedPacketsQueueManager`         |
+| `EventBus::Sumbit`                                                                        | `Submit`                              |
+| `Rendrer2D/` (папка)                                                                      | `Renderer2D`                          |
+| `m_pRendered2D`                                                                           | `m_pRenderer2D`                       |
+| `GetDeltaTtime`                                                                           | `GetDeltaTime`                        |
+| `PacketRetryPolicty.h`                                                                    | `PacketRetryPolicy.h`                 |
+| `GetSesion`                                                                               | `GetSession`                          |
+| `m_oRevivedPacketsMap`                                                                    | `m_oReceivedPacketsMap`               |
+| `pCurrentStideOffset`, `nStrideOffeset`                                                   | `Stride`, `Offset`                    |
+| `pVertrexBuffer`                                                                          | `pVertexBuffer`                       |
+| `oFucntionReference`                                                                      | `oFunctionReference`                  |
+| `initilize`, `occured`, `initalize`, `diffrent`                                           | `initialize`, `occurred`, `different` |
 
 **Други:**
+
 - `IsPacketAlreadyQueued` връща `true`, когато пакетът **НЕ е** в опашката — името казва обратното. Извикващият код компенсира с `if (!IsPacketAlreadyQueued)` → лог „Duplicate“. Обърни логиката и името (`IsDuplicate`).
 - `OpenGLContext::CheckIfClientSupportsOpenGLVersion4` проверява за 4.3, а се иска 4.4 контекст; шейдърите са `#version 330`. Избери една версия.
 - Унгарска нотация (`m_o`, `nn`, `str`) е последователна — ОК, но `oVertices` за `std::vector<float>` и `oPlayerStateDataElementSize` за `size_t` са подвеждащи.
@@ -224,17 +240,17 @@ m_oProjectionMatrix = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
 
 ## 7. Билд система (premake)
 
-| # | Проблем | Препоръка |
-|---|---|---|
-| B1 | `DEBUG` е дублиран в `client/premake5.lua` | Вече идва от workspace-а — махни го от Client. Регенерирай проектите: сегашните `.vcxproj` са от преди промяната. |
-| B4 | `filter "system:linux"` в Networking, но проектът е само за Windows | Махни филтъра. |
-| B5 | GLM include dir е `vendor/glm/glm` → include-ите са `<mat4x4.hpp>`, `<gtc/...>`, `<matrix.hpp>` | Стандартното е `vendor/glm` + `<glm/mat4x4.hpp>`. Сегашното е податливо на колизии с други `matrix.hpp`. |
-| B6 | `server/premake5.lua` хардкодва пътища вместо `IncludeDirectories[...]` | Използвай таблицата. |
-| B7 | Няма `warnings "Extra"` / `fatalwarnings` | Повечето бъгове тук (неизползвани променливи, signed/unsigned, `LOG_ERROR` без placeholder, init order) щяха да излязат като предупреждения. |
-| B8 | Release няма `defines { "NDEBUG" }`, няма `runtime "Release"` / `staticruntime` | Изрично задай. |
-| B9 | `glad.c` се компилира в Engine, но Client ползва glad директно (`Game.cpp`) | Glad като отделен проект в групата `Dependencies`, както GLFW. |
-| B10 | `.vscode/settings.json` е комитнат; `premake5.exe` в корена (не е комитнат) | Решете дали `.vscode` е за всички; добави скрипт `GenerateProjects.bat`. |
-| B11 | Submodule `vendor/GLFW` е `-dirty` | Некомитнати промени в submodule-а — или ги комитни във форка, или ги отмени. |
+| #   | Проблем                                                                                         | Препоръка                                                                                                                                    |
+| --- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1  | `DEBUG` е дублиран в `client/premake5.lua`                                                      | Вече идва от workspace-а — махни го от Client. Регенерирай проектите: сегашните `.vcxproj` са от преди промяната.                            |
+| B4  | `filter "system:linux"` в Networking, но проектът е само за Windows                             | Махни филтъра.                                                                                                                               |
+| B5  | GLM include dir е `vendor/glm/glm` → include-ите са `<mat4x4.hpp>`, `<gtc/...>`, `<matrix.hpp>` | Стандартното е `vendor/glm` + `<glm/mat4x4.hpp>`. Сегашното е податливо на колизии с други `matrix.hpp`.                                     |
+| B6  | `server/premake5.lua` хардкодва пътища вместо `IncludeDirectories[...]`                         | Използвай таблицата.                                                                                                                         |
+| B7  | Няма `warnings "Extra"` / `fatalwarnings`                                                       | Повечето бъгове тук (неизползвани променливи, signed/unsigned, `LOG_ERROR` без placeholder, init order) щяха да излязат като предупреждения. |
+| B8  | Release няма `defines { "NDEBUG" }`, няма `runtime "Release"` / `staticruntime`                 | Изрично задай.                                                                                                                               |
+| B9  | `glad.c` се компилира в Engine, но Client ползва glad директно (`Game.cpp`)                     | Glad като отделен проект в групата `Dependencies`, както GLFW.                                                                               |
+| B10 | `.vscode/settings.json` е комитнат; `premake5.exe` в корена (не е комитнат)                     | Решете дали `.vscode` е за всички; добави скрипт `GenerateProjects.bat`.                                                                     |
+| B11 | Submodule `vendor/GLFW` е `-dirty`                                                              | Некомитнати промени в submodule-а — или ги комитни във форка, или ги отмени.                                                                 |
 
 ---
 
@@ -256,6 +272,7 @@ m_oProjectionMatrix = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
 
 **1. Протоколът е „memcpy на struct“.**
 Пакетите се пращат като суров образ на C++ структура (`reinterpret_cast<const char*>(&oPacket)`). Това значи:
+
 - зависи от padding, подравняване, размер на `enum`, endianness и компилатор;
 - изпращат се padding байтове;
 - няма магическо число и версия на протокола в хедъра (`ProtocolVersion` съществува, но не се праща);
@@ -282,6 +299,7 @@ Request ID = ACK ID = sequence — едно поле за три роли (H1). 
 **Препоръка:** `Renderer2D::BeginScene(camera)` → `DrawQuad(transform, color/texture)` → `EndScene()` с batching; `ILayer::Draw(Renderer2D&)` (вече е заложено) и `GameObject::Draw(Renderer2D&)`; кеширане на uniform locations в `Shader`.
 
 **6. Event системата е непълна.**
+
 - Редът вече е детерминиран (`std::map`), `bIsHandled` се попълва, но `EventBus` не спира при него (L9).
 - Слоевете се регистрират директно в глобалния bus, вместо `Application` да ги пропагира през `LayerStack`.
 - Отписване по време на dispatch инвалидира итератора.
@@ -295,20 +313,20 @@ Request ID = ACK ID = sequence — едно поле за три роли (H1). 
 
 ### Оценка
 
-| Аспект | Оценка | Коментар |
-|---|---|---|
-| Разделение на модули | **8/10** | Правилна посока на зависимостите, сървърът е независим от графиката. |
-| Engine дизайн (идея) | **7/10** | Layers + events + renderer queue — стандартният модел, правилно заложен. |
-| Engine изпълнение | **4/10** | Рендерерът не рисува, ownership със сурови указатели. |
-| Мрежова архитектура (идея) | **6/10** | Общ endpoint + processor-и + неблокиращ UDP — добре. |
-| Мрежово изпълнение | **3/10** | Грешна ACK семантика, singleton опашка, сървърът не ретрайва. |
-| Сигурност (вход от мрежата) | **3/10** | Без валидация на размер/тип на пакетите. |
-| Управление на ресурси/RAII | **5/10** | Добре за GL обвивки и сокети, лошо за слоеве и шейдъри при грешка. |
-| Билд система | **6/10** | Работи на Windows; `DEBUG` дефиниран грешно, регистър на пътища. |
-| Четимост/стил | **6/10** | Последователно, но много правописни грешки и мъртъв код. |
-| **Общо** | **~5/10** | Солидна скелетна архитектура, но кодът е в преходно, недовършено състояние. |
+| Аспект                      | Оценка    | Коментар                                                                    |
+| --------------------------- | --------- | --------------------------------------------------------------------------- |
+| Разделение на модули        | **8/10**  | Правилна посока на зависимостите, сървърът е независим от графиката.        |
+| Engine дизайн (идея)        | **7/10**  | Layers + events + renderer queue — стандартният модел, правилно заложен.    |
+| Engine изпълнение           | **4/10**  | Рендерерът не рисува, ownership със сурови указатели.                       |
+| Мрежова архитектура (идея)  | **6/10**  | Общ endpoint + processor-и + неблокиращ UDP — добре.                        |
+| Мрежово изпълнение          | **3/10**  | Грешна ACK семантика, singleton опашка, сървърът не ретрайва.               |
+| Сигурност (вход от мрежата) | **3/10**  | Без валидация на размер/тип на пакетите.                                    |
+| Управление на ресурси/RAII  | **5/10**  | Добре за GL обвивки и сокети, лошо за слоеве и шейдъри при грешка.          |
+| Билд система                | **6/10**  | Работи на Windows; `DEBUG` дефиниран грешно, регистър на пътища.            |
+| Четимост/стил               | **6/10**  | Последователно, но много правописни грешки и мъртъв код.                    |
+| **Общо**                    | **~5/10** | Солидна скелетна архитектура, но кодът е в преходно, недовършено състояние. |
 
-**С една дума:** архитектурната *идея* е зряла — виждаш как се прави енджин и как се разделят клиент/сървър. Проблемите са в *изпълнението* и в мрежовия протокол, който има нужда от редизайн (connection обект, отделен ACK, сериализация вместо memcpy), преди да се надгражда отгоре. Ако оправиш Високите и направиш точки 1–4 от архитектурните препоръки, проектът ще стои на стабилна основа.
+**С една дума:** архитектурната _идея_ е зряла — виждаш как се прави енджин и как се разделят клиент/сървър. Проблемите са в _изпълнението_ и в мрежовия протокол, който има нужда от редизайн (connection обект, отделен ACK, сериализация вместо memcpy), преди да се надгражда отгоре. Ако оправиш Високите и направиш точки 1–4 от архитектурните препоръки, проектът ще стои на стабилна основа.
 
 ---
 
@@ -316,9 +334,9 @@ Request ID = ACK ID = sequence — едно поле за три роли (H1). 
 
 Горната оценка е като за завършен код. За прототип, който се развива и тества в момента, голяма част от находките са **нормални за етапа** и не са причина за притеснение: memcpy сериализация, singleton-и, липса на batching, мъртъв код (`Game.*`), правопис, хардкоднати адреси.
 
-| Аспект | Оценка за прототип |
-|---|---|
-| Насока и идея | **8/10** — правилните абстракции са избрани рано (модули, слоеве, events, render queue, общ endpoint + processor-и, неблокиращ UDP, tick rate). Няма нищо, което трябва да се изхвърли. |
+| Аспект                  | Оценка за прототип                                                                                                                                                                                                                                    |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Насока и идея           | **8/10** — правилните абстракции са избрани рано (модули, слоеве, events, render queue, общ endpoint + processor-и, неблокиращ UDP, tick rate). Няма нищо, което трябва да се изхвърли.                                                               |
 | Изпълнение спрямо етапа | **6/10** — скелетът е на място; бъговете са типични за код „по средата на рефакторинг“. Единственото, което трябва да се реши **преди** да се трупа още код отгоре, е семантиката на ACK/надеждността (H1–H3), защото всичко мрежово ще стъпи на нея. |
 
 ## 8б. Ревизия след поправките (2026-11-25)
