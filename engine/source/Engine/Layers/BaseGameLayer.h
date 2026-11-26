@@ -16,7 +16,7 @@ namespace engine
 	public:
 		virtual bool OnAttach() override;
 		virtual bool OnDetach() override;
-		virtual void OnEvent(const events::Event& oEvent) override;
+		virtual void OnEvent(events::Event& oEvent) override;
 		virtual void Update() override;
 		virtual void Draw(IN Renderer2D& oRenderer2D) override;
 

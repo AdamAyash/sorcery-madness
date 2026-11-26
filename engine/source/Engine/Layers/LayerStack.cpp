@@ -27,9 +27,9 @@ namespace engine
 
 	void LayerStack::Update()
 	{
-		for (size_t nIndex = 0; nIndex < m_oLayers.size(); nIndex++)
+		for (size_t nIndex = m_oLayers.size(); nIndex > 0; nIndex--)
 		{
-			const auto pCurrentLayer = m_oLayers.at(nIndex);
+			const auto pCurrentLayer = m_oLayers.at(nIndex - 1);
 			if (!pCurrentLayer)
 				continue;
 
@@ -39,9 +39,9 @@ namespace engine
 
 	void LayerStack::Draw(IN Renderer2D& oRenderer2D)
 	{
-		for (size_t nIndex = 0; nIndex < m_oLayers.size(); nIndex++)
+		for (size_t nIndex = m_oLayers.size(); nIndex > 0; nIndex--)
 		{
-			const auto pCurrentLayer = m_oLayers.at(nIndex);
+			const auto pCurrentLayer = m_oLayers.at(nIndex - 1);
 			if (!pCurrentLayer)
 				continue;
 
@@ -51,9 +51,9 @@ namespace engine
 
 	void LayerStack::Clear()
 	{
-		for (size_t nIndex = 0; nIndex < m_oLayers.size(); nIndex++)
+		for (size_t nIndex = m_oLayers.size(); nIndex > 0; nIndex--)
 		{
-			const auto pCurrentLayer = m_oLayers.at(nIndex);
+			const auto pCurrentLayer = m_oLayers.at(nIndex - 1);
 			if (!pCurrentLayer)
 				continue;
 

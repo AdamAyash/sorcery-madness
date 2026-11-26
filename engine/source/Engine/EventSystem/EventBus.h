@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Common/Common.h>
+#include <map>
 
 namespace engine::events
 {
@@ -21,9 +22,9 @@ namespace engine::events
 		void Register(IN IEventListener *pEventListener);
 		void UnRegister(IN IEventListener *pEventListener);
 
-		void Sumbit(IN const Event &oEvent);
+		void Sumbit(IN Event &oEvent);
 
 	private:
-		std::unordered_map<unsigned long, IEventListener *> m_oEventListenersMap;
+		std::map<unsigned long, IEventListener *> m_oEventListenersMap;
 	};
 }

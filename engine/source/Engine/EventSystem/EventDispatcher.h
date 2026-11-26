@@ -6,13 +6,13 @@
 
 namespace engine::events
 {
-	template <typename TEvent>
+	template<typename TEvent, typename = typename std::enable_if<std::is_base_of_v<Event, TEvent>>>
 	using EventCallback = std::function<bool(const TEvent&)>;
 
 	class EventDispatcher : public common::NonCopyableObject
 	{
 	public:
-		EventDispatcher(IN const Event& oEvent)
+		EventDispatcher(IN Event& oEvent)
 			: m_oEvent(oEvent)
 		{
 		}
@@ -27,14 +27,14 @@ namespace engine::events
 		{
 			if (m_oEvent.GetEventType() == TEvent::GetStaticEventType())
 			{
-				oEventCallback(dynamic_cast<const TEvent&>(m_oEvent));
+				m_oEvent.bIsHandled = oEventCallback(dynamic_cast<const TEvent&>(m_oEvent));
 			}
 
 			return true;
 		}
 
 	private:
-		const Event& m_oEvent;
+		Event& m_oEvent;
 	};
 }
 

@@ -14,12 +14,6 @@ namespace networking
 	{
 	}
 
-	PendingPacketsQueueManager& PendingPacketsQueueManager::GetInstance()
-	{
-		static PendingPacketsQueueManager oPendingPacketsManager;
-		return oPendingPacketsManager;
-	}
-
 	void PendingPacketsQueueManager::Submit(IN PendingPacket& oPendingPacket)
 	{
 		oPendingPacket.oLastSentTimesStamp = common::Clock::now();

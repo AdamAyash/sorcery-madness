@@ -14,7 +14,6 @@ namespace networking
 		~ReceivedPacketsQueueManager();
 
 	public:
-		static ReceivedPacketsQueueManager& GetInstance();
 		void Submit(IN const ReceivedPacket oRecievedPacket);
 
 	private:

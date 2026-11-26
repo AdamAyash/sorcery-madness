@@ -2,6 +2,7 @@
 
 #include <Common/Common.h>
 #include "Transform.h"
+#include "../Graphics/Rendrer2D/Renderer2D.h"
 
 namespace engine
 {
@@ -15,7 +16,7 @@ namespace engine
 
 	public:
 		virtual void Update();
-		virtual void Draw();
+		virtual void Draw(IN Renderer2D& oRenderer2D) PURE;
 
 	public:
 		Transform oTransform;

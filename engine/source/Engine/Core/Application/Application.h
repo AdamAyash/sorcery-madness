@@ -22,7 +22,7 @@ namespace engine
 		void Run();
 
 	public:
-		void OnEvent(const events::Event& oEvent) override;
+		void OnEvent(IN events::Event& oEvent) override;
 
 	protected:
 		virtual bool Initialize();

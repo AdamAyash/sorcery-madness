@@ -36,6 +36,7 @@ namespace engine
 
 	private:
 		OpenGLQuad m_oOpenGLQuad;
+		glm::mat4 m_oProjectionMatrix = glm::mat4(1);
 		std::vector<RenderCommand> m_oRenderCommands;
 
 		friend Application;

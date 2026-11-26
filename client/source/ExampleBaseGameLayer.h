@@ -14,12 +14,10 @@ public:
 
 public:
 	 void Update() override;
-	 void Draw(IN engine::Renderer2D& oRenderer2D) override;
 
 private:
 	bool LoadContent() override;
 
 private:
-	common::Scope<engine::Shader> m_pShader = nullptr;
 	PlayerGameObject m_oPlayer;
 };

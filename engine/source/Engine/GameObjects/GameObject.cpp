@@ -13,8 +13,4 @@ namespace engine
 	void GameObject::Update()
 	{
 	}
-
-	void GameObject::Draw()
-	{
-	}
 }

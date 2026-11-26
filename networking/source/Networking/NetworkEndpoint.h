@@ -227,7 +227,7 @@ namespace networking
 
 		std::vector<networking::ReceivedPacket> m_oRecivedPacketsQueue;
 
-		PendingPacketsQueueManager &m_oPendingPacketsQueueManager = PendingPacketsQueueManager::GetInstance();
+		PendingPacketsQueueManager m_oPendingPacketsQueueManager;
 
 	private:
 		__int64 m_nnNextRequestId = 1;

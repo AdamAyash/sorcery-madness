@@ -49,7 +49,7 @@ namespace engine
 		}
 	}
 
-	void Application::OnEvent(IN const events::Event &oEvent)
+	void Application::OnEvent(IN events::Event &oEvent)
 	{
 		events::EventDispatcher oEventDispatcher(oEvent);
 		oEventDispatcher.Dispatch<events::WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));

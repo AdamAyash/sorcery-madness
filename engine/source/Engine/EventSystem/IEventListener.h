@@ -19,7 +19,7 @@ namespace engine::events
 		}
 
 	public:
-		virtual void OnEvent(const Event &oEvent) PURE;
+		virtual void OnEvent(Event &oEvent) PURE;
 
 	public:
 		constexpr unsigned long GetEventListenerSubscriptionId() const

@@ -10,15 +10,13 @@ namespace networking
 
 	class PendingPacketsQueueManager final : public common::NonCopyableObject
 	{
-	private:
+	public:
 		PendingPacketsQueueManager();
 
 	public:
 		~PendingPacketsQueueManager();
 
 	public:
-		static PendingPacketsQueueManager& GetInstance();
-
 		void Submit(IN PendingPacket& oPendingPacket);
 		void Remove(IN const __int64 nnPendingPacketId);
 

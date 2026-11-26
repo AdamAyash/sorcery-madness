@@ -30,7 +30,7 @@ namespace engine
 		return true;
 	}
 
-	void BaseGameLayer::OnEvent(const events::Event& oEvent)
+	void BaseGameLayer::OnEvent(events::Event& oEvent)
 	{
 
 	}
@@ -47,7 +47,7 @@ namespace engine
 	{
 		for (auto& gameObjectIterator : m_oGameObjects)
 		{
-			gameObjectIterator->Draw();
+			gameObjectIterator->Draw(oRenderer2D);
 		}
 	}
 }

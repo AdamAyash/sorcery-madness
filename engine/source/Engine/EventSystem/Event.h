@@ -14,8 +14,8 @@ namespace engine::events
     public:
         virtual EventTypes GetEventType() const PURE;
 
-    private:
-        bool m_bIsHandled = false;
+    public:
+        bool bIsHandled = false;
     };
 
 #define EVENT(type)                                                     \
