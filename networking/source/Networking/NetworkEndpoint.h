@@ -17,11 +17,11 @@ namespace networking
 	template <class TSocket>
 	class NetworkEndpoint : public common::NonCopyableObject
 	{
-		static_assert(std::is_convertible_v<TSocket*, BaseSocket*>,
-			"TSocket must publicly inherit from BaseSocket");
+		static_assert(std::is_convertible_v<TSocket *, BaseSocket *>,
+					  "TSocket must publicly inherit from BaseSocket");
 
 	protected:
-		NetworkEndpoint(IN const std::string& strIpAddress, IN const std::string& strPort)
+		NetworkEndpoint(IN const std::string &strIpAddress, IN const std::string &strPort)
 			: m_strIpAddress(strIpAddress), m_strPort(strPort)
 		{
 		}
@@ -33,17 +33,18 @@ namespace networking
 
 	public:
 		virtual bool Start() PURE;
-		virtual bool IsPacketAlreadyQueued(IN const ReceivedPacket& oReceivedPacket) const PURE;
-		virtual bool ProcessPacket(IN const ReceivedPacket& oReceivedPacket) PURE;
+		virtual bool IsPacketAlreadyQueued(IN const ReceivedPacket &oReceivedPacket) const PURE;
+		virtual bool ProcessPacket(IN const ReceivedPacket &oReceivedPacket) PURE;
 
 	public:
 		template <class TPacket>
-		bool SendPacket(IN TPacket& oPacket, IN const SocketAddress* pSocketAddress = nullptr, IN const PacketSendStrategy ePacketSendStrategy = PacketSendStrategy::Unreliable)
+		bool SendPacket(IN TPacket &oPacket, IN const SocketAddress *pSocketAddress = nullptr,
+						IN const PacketSendStrategy ePacketSendStrategy = PacketSendStrategy::Unreliable)
 		{
-			static_assert(std::is_convertible_v<TPacket*, Packet*>,
-				"TPacket must publicly inherit from Packet");
+			static_assert(std::is_convertible_v<TPacket *, Packet *>,
+						  "TPacket must publicly inherit from Packet");
 
-			Packet* const pBasePacket = static_cast<Packet*>(&oPacket);
+			Packet *const pBasePacket = static_cast<Packet *>(&oPacket);
 			if (!pBasePacket)
 			{
 				// TODO ERROR
@@ -53,10 +54,10 @@ namespace networking
 			if (pBasePacket->nnRequestId <= 0)
 				pBasePacket->nnRequestId = m_nnNextRequestId++;
 
-			const char* pPacketData = SerializePacket(oPacket);
+			const char *pPacketData = SerializePacket(oPacket);
 			if (!pPacketData)
 			{
-				LOG_ERROR("An error occured while serializing packet: {0}", GetPacketName(pBasePacket->ePacketType));
+				LOG_ERROR("An error occurred while serializing packet: {0}", GetPacketName(pBasePacket->ePacketType));
 				return false;
 			}
 
@@ -85,15 +86,15 @@ namespace networking
 		}
 
 	protected:
-		void RecievePackets()
+		void ReceivePackets()
 		{
 			while (true)
 			{
 				char messageBuffer[n_MAX_PACKET_SIZE]{};
 				SocketAddress oClientAddress;
 
-				const auto nBytesRecived = m_oSocket->Recieve(messageBuffer, &oClientAddress);
-				if (nBytesRecived == SOCKET_ERROR)
+				const auto nBytesReceived = m_oSocket->Receive(messageBuffer, &oClientAddress);
+				if (nBytesReceived == SOCKET_ERROR)
 				{
 					auto nNetworkError = WSAGetLastError();
 
@@ -103,14 +104,14 @@ namespace networking
 					return;
 				}
 
-				const PacketHeader* const pPacketHeader = reinterpret_cast<PacketHeader*>(messageBuffer);
+				const PacketHeader *const pPacketHeader = reinterpret_cast<PacketHeader *>(messageBuffer);
 
 				if (!pPacketHeader)
 					continue;
 
-				if (!ValidatePacketHeader(*pPacketHeader, nBytesRecived))
+				if (!ValidatePacketHeader(*pPacketHeader, nBytesReceived))
 				{
-					LOG_ERROR("The recieved packet is corrupted: {0}", GetPacketName(pPacketHeader->ePacketType));
+					LOG_ERROR("The received packet is corrupted: {0}", GetPacketName(pPacketHeader->ePacketType));
 					continue;
 				}
 
@@ -118,14 +119,14 @@ namespace networking
 					"Received packet | Type: {0} | RequestId: {1} | Size: {2} bytes | From: {3}",
 					GetPacketName(pPacketHeader->ePacketType),
 					pPacketHeader->nnRequestId,
-					nBytesRecived,
+					nBytesReceived,
 					oClientAddress.GetIpAddress());
 
 				ReceivedPacket oReceivedPacket;
 				oReceivedPacket.nnRequestId = pPacketHeader->nnRequestId;
 				oReceivedPacket.ePacketType = pPacketHeader->ePacketType;
 				oReceivedPacket.oSocketAddress = oClientAddress;
-				oReceivedPacket.nPacketSize = nBytesRecived;
+				oReceivedPacket.nPacketSize = nBytesReceived;
 
 				if (!IsPacketAlreadyQueued(oReceivedPacket))
 				{
@@ -137,42 +138,36 @@ namespace networking
 					continue;
 				}
 
-				memcpy(oReceivedPacket.oPacketPayload, messageBuffer, nBytesRecived);
-				memset(messageBuffer, 0, nBytesRecived);
+				memcpy(oReceivedPacket.oPacketPayload, messageBuffer, nBytesReceived);
+				memset(messageBuffer, 0, nBytesReceived);
 
 				const auto nnPendingPacketId = m_oPendingPacketsQueueManager.FindPendingPacket(oReceivedPacket);
 
 				if (nnPendingPacketId.has_value())
 					m_oPendingPacketsQueueManager.Remove(*nnPendingPacketId);
 
-				m_oRecivedPacketsQueue.push_back(oReceivedPacket);
+				m_oReceivedPacketsQueue.push_back(oReceivedPacket);
 			}
 		}
 
 		void ProcessPackets()
 		{
-			for (auto packetIterator = m_oRecivedPacketsQueue.begin(); packetIterator != m_oRecivedPacketsQueue.end();)
+			for (const auto &oPendingPacket : m_oReceivedPacketsQueue)
 			{
-				const auto ePacketType = packetIterator->ePacketType;
-				if (!ProcessPacket(*packetIterator))
-				{
-					++packetIterator;
-					continue;
-				}
-
-				packetIterator = m_oRecivedPacketsQueue.erase(packetIterator);
+				if (!ProcessPacket(oPendingPacket))
+					LOG_ERROR("Process packet failed: {0}", GetPacketName(oPendingPacket.ePacketType));
 			}
 
-			m_oRecivedPacketsQueue.clear();
+			m_oReceivedPacketsQueue.clear();
 		}
 
 		void ProcessPendingPackets()
 		{
-			const std::vector<PendingPacket>& oPendingPackets = m_oPendingPacketsQueueManager.GetPacketsToRetry();
-			for (const auto& oPendingPacket : oPendingPackets)
-			{
-				const char* pPacketData = oPendingPacket.oPacketSerializedData.data();
+			const std::vector<PendingPacket> &oPendingPackets = m_oPendingPacketsQueueManager.GetPacketsToRetry();
 
+			for (const auto &oPendingPacket : oPendingPackets)
+			{
+				const char *pPacketData = oPendingPacket.oPacketSerializedData.data();
 				const auto nPacketSizeInBytes = static_cast<int>(oPendingPacket.oPacketSerializedData.size());
 
 				if (!SendPacketInternal(pPacketData, nPacketSizeInBytes))
@@ -189,14 +184,14 @@ namespace networking
 		}
 
 	private:
-		bool ValidatePacketHeader(IN const PacketHeader& packetHeader, IN const int nBytesRecived)
+		bool ValidatePacketHeader(IN const PacketHeader &packetHeader, IN const int nBytesReceived)
 		{
 			const auto nPacketSize = sizeof(PacketHeader);
 
-			if (nBytesRecived < nPacketSize)
+			if (nBytesReceived < nPacketSize)
 			{
-				LOG_ERROR("Incomplete packet recieved | Expected: {0} | Actual: {1}",
-					nPacketSize, nBytesRecived);
+				LOG_ERROR("Incomplete packet received | Expected: {0} | Actual: {1}",
+						  nPacketSize, nBytesReceived);
 
 				return false;
 			}
@@ -204,7 +199,7 @@ namespace networking
 			return true;
 		}
 
-		bool SendPacketInternal(IN const char* pPacketData, IN const int nPacketSize, IN const SocketAddress* pSocketAddress = nullptr)
+		bool SendPacketInternal(IN const char *pPacketData, IN const int nPacketSize, IN const SocketAddress *pSocketAddress = nullptr)
 		{
 			const auto nBytesSent = m_oSocket->Send(pPacketData, nPacketSize, pSocketAddress);
 
@@ -224,7 +219,7 @@ namespace networking
 		common::Scope<networking::WinsockContext> m_oWinsockContext = nullptr;
 		common::Scope<TSocket> m_oSocket = nullptr;
 
-		std::vector<networking::ReceivedPacket> m_oRecivedPacketsQueue;
+		std::vector<networking::ReceivedPacket> m_oReceivedPacketsQueue;
 
 		PendingPacketsQueueManager m_oPendingPacketsQueueManager;
 

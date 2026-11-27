@@ -27,8 +27,6 @@ bool ClientPacketProcessor::ProcessPacket(const networking::ReceivedPacket &oRec
 		LOG_ERROR("Unsupported packet type: {0}", static_cast<int>(oReceivedPacket.ePacketType));
 		return false;
 	}
-
-	return true;
 }
 
 bool ClientPacketProcessor::ProcessConnectionEstablishedRequest(IN const networking::ReceivedPacket &oReceivedPacket)

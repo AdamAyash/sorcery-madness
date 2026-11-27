@@ -30,12 +30,12 @@ namespace engine
 		m_pVertexArray = common::CreateScope<VertexArray>();
 		m_pVertexArray->Bind();
 
-		const auto nStrideOffeset = sizeof(float) * 2;
+		const auto nStrideOffset = sizeof(float) * 2;
 
 		auto pVertexBuffer  = common::CreateReference<VertexBuffer>();
 		pVertexBuffer->Bind();
 		pVertexBuffer->Pack<float>(oVertices, GL_STATIC_DRAW);
-		pVertexBuffer->AddLayout(nStrideOffeset, TWO_COMPONENT_SIZE);
+		pVertexBuffer->AddLayout(nStrideOffset, TWO_COMPONENT_SIZE);
 
 		m_pVertexArray->AddVertexBuffer(pVertexBuffer);
 		m_pVertexArray->UnBind();

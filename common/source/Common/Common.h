@@ -17,26 +17,26 @@
 
 namespace common
 {
-	template<class T>
+	template <class T>
 	using Scope = std::unique_ptr<T>;
 
-	template<class T, class ... Args>
-	constexpr Scope<T> CreateScope(Args&& ... args)
+	template <class T, class... Args>
+	constexpr Scope<T> CreateScope(Args &&...args)
 	{
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
 
-	template<class T>
-	constexpr Scope<T> CreateScopeFromRaw(T* pRawPointer) noexcept
+	template <class T>
+	constexpr Scope<T> CreateScopeFromRaw(T *pRawPointer) noexcept
 	{
 		return Scope<T>(pRawPointer);
 	}
 
-	template<class T>
+	template <class T>
 	using Reference = std::shared_ptr<T>;
 
-	template<class T, class ... Args>
-	constexpr Reference<T> CreateReference(Args&& ... args)
+	template <class T, class... Args>
+	constexpr Reference<T> CreateReference(Args &&...args)
 	{
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}

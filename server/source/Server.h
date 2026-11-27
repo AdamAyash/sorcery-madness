@@ -25,7 +25,7 @@ private:
 private:
 	bool m_bIsRunning = false;
 
-	std::vector<networking::ReceivedPacket> m_oReceivedPacket;
+	std::vector<networking::ReceivedPacket> m_oReceivedPackets;
 	common::Scope<ServerContext> m_oServerContext = nullptr;
 	common::Scope<ServerPacketProcessor> m_oServerPacketProcessor = nullptr;
 };

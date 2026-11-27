@@ -21,14 +21,14 @@ bool Client::Start()
 	m_oWinsockContext = common::CreateScope<networking::WinsockContext>();
 	if (!m_oWinsockContext->Initialize())
 	{
-		LOG_ERROR("An error occured while initilizing winsock context");
+		LOG_ERROR("An error occurred while initializing winsock context");
 		return false;
 	}
 
 	m_oSocket = common::CreateScope<networking::Socket>(m_strIpAddress, m_strPort);
 	if (!m_oSocket->Open())
 	{
-		LOG_ERROR("An error occured while opening the client socket");
+		LOG_ERROR("An error occurred while opening the client socket");
 		return false;
 	}
 
@@ -43,9 +43,9 @@ bool Client::Start()
 
 bool Client::IsPacketAlreadyQueued(IN const networking::ReceivedPacket &oReceivedPacket) const
 {
-	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
+	for (auto nIndex = 0; nIndex < m_oReceivedPacketsQueue.size(); ++nIndex)
 	{
-		auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
+		auto oCurrentPacket = m_oReceivedPacketsQueue[nIndex];
 		if (oCurrentPacket.nnRequestId == oReceivedPacket.nnRequestId)
 			return false;
 	}
@@ -73,7 +73,7 @@ bool Client::ConnectToServer()
 
 void Client::Update()
 {
-	RecievePackets();
+	ReceivePackets();
 	ProcessPendingPackets();
 	ProcessPackets();
 }

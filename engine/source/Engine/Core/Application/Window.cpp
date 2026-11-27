@@ -21,7 +21,7 @@ namespace engine
 		OpenGLContext oOpenGLContext;
 		if (!oOpenGLContext.InitializeOpenGLContext())
 		{
-			LOG_ERROR("Failed to initalize OpenGL context.");
+			LOG_ERROR("Failed to initialize OpenGL context.");
 		}
 
 		m_pWindow = glfwCreateWindow(oWindowProperties.m_nWidth, oWindowProperties.m_nHeight,

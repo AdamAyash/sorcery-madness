@@ -14,7 +14,7 @@ namespace engine
 		{
 		public:
 			VertexBufferLayout(unsigned int nIndex, std::size_t nnStrideSize, int nComponentSize = FOUR_COMPONENT_SIZE,
-				GLenum eComponentType = GL_FLOAT, GLboolean bNormalized = GL_FALSE, const void* pCurrentStideOffset = (void*)0);
+				GLenum eComponentType = GL_FLOAT, GLboolean bNormalized = GL_FALSE, const void* pCurrentStrideOffset = (void*)0);
 
 			~VertexBufferLayout();
 
@@ -30,7 +30,7 @@ namespace engine
 			GLenum m_eComponentType;
 			GLboolean m_bNormalized;
 			std::size_t m_nnStrideSize;
-			const void* m_pCurrentStideOffset;
+			const void* m_pCurrentStrideOffset;
 		};
 
 	public:
@@ -44,7 +44,7 @@ namespace engine
 		virtual void Destroy() override;
 
 		void AddLayout(IN const std::size_t nnStrideSize, OPTIONAL const  int nComponentSize = FOUR_COMPONENT_SIZE, OPTIONAL const GLenum eComponentType = GL_FLOAT,
-			OPTIONAL const GLboolean bNormalized = GL_FALSE, const void* pCurrentStideOffset = (void*)0);
+			OPTIONAL const GLboolean bNormalized = GL_FALSE, const void* pCurrentStrideOffset = (void*)0);
 
 		template<class DataType>
 		void Pack(IN std::vector<DataType>& pData, IN const GLenum usage)

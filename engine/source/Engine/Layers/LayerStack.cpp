@@ -12,7 +12,7 @@ namespace engine
 		Clear();
 	}
 
-	bool LayerStack::PushLayer(IN ILayer* const oLayer)
+	bool LayerStack::PushLayer(IN ILayer *const oLayer)
 	{
 		if (!oLayer->OnAttach())
 		{
@@ -25,16 +25,16 @@ namespace engine
 		return true;
 	}
 
-	void LayerStack::OnEvent(events::Event& oEvent)
+	void LayerStack::OnEvent(events::Event &oEvent)
 	{
-		if (oEvent.bIsHandled)
-			return;
-
 		for (size_t nIndex = m_oLayers.size(); nIndex > 0; nIndex--)
 		{
 			const auto pCurrentLayer = m_oLayers.at(nIndex - 1);
 			if (!pCurrentLayer)
 				continue;
+
+			if (oEvent.bIsHandled)
+				return;
 
 			pCurrentLayer->OnEvent(oEvent);
 		}
@@ -52,7 +52,7 @@ namespace engine
 		}
 	}
 
-	void LayerStack::Draw(IN Renderer2D& oRenderer2D)
+	void LayerStack::Draw(IN Renderer2D &oRenderer2D)
 	{
 		for (size_t nIndex = m_oLayers.size(); nIndex > 0; nIndex--)
 		{

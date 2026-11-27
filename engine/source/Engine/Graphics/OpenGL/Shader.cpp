@@ -7,8 +7,8 @@
 
 namespace engine
 {
-	Shader::Shader(IN const std::string& strVertexShaderSourceFilePath,
-		IN const std::string& strFragmentShaderSourceFilePath, const std::string& strShaderName)
+	Shader::Shader(IN const std::string &strVertexShaderSourceFilePath,
+				   IN const std::string &strFragmentShaderSourceFilePath, const std::string &strShaderName)
 		: m_strShaderName(strShaderName)
 	{
 		common::Timer oTimer;
@@ -41,7 +41,7 @@ namespace engine
 
 	void Shader::Destroy()
 	{
-		if(m_nObjectID != INVALID_OBJECT_ID)
+		if (m_nObjectID != INVALID_OBJECT_ID)
 			glDeleteProgram(m_nObjectID);
 	}
 
@@ -50,20 +50,20 @@ namespace engine
 		return m_bIsShaderValid;
 	}
 
-	void Shader::SetMatrix(IN const std::string& strName, IN const glm::mat4& oMatrix)
+	void Shader::SetMatrix(IN const std::string &strName, IN const glm::mat4 &oMatrix)
 	{
 		glUniformMatrix4fv(glGetUniformLocation(m_nObjectID, strName.c_str()), 1, false, glm::value_ptr(oMatrix));
 	}
 
-	const bool Shader::Create(IN const std::string& strVertexShaderSourceFilePath, IN const std::string& strFragmentShaderSourceFilePath)
+	const bool Shader::Create(IN const std::string &strVertexShaderSourceFilePath, IN const std::string &strFragmentShaderSourceFilePath)
 	{
 		const std::string strVertexShaderSource = FileSystem::ReadFileContents(strVertexShaderSourceFilePath);
-		const char* const pVertexShaderSource = strVertexShaderSource.c_str();
+		const char *const pVertexShaderSource = strVertexShaderSource.c_str();
 
 		const std::string strFragmentShaderSource = FileSystem::ReadFileContents(strFragmentShaderSourceFilePath);
-		const char* const pFragmentShaderSource = strFragmentShaderSource.c_str();
+		const char *const pFragmentShaderSource = strFragmentShaderSource.c_str();
 
-		BOOL bIsSuccessful = FALSE;
+		GLint bIsSuccessful = FALSE;
 		char shaderCompilationInfoBuffer[SHADER_COMPILATION_INFO_BUFFER_SIZE];
 
 		const GLuint nVertexShaderProgram = glCreateShader(GL_VERTEX_SHADER);
