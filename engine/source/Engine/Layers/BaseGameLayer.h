@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Base/ILayer.h"
-#include "../EventSystem/IEventListener.h"
 #include "../GameObjects/GameObject.h"
 
 namespace engine
 {
-	class BaseGameLayer : public ILayer, public events::IEventListener
+	class BaseGameLayer : public ILayer
 	{
 	protected:
 		BaseGameLayer();
@@ -16,8 +15,7 @@ namespace engine
 	public:
 		virtual bool OnAttach() override;
 		virtual bool OnDetach() override;
-		virtual void OnEvent(events::Event& oEvent) override;
-		virtual void Update() override;
+		virtual void OnUpdate() override;
 		virtual void Draw(IN Renderer2D& oRenderer2D) override;
 
 	protected:

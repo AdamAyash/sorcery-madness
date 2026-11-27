@@ -4,6 +4,9 @@ configurations { "Debug", "Release" }
 startproject "Client"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+warnings "Extra"
+--buildoptions { "/WX" }
+
 filter "system:windows"
 buildoptions { "/utf-8" }
 

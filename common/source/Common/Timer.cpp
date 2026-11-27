@@ -11,7 +11,6 @@ namespace common
 
 	Timer::~Timer()
 	{
-		Restart();
 	}
 
 	void Timer::Restart()

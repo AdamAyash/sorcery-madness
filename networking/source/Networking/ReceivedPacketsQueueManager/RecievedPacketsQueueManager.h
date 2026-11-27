@@ -17,6 +17,6 @@ namespace networking
 		void Submit(IN const ReceivedPacket oReceivedPacket);
 
 	private:
-		std::unordered_map<__int64, ReceivedPacket> m_oRevivedPacketsMap;
+		std::unordered_map<__int64, ReceivedPacket> m_oReceivedPacketsMap;
 	};
 }

@@ -74,8 +74,10 @@ namespace engine
 		if (!bIsSuccessful)
 		{
 			glGetShaderInfoLog(nVertexShaderProgram, SHADER_COMPILATION_INFO_BUFFER_SIZE, NULL, shaderCompilationInfoBuffer);
+
 			LOG_ERROR("Shader '{0}' vertex:\n{1}", m_strShaderName, shaderCompilationInfoBuffer);
 			glDeleteShader(nVertexShaderProgram);
+
 			return false;
 		}
 
@@ -87,8 +89,12 @@ namespace engine
 		if (!bIsSuccessful)
 		{
 			glGetShaderInfoLog(nFragmentShaderProgram, SHADER_COMPILATION_INFO_BUFFER_SIZE, NULL, shaderCompilationInfoBuffer);
+
 			LOG_ERROR("Shader '{0}' fragment:\n{1}", m_strShaderName, shaderCompilationInfoBuffer);
+
+			glDeleteShader(nVertexShaderProgram);
 			glDeleteShader(nFragmentShaderProgram);
+
 			return false;
 		}
 

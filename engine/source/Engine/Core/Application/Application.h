@@ -2,9 +2,10 @@
 #include "Window.h"
 #include "GameTime.h"
 #include "../../EventSystem/Events/WindowEvents/WindowCloseEvent.h"
+#include "../../EventSystem/Events/WindowEvents/WindowResizeEvent.h"
 #include "../../Layers/LayerStack.h"
 #include "../../EventSystem/IEventListener.h"
-#include "../../Graphics/Rendrer2D/Renderer2D.h"
+#include "../../Graphics/Renderer2D/Renderer2D.h"
 
 namespace engine
 {
@@ -26,13 +27,14 @@ namespace engine
 
 	protected:
 		virtual bool Initialize();
-		virtual void Update();
+		virtual void OnUpdate();
 		virtual void Draw();
 
 		bool PushLayer(ILayer* pLayer);
 
 	private:
 		bool OnWindowClose(IN const events::WindowCloseEvent& oWindowCloseEvent);
+		bool OnWindowResize(IN const events::WindowResizeEvent& oWindowCloseEvent);
 
 	private:
 		bool m_bIsRunning = false;

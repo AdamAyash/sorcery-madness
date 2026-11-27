@@ -18,7 +18,7 @@ namespace engine
 		virtual void UnBind() const override;
 		virtual void Destroy() override;
 
-		void AddVertexBuffer(common::Reference<VertexBuffer> pVertrexBuffer);
+		void AddVertexBuffer(common::Reference<VertexBuffer> pVertexBuffer);
 
 	private:
 		std::vector<common::Reference<VertexBuffer>> m_oVertexBufferArray;

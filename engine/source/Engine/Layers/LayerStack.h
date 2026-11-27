@@ -2,7 +2,8 @@
 
 #include <Common/Common.h>
 #include <vector>
-#include "../Graphics/Rendrer2D/Renderer2D.h"
+#include "../Graphics/Renderer2D/Renderer2D.h"
+#include "../EventSystem/Event.h"
 
 namespace engine
 {
@@ -17,7 +18,8 @@ namespace engine
 	public:
 		bool PushLayer(IN ILayer* const oLayer);
 
-		void Update();
+		void OnEvent(events::Event& oEvent);
+		void OnUpdate();
 		void Draw(IN Renderer2D& oRenderer2D);
 
 		void Clear();

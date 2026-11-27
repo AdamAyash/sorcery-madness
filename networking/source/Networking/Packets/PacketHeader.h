@@ -2,7 +2,7 @@
 
 #include <Common/Common.h>
 #include "PacketTypes.h"
-#include "PacketRetryPolicty.h"
+#include "PacketRetryPolicy.h"
 
 namespace networking
 {

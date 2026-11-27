@@ -4,7 +4,8 @@ namespace engine::events
 {
 	enum class EventTypes
 	{
-		WindowCloseEvent
+		WindowCloseEvent,
+		WindowResizeEvent
 	};
 
 	inline const std::string GetEventTypeName(const EventTypes eEventType)
@@ -13,6 +14,8 @@ namespace engine::events
 		{
 		case EventTypes::WindowCloseEvent:
 			return "WindowCloseEvent";
+		case EventTypes::WindowResizeEvent:
+			return "WindowResizeEvent";
 		default: 
 			return "Not implemented event";
 		}

@@ -9,13 +9,10 @@ namespace engine
 
 	BaseGameLayer::~BaseGameLayer()
 	{
-		events::UNREGISTER_EVENT_LISTENER(this);
 	}
 
 	bool BaseGameLayer::OnAttach()
 	{
-		events::REGISTER_EVENT_LISTENER(this);
-
 		if (!this->LoadContent())
 		{
 			//TODO LOG
@@ -30,12 +27,7 @@ namespace engine
 		return true;
 	}
 
-	void BaseGameLayer::OnEvent(events::Event& oEvent)
-	{
-
-	}
-
-	void BaseGameLayer::Update()
+	void BaseGameLayer::OnUpdate()
 	{
 		for (auto& gameObjectIterator : m_oGameObjects)
 		{

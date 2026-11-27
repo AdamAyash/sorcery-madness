@@ -21,7 +21,7 @@ namespace engine
 		/// Returns delta time in seconds.
 		/// </summary>
 		/// <returns>double</returns>
-		double GetDeltaTtime() const;
+		double GetDeltaTime() const;
 
 		/// <summary>
 		/// Returns the total game time in seconds since glfw was initialized.

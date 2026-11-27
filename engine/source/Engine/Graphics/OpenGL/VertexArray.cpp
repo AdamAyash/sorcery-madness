@@ -33,8 +33,8 @@ namespace engine
 		m_oVertexBufferArray.clear();
 	}
 
-	void VertexArray::AddVertexBuffer(common::Reference<VertexBuffer> pVertrexBuffer)
+	void VertexArray::AddVertexBuffer(common::Reference<VertexBuffer> pVertexBuffer)
 	{
-		m_oVertexBufferArray.push_back(pVertrexBuffer);
+		m_oVertexBufferArray.push_back(pVertexBuffer);
 	}
 }

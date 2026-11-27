@@ -36,7 +36,7 @@ std::optional<int> SessionManager::CreateSession(const IN networking::SocketAddr
 	return oSession.GetSessionId();
 }
 
-const Session& SessionManager::GetSesion(const IN int nSessionId) const
+const Session& SessionManager::GetSession(const IN int nSessionId) const
 {
 	return m_oClientSessionsMap.at(nSessionId);
 }

@@ -19,7 +19,7 @@ namespace engine
 		m_dLastFrame = m_dCurrentTime;
 	}
 
-	double GameTime::GetDeltaTtime() const
+	double GameTime::GetDeltaTime() const
 	{
 		return m_dDeltaTime;
 	}

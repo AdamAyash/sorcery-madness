@@ -22,7 +22,7 @@ namespace engine::events
 		void Register(IN IEventListener *pEventListener);
 		void UnRegister(IN IEventListener *pEventListener);
 
-		void Sumbit(IN Event &oEvent);
+		void Submit(IN Event &oEvent);
 
 	private:
 		std::map<unsigned long, IEventListener *> m_oEventListenersMap;

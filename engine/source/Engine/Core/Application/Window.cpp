@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "../../Graphics/OpenGL/OpenGLContext.h"
 #include "../../EventSystem/Events/WindowEvents/WindowCloseEvent.h"
+#include "../../EventSystem/Events/WindowEvents/WindowResizeEvent.h"
 #include "../../EventSystem/EventDispatcher.h"
 
 namespace engine
@@ -43,13 +44,18 @@ namespace engine
 		glfwSetWindowCloseCallback(m_pWindow, [](GLFWwindow* pWindow)
 		{
 			const Window& oWindow = *reinterpret_cast<const Window*>(glfwGetWindowUserPointer(pWindow));
+
 			events::WindowCloseEvent oWindowCloseEvent;
-			
-			events::SUBMIT_EVENT(oWindowCloseEvent);
+			SUBMIT_EVENT(oWindowCloseEvent);
 		});
 
 		glfwSetFramebufferSizeCallback(m_pWindow, [](GLFWwindow* pWindow, int nWidth, int nHeight)
 		{
+			const Window& oWindow = *reinterpret_cast<const Window*>(glfwGetWindowUserPointer(pWindow));
+
+			events::WindowResizeEvent oWindowResizeEvent(nWidth, nHeight);
+			SUBMIT_EVENT(oWindowResizeEvent);
+
 			glViewport(0, 0, nWidth, nHeight);
 		});
 	}

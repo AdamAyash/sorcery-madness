@@ -120,7 +120,7 @@ void Server::Update()
 	for (int index = 0; index < nPlayerCount; ++index)
 	{
 		const auto nSessionId = oUpdateWorldStatePacket.playerStateDataArray[index].nSessionId;
-		const auto oClientAddress = SessionManager::GetInstance().GetSesion(nSessionId).GetClientAddress();
+		const auto oClientAddress = SessionManager::GetInstance().GetSession(nSessionId).GetClientAddress();
 
 		if (!SendPacket<networking::UpdateWorldStatePacket>(oUpdateWorldStatePacket, &oClientAddress))
 		{

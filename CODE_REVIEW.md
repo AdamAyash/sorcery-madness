@@ -223,7 +223,7 @@ m_oProjectionMatrix = glm::ortho(0.0f, 1600.0f, 0.0f, 900.0f);
 | `GetSesion`                                                                               | `GetSession`                          |
 | `m_oRevivedPacketsMap`                                                                    | `m_oReceivedPacketsMap`               |
 | `pCurrentStideOffset`, `nStrideOffeset`                                                   | `Stride`, `Offset`                    |
-| `pVertrexBuffer`                                                                          | `pVertexBuffer`                       |
+| `pVertexBuffer`                                                                          | `pVertexBuffer`                       |
 | `oFucntionReference`                                                                      | `oFunctionReference`                  |
 | `initilize`, `occured`, `initalize`, `diffrent`                                           | `initialize`, `occurred`, `different` |
 

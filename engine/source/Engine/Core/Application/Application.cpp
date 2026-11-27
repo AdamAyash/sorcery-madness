@@ -13,7 +13,7 @@ namespace engine
 
 	Application::~Application()
 	{
-		events::UNREGISTER_EVENT_LISTENER(this);
+		UNREGISTER_EVENT_LISTENER(this);
 	}
 
 	bool Application::Initialize()
@@ -25,7 +25,7 @@ namespace engine
 		m_pLayerStack = common::CreateScope<LayerStack>();
 		m_pRendered2D = common::CreateScopeFromRaw<Renderer2D>(new Renderer2D());
 
-		events::REGISTER_EVENT_LISTENER(this);
+		REGISTER_EVENT_LISTENER(this);
 
 		m_bIsRunning = true;
 
@@ -42,7 +42,7 @@ namespace engine
 
 		while (m_bIsRunning)
 		{
-			Update();
+			OnUpdate();
 			Draw();
 
 			m_pWindow->OnUpdate();
@@ -53,13 +53,16 @@ namespace engine
 	{
 		events::EventDispatcher oEventDispatcher(oEvent);
 		oEventDispatcher.Dispatch<events::WindowCloseEvent>(BIND_EVENT(Application::OnWindowClose));
+		oEventDispatcher.Dispatch<events::WindowResizeEvent>(BIND_EVENT(Application::OnWindowResize));
+
+		m_pLayerStack->OnEvent(oEvent);
 	}
 
-	void Application::Update()
+	void Application::OnUpdate()
 	{
 		m_oGameTime.Calculate();
 
-		m_pLayerStack->Update();
+		m_pLayerStack->OnUpdate();
 	}
 
 	void Application::Draw()
@@ -76,6 +79,12 @@ namespace engine
 	bool Application::OnWindowClose(IN const events::WindowCloseEvent &oWindowCloseEvent)
 	{
 		m_bIsRunning = false;
+		return true;
+	}
+
+	bool Application::OnWindowResize(IN const events::WindowResizeEvent& oWindowCloseEvent)
+	{
+		m_pRendered2D->SetWindowViewport(oWindowCloseEvent.GetWidth(), oWindowCloseEvent.GetHeight());
 		return true;
 	}
 }

@@ -6,7 +6,7 @@
 
 namespace engine::events
 {
-	template<typename TEvent, typename = typename std::enable_if<std::is_base_of_v<Event, TEvent>>>
+	template<std::derived_from<Event> TEvent>
 	using EventCallback = std::function<bool(const TEvent&)>;
 
 	class EventDispatcher : public common::NonCopyableObject
@@ -25,6 +25,8 @@ namespace engine::events
 		template <class TEvent>
 		bool Dispatch(IN EventCallback<TEvent> oEventCallback)
 		{
+			static_assert(std::is_convertible_v<TEvent*, Event*>, "TEvent must publicly inherit from Event");
+
 			if (m_oEvent.GetEventType() == TEvent::GetStaticEventType())
 			{
 				m_oEvent.bIsHandled = oEventCallback(dynamic_cast<const TEvent&>(m_oEvent));
@@ -38,8 +40,8 @@ namespace engine::events
 	};
 }
 
-#define BIND_EVENT(oFucntionReference) std::bind(&oFucntionReference, this, std::placeholders::_1)
+#define BIND_EVENT(oFucntionReference) std::bind(&oFunctionReference, this, std::placeholders::_1)
 
-#define SUBMIT_EVENT(Event) EventBus::GetInstance().Sumbit(Event);
-#define REGISTER_EVENT_LISTENER(EventListener) EventBus::GetInstance().Register(EventListener);
-#define UNREGISTER_EVENT_LISTENER(EventListener) EventBus::GetInstance().UnRegister(EventListener);
+#define SUBMIT_EVENT(Event) events::EventBus::GetInstance().Submit(Event);
+#define REGISTER_EVENT_LISTENER(EventListener) events::EventBus::GetInstance().Register(EventListener);
+#define UNREGISTER_EVENT_LISTENER(EventListener) events::EventBus::GetInstance().UnRegister(EventListener);

@@ -24,7 +24,9 @@
     "externalwarnings",
     "defines",
     "group",
-    "debugdir"
+    "debugdir",
+    "warnings",
+    "flags"
   ],
   "cSpell.words": [
     "buildcfg",

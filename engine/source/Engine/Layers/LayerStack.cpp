@@ -25,7 +25,22 @@ namespace engine
 		return true;
 	}
 
-	void LayerStack::Update()
+	void LayerStack::OnEvent(events::Event& oEvent)
+	{
+		if (oEvent.bIsHandled)
+			return;
+
+		for (size_t nIndex = m_oLayers.size(); nIndex > 0; nIndex--)
+		{
+			const auto pCurrentLayer = m_oLayers.at(nIndex - 1);
+			if (!pCurrentLayer)
+				continue;
+
+			pCurrentLayer->OnEvent(oEvent);
+		}
+	}
+
+	void LayerStack::OnUpdate()
 	{
 		for (size_t nIndex = m_oLayers.size(); nIndex > 0; nIndex--)
 		{
@@ -33,7 +48,7 @@ namespace engine
 			if (!pCurrentLayer)
 				continue;
 
-			pCurrentLayer->Update();
+			pCurrentLayer->OnUpdate();
 		}
 	}
 

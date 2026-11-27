@@ -37,7 +37,7 @@ namespace engine::events
 		m_oEventListenersMap.erase(pEventListener->GetEventListenerSubscriptionId());
 	}
 
-	void EventBus::Sumbit(IN Event &oEvent)
+	void EventBus::Submit(IN Event &oEvent)
 	{
 		for (const auto& [nId, pEventListener] : m_oEventListenersMap)
 		{
