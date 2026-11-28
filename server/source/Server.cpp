@@ -33,14 +33,14 @@ bool Server::Start()
 	m_oWinsockContext = common::CreateScope<networking::WinsockContext>();
 	if (!m_oWinsockContext->Initialize())
 	{
-		LOG_ERROR("An error occured while initilizing winsock context");
+		LOG_ERROR("An error occurred while initializing winsock context");
 		return false;
 	}
 
 	m_oSocket = common::CreateScope<networking::ServerSocket>(m_strIpAddress, m_strPort);
 	if (!m_oSocket->Open())
 	{
-		LOG_ERROR("An error occured while opening the server socket");
+		LOG_ERROR("An error occurred while opening the server socket");
 		return false;
 	}
 
@@ -57,9 +57,9 @@ bool Server::Start()
 
 bool Server::IsPacketAlreadyQueued(IN const networking::ReceivedPacket &oReceivedPacket) const
 {
-	for (auto nIndex = 0; nIndex < m_oRecivedPacketsQueue.size(); ++nIndex)
+	for (auto nIndex = 0; nIndex < m_oReceivedPacketsQueue.size(); ++nIndex)
 	{
-		auto oCurrentPacket = m_oRecivedPacketsQueue[nIndex];
+		auto oCurrentPacket = m_oReceivedPacketsQueue[nIndex];
 		if (oCurrentPacket.nnRequestId == oReceivedPacket.nnRequestId &&
 			oCurrentPacket.oSocketAddress == oReceivedPacket.oSocketAddress)
 		{
@@ -81,7 +81,7 @@ void Server::Run()
 	{
 		const auto currentTime = common::Clock::now();
 
-		RecievePackets();
+		ReceivePackets();
 		ProcessPackets();
 
 		if (currentTime >= nextWorldStateUpdate)
@@ -124,7 +124,7 @@ void Server::Update()
 
 		if (!SendPacket<networking::UpdateWorldStatePacket>(oUpdateWorldStatePacket, &oClientAddress))
 		{
-			LOG_ERROR("An error occured while updating world state.");
+			LOG_ERROR("An error occurred while updating world state.");
 		}
 	}
 }

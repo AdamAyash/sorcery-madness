@@ -70,7 +70,7 @@ uint64_t ToKey() const
 ### 3. [PendingPacket.h](networking/source/Networking/Packets/PendingPacket.h): адрес на получателя (H3)
 
 ```cpp
-SocketAddress oDestination;
+SocketAddress oDestinationAddress;   // вече е добавено
 ```
 
 ### 4. [PendingPacketsQueueManager](networking/source/Networking/PendingPacketsQueueManager/PendingPacketsQueueManager.h): ключ (адрес, ID)
@@ -78,7 +78,7 @@ SocketAddress oDestination;
 ```cpp
 using PendingPacketKey = std::pair<uint64_t, __int64>;     // (адрес, request id)
 
-void Submit(IN PendingPacket& oPendingPacket);             // ключ = {oDestination.ToKey(), id}
+void Submit(IN PendingPacket& oPendingPacket);             // ключ = {oDestinationAddress.ToKey(), id}
 void Remove(IN const SocketAddress& oFrom, IN const __int64 nnAckId);
 
 std::map<PendingPacketKey, PendingPacket> m_oPendingPacketsQueue;   // std::map → не трябва hash
@@ -92,12 +92,12 @@ std::map<PendingPacketKey, PendingPacket> m_oPendingPacketsQueue;   // std::map 
 
 ```cpp
 pBasePacket->bRequiresAck = true;
-oPendingPacket.oDestination = pSocketAddress ? *pSocketAddress : m_oSocket->GetAddress(); // клиентът → сървъра
+oPendingPacket.oDestinationAddress = pSocketAddress ? *pSocketAddress : m_oSocket->GetAddress(); // клиентът → сървъра
 ```
 
 Ако `BaseSocket` няма getter за `m_oSocketAddress`, трябва да се добави.
 
-**`RecievePackets`, след `ValidatePacketHeader`:**
+**`ReceivePackets`, след `ValidatePacketHeader`:**
 
 ```cpp
 // а) ACK: маха чакащия пакет и не влиза в опашката за обработка
@@ -146,12 +146,12 @@ void MarkAsReceived(const SocketAddress& oFrom, __int64 nnId)
 **`ProcessPendingPackets`:** повторното изпращане вече отива на правилния адрес.
 
 ```cpp
-SendPacketInternal(pPacketData, nPacketSizeInBytes, &oPendingPacket.oDestination);
+SendPacketInternal(pPacketData, nPacketSizeInBytes, &oPendingPacket.oDestinationAddress);
 ```
 
 ### 6. [Server.cpp](server/source/Server.cpp), `Run`
 
-Добави `ProcessPendingPackets();` след `RecievePackets();` (H2).
+Добави `ProcessPendingPackets();` след `ReceivePackets();` (H2).
 
 ### 7. [ServerPacketProcessor.cpp](server/source/ServerPacketProcessor/ServerPacketProcessor.cpp)
 
@@ -174,6 +174,6 @@ SendPacketInternal(pPacketData, nPacketSizeInBytes, &oPendingPacket.oDestination
 |---|---|
 | H1: смесени ID-та | ✅ ACK е изричен, а ключът включва адреса |
 | H2: сървърът не повтаря | ✅ `ProcessPendingPackets` в `Run` |
-| H3: грешен адрес при повторение | ✅ `oDestination` в `PendingPacket` |
+| H3: грешен адрес при повторение | ✅ `oDestinationAddress` в `PendingPacket` |
 | C6: повторен `Connect` | ✅ спира се от историята, преди да стигне до логиката |
 | `IsPacketAlreadyQueued` в Client и Server | заменя се с обща история в базовия клас |

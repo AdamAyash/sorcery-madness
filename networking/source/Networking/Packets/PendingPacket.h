@@ -20,6 +20,6 @@ namespace networking
 		std::vector<char> oPacketSerializedData;
 		int nPacketRetryTimeoutInSeconds = 0;
 		SocketAddress oDestinationAddress;
-		std::chrono::steady_clock::time_point oLastSentTimesStamp;
+		std::chrono::steady_clock::time_point oLastSentTimeStamp;
 	};
 }

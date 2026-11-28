@@ -40,7 +40,7 @@ namespace engine::events
 	};
 }
 
-#define BIND_EVENT(oFucntionReference) std::bind(&oFunctionReference, this, std::placeholders::_1)
+#define BIND_EVENT(oFunctionReference) std::bind(&oFunctionReference, this, std::placeholders::_1)
 
 #define SUBMIT_EVENT(Event) events::EventBus::GetInstance().Submit(Event);
 #define REGISTER_EVENT_LISTENER(EventListener) events::EventBus::GetInstance().Register(EventListener);

@@ -20,12 +20,11 @@ public:
 	void Update();
 
 private:
-private:
 	bool ProcessPacket(const networking::ReceivedPacket &oReceivedPacket) override;
 
 private:
 	bool m_bIsRunning = false;
 	GameContext &m_oGameContext;
 	common::Scope<ClientPacketProcessor> m_oClientPacketProcessor;
-	std::vector<networking::ReceivedPacket> m_oRecivedPackets;
+	std::vector<networking::ReceivedPacket> m_oReceivedPackets;
 };

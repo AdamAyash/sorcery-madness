@@ -12,7 +12,7 @@ namespace engine
 
 	public:
 		/// <summary>
-		/// Calculates diffrent time variables.
+		/// Calculates different time variables.
 		/// </summary>
 		/// <returns>double</returns>
 		void Calculate();

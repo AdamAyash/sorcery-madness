@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Application.h"
 #include "../../Layers/Base/ILayer.h"
 #include "../../EventSystem/EventDispatcher.h"
@@ -23,7 +21,7 @@ namespace engine
 		WindowProperties oWindowProperties;
 		m_pWindow = common::CreateScope<Window>(oWindowProperties);
 		m_pLayerStack = common::CreateScope<LayerStack>();
-		m_pRendered2D = common::CreateScopeFromRaw<Renderer2D>(new Renderer2D());
+		m_pRenderer2D = common::CreateScopeFromRaw<Renderer2D>(new Renderer2D());
 
 		REGISTER_EVENT_LISTENER(this);
 
@@ -67,8 +65,8 @@ namespace engine
 
 	void Application::Draw()
 	{
-		m_pLayerStack->Draw(*m_pRendered2D.get());
-		m_pRendered2D->Draw();
+		m_pLayerStack->Draw(*m_pRenderer2D.get());
+		m_pRenderer2D->Draw();
 	}
 
 	bool Application::PushLayer(ILayer *pLayer)
@@ -82,9 +80,9 @@ namespace engine
 		return true;
 	}
 
-	bool Application::OnWindowResize(IN const events::WindowResizeEvent& oWindowCloseEvent)
+	bool Application::OnWindowResize(IN const events::WindowResizeEvent &oWindowResizeEvent)
 	{
-		m_pRendered2D->SetWindowViewport(oWindowCloseEvent.GetWidth(), oWindowCloseEvent.GetHeight());
+		m_pRenderer2D->SetWindowViewport(oWindowResizeEvent.GetWidth(), oWindowResizeEvent.GetHeight());
 		return true;
 	}
 }

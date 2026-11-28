@@ -87,7 +87,7 @@ namespace networking
 	}
 
 
-	int BaseSocket::Recieve(OUT char* pMessageBuffer, OUT SocketAddress* pSenderAddress /*= nullptr*/) const
+	int BaseSocket::Receive(OUT char* pMessageBuffer, OUT SocketAddress* pSenderAddress /*= nullptr*/) const
 	{
 		if (m_oSocket == INVALID_SOCKET)
 		{
@@ -98,7 +98,7 @@ namespace networking
 		sockaddr oAddressFrom {};
 		int nAddressFromSizeInBytes = sizeof(oAddressFrom);
 
-		const int bytesRecieved = recvfrom(m_oSocket, 
+		const int bytesReceived = recvfrom(m_oSocket, 
 			pMessageBuffer, 
 			n_MAX_PACKET_SIZE, 
 			0, 
@@ -108,7 +108,7 @@ namespace networking
 		if (pSenderAddress)
 			pSenderAddress->Set(oAddressFrom);
 
-		return bytesRecieved;
+		return bytesReceived;
 	}
 
 	void BaseSocket::Close()

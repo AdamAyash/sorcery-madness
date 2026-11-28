@@ -16,7 +16,7 @@ namespace networking
 
 	void PendingPacketsQueueManager::Submit(IN PendingPacket& oPendingPacket)
 	{
-		oPendingPacket.oLastSentTimesStamp = common::Clock::now();
+		oPendingPacket.oLastSentTimeStamp = common::Clock::now();
 		m_oPendingPacketsQueue[oPendingPacket.oPacketHeader.nnRequestId] = oPendingPacket;
 	}
 
@@ -42,7 +42,7 @@ namespace networking
 			const auto oCurrentTimeStamp = std::chrono::steady_clock::now();
 			const std::chrono::seconds oPacketRetryTimeoutInSeconds(pendingPacketIterator->second.nPacketRetryTimeoutInSeconds);
 
-			if (oCurrentTimeStamp - pendingPacketIterator->second.oLastSentTimesStamp >= oPacketRetryTimeoutInSeconds)
+			if (oCurrentTimeStamp - pendingPacketIterator->second.oLastSentTimeStamp >= oPacketRetryTimeoutInSeconds)
 			{
 				if (pendingPacketIterator->second.oPacketHeader.eRetryPolicy == PacketRetryPolicy::Unlimited)
 				{
@@ -53,7 +53,7 @@ namespace networking
 					pendingPacketIterator->second.sRetryCount++;
 				}
 
-				pendingPacketIterator->second.oLastSentTimesStamp = oCurrentTimeStamp;
+				pendingPacketIterator->second.oLastSentTimeStamp = oCurrentTimeStamp;
 				m_oPendingPacketsRegisteredForRetry.push_back(pendingPacketIterator->second);
 			}
 
