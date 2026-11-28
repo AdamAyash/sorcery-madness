@@ -3,6 +3,7 @@
 #include "../../EventSystem/Events/WindowEvents/WindowCloseEvent.h"
 #include "../../EventSystem/Events/WindowEvents/WindowResizeEvent.h"
 #include "../../EventSystem/EventDispatcher.h"
+#include "../../InputManager/InputManager.h"
 
 namespace engine
 {
@@ -43,20 +44,27 @@ namespace engine
 
 		glfwSetWindowCloseCallback(m_pWindow, [](GLFWwindow* pWindow)
 		{
-			const Window& oWindow = *reinterpret_cast<const Window*>(glfwGetWindowUserPointer(pWindow));
-
 			events::WindowCloseEvent oWindowCloseEvent;
 			SUBMIT_EVENT(oWindowCloseEvent);
 		});
 
 		glfwSetFramebufferSizeCallback(m_pWindow, [](GLFWwindow* pWindow, int nWidth, int nHeight)
 		{
-			const Window& oWindow = *reinterpret_cast<const Window*>(glfwGetWindowUserPointer(pWindow));
-
 			events::WindowResizeEvent oWindowResizeEvent(nWidth, nHeight);
 			SUBMIT_EVENT(oWindowResizeEvent);
 
 			glViewport(0, 0, nWidth, nHeight);
+		});
+
+		glfwSetKeyCallback(m_pWindow, [](GLFWwindow* pWindow, int nKey, int, int nAction, int)
+		{
+			auto& inputManager = InputManager::GetInstance();
+
+			if (nAction == GLFW_PRESS)
+				inputManager.SetKeyPressed(nKey, true);
+
+			else if (nAction == GLFW_RELEASE)
+				inputManager.SetKeyPressed(nKey, false);
 		});
 	}
 
